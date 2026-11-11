@@ -1,0 +1,158 @@
+float3 fx02_neighbor(float2 uv, float3 fallback)
+{
+    float4 tap = src(uv);
+    return lerp(fallback, tap.rgb, saturate(tap.a));
+}
+
+float4 fx02_median(float2 uv, float radius)
+{
+    float2 dx = float2(pixel_size.x * radius, 0.0);
+    float2 dy = float2(0.0, pixel_size.y * radius);
+    float4 central = src(uv);
+    float3 a = fx02_neighbor(uv - dx - dy, central.rgb);
+    float3 b = fx02_neighbor(uv - dy, central.rgb);
+    float3 c = fx02_neighbor(uv + dx - dy, central.rgb);
+    float3 d = fx02_neighbor(uv - dx, central.rgb);
+    float3 e = central.rgb;
+    float3 f = fx02_neighbor(uv + dx, central.rgb);
+    float3 g = fx02_neighbor(uv - dx + dy, central.rgb);
+    float3 h = fx02_neighbor(uv + dy, central.rgb);
+    float3 i = fx02_neighbor(uv + dx + dy, central.rgb);
+    // Component-wise insertion sorting network: the fifth value is the exact median.
+    float3 temporary;
+    temporary = min(a,b); b = max(a,b); a = temporary;
+    temporary = min(b,c); c = max(b,c); b = temporary;
+    temporary = min(a,b); b = max(a,b); a = temporary;
+    temporary = min(c,d); d = max(c,d); c = temporary;
+    temporary = min(b,c); c = max(b,c); b = temporary;
+    temporary = min(a,b); b = max(a,b); a = temporary;
+    temporary = min(d,e); e = max(d,e); d = temporary;
+    temporary = min(c,d); d = max(c,d); c = temporary;
+    temporary = min(b,c); c = max(b,c); b = temporary;
+    temporary = min(a,b); b = max(a,b); a = temporary;
+    temporary = min(e,f); f = max(e,f); e = temporary;
+    temporary = min(d,e); e = max(d,e); d = temporary;
+    temporary = min(c,d); d = max(c,d); c = temporary;
+    temporary = min(b,c); c = max(b,c); b = temporary;
+    temporary = min(a,b); b = max(a,b); a = temporary;
+    temporary = min(f,g); g = max(f,g); f = temporary;
+    temporary = min(e,f); f = max(e,f); e = temporary;
+    temporary = min(d,e); e = max(d,e); d = temporary;
+    temporary = min(c,d); d = max(c,d); c = temporary;
+    temporary = min(b,c); c = max(b,c); b = temporary;
+    temporary = min(a,b); b = max(a,b); a = temporary;
+    temporary = min(g,h); h = max(g,h); g = temporary;
+    temporary = min(f,g); g = max(f,g); f = temporary;
+    temporary = min(e,f); f = max(e,f); e = temporary;
+    temporary = min(d,e); e = max(d,e); d = temporary;
+    temporary = min(c,d); d = max(c,d); c = temporary;
+    temporary = min(b,c); c = max(b,c); b = temporary;
+    temporary = min(a,b); b = max(a,b); a = temporary;
+    temporary = min(h,i); i = max(h,i); h = temporary;
+    temporary = min(g,h); h = max(g,h); g = temporary;
+    temporary = min(f,g); g = max(f,g); f = temporary;
+    temporary = min(e,f); f = max(e,f); e = temporary;
+    temporary = min(d,e); e = max(d,e); d = temporary;
+    temporary = min(c,d); d = max(c,d); c = temporary;
+    temporary = min(b,c); c = max(b,c); b = temporary;
+    temporary = min(a,b); b = max(a,b); a = temporary;
+    return float4(e, central.a);
+}
+
+// FXAA: contrast early-out, span orientation/search and subpixel resolve.
+// Independently implemented from NVIDIA's FXAA whitepaper equations.
+// Fetch premultiplied RGBA so silhouettes filter without dark/colored fringes.
+float4 fx02_sample(float2 uv){return image.SampleLevel(fx_sampler,uv,0);}
+float fx02_luma(float4 c,float alphaMode){return lerp(dot(c.rgb,float3(.299,.587,.114)),c.a,alphaMode);}
+float4 fx02_fxaa(float2 uv){
+ float2 dx=float2(pixel_size.x,0),dy=float2(0,pixel_size.y);
+ float4 m=fx02_sample(uv),n=fx02_sample(uv-dy),s=fx02_sample(uv+dy),w=fx02_sample(uv-dx),e=fx02_sample(uv+dx);
+ // Select alpha only when its silhouette contrast exceeds RGB contrast.
+ // An alpha floor would erase all dark opaque edges (including red/blue).
+ float ml=dot(m.rgb,float3(.299,.587,.114)),nl=dot(n.rgb,float3(.299,.587,.114)),sl=dot(s.rgb,float3(.299,.587,.114)),wl=dot(w.rgb,float3(.299,.587,.114)),el=dot(e.rgb,float3(.299,.587,.114));
+ float rgbRange=max(ml,max(max(nl,sl),max(wl,el)))-min(ml,min(min(nl,sl),min(wl,el)));
+ float alphaRange=max(m.a,max(max(n.a,s.a),max(w.a,e.a)))-min(m.a,min(min(n.a,s.a),min(w.a,e.a)));
+ float alphaMode=alphaRange>rgbRange?1:0;
+ float lm=fx02_luma(m,alphaMode),ln=fx02_luma(n,alphaMode),ls=fx02_luma(s,alphaMode),lw=fx02_luma(w,alphaMode),le=fx02_luma(e,alphaMode);
+ float lo=min(lm,min(min(ln,ls),min(lw,le))),hi=max(lm,max(max(ln,ls),max(lw,le))),range=hi-lo;
+ if(range<max(.0312,hi*p0.x))return straight(m);
+ float4 nw=fx02_sample(uv-dx-dy),ne=fx02_sample(uv+dx-dy),sw=fx02_sample(uv-dx+dy),se=fx02_sample(uv+dx+dy);
+ float lnw=fx02_luma(nw,alphaMode),lne=fx02_luma(ne,alphaMode),lsw=fx02_luma(sw,alphaMode),lse=fx02_luma(se,alphaMode);
+ float vertical=abs(.25*lnw-.5*ln+.25*lne)+abs(.5*lw-lm+.5*le)+abs(.25*lsw-.5*ls+.25*lse);
+ float horizontal=abs(.25*lnw-.5*lw+.25*lsw)+abs(.5*ln-lm+.5*ls)+abs(.25*lne-.5*le+.25*lse);
+ bool h=horizontal>=vertical;
+ float a=h?ln:lw,b=h?ls:le;float ga=abs(a-lm),gb=abs(b-lm);
+ float signStep=ga>=gb?-1:1;float average=.5*(lm+(ga>=gb?a:b));
+ float gradient=.25*max(ga,gb);float2 normal=h?dy:dx,tangent=h?dx:dy;
+ float2 center=uv+normal*(signStep*.5),pn=center-tangent,pp=center+tangent;
+ float endN=average,endP=average;bool doneN=false,doneP=false;
+ for(int i=0;i<8;++i){
+  if(!doneN)endN=fx02_luma(fx02_sample(pn),alphaMode);if(!doneP)endP=fx02_luma(fx02_sample(pp),alphaMode);
+  doneN=doneN||abs(endN-average)>=gradient;doneP=doneP||abs(endP-average)>=gradient;
+  if(doneN&&doneP)break;if(!doneN)pn-=tangent;if(!doneP)pp+=tangent;
+ }
+ float distN=h?uv.x-pn.x:uv.y-pn.y,distP=h?pp.x-uv.x:pp.y-uv.y;
+ bool nearN=distN<distP;float end=nearN?endN:endP;
+ float offset=.5-min(distN,distP)/max(distN+distP,.000001);
+ if((lm-average<0)==(end-average<0))offset=0;
+ float4 span=fx02_sample(uv+normal*(signStep*offset));
+ float blend=min(.75,max(0,abs((ln+ls+lw+le)*.25-lm)/max(range,.000001)-.25)*(4.0/3.0))*p0.y;
+ return straight(lerp(span,(m+n+s+w+e+nw+ne+sw+se)/9,blend));
+}
+// AMD FidelityFX RCAS, full precision five-tap path. MIT: AA_NOTICES.txt.
+// No upscale, no temporal history, exact divisions with zero-denominator guards.
+float4 fx02_rcas(float2 uv){
+ float4 c=src(uv);if(p0.x<=0||c.a<=.00001)return c;
+ float3 b=fx02_neighbor(uv-float2(0,pixel_size.y),c.rgb),d=fx02_neighbor(uv-float2(pixel_size.x,0),c.rgb);
+ float3 f=fx02_neighbor(uv+float2(pixel_size.x,0),c.rgb),h=fx02_neighbor(uv+float2(0,pixel_size.y),c.rgb),e=c.rgb;
+ float3 minimum=min(min(b,d),min(f,h)),maximum=max(max(b,d),max(f,h));
+ float3 hitMin=min(minimum,e)/max(4*maximum,.00001);
+ float3 hitMax=(1-max(maximum,e))/min(4*minimum-4,-.00001);
+ float3 lobes=max(-hitMin,hitMax);
+ float lobe=max(-.1875,min(max(lobes.r,max(lobes.g,lobes.b)),0))*p0.x;
+ if(p0.y>.5){
+  float bl=b.b*.5+b.r*.5+b.g,dl=d.b*.5+d.r*.5+d.g,el=e.b*.5+e.r*.5+e.g,fl=f.b*.5+f.r*.5+f.g,hl=h.b*.5+h.r*.5+h.g;
+  float noise=abs(.25*(bl+dl+fl+hl)-el)/max(max(max(bl,dl),max(el,max(fl,hl)))-min(min(bl,dl),min(el,min(fl,hl))),.00001);
+  lobe*=1-.5*saturate(noise);
+ }
+ return float4(saturate((lobe*(b+d+f+h)+e)/(4*lobe+1)),c.a);
+}
+
+float4 fxApply(float2 uv)
+{
+    if(effect_id==3)return fx02_fxaa(uv);
+    if(effect_id==4)return fx02_rcas(uv);
+    float4 c = src(uv);
+    if (effect_id == 0) {
+        float2 step_uv = pixel_size * p0.y;
+        float3 north = fx02_neighbor(uv - float2(0.0, step_uv.y), c.rgb);
+        float3 south = fx02_neighbor(uv + float2(0.0, step_uv.y), c.rgb);
+        float3 west = fx02_neighbor(uv - float2(step_uv.x, 0.0), c.rgb);
+        float3 east = fx02_neighbor(uv + float2(step_uv.x, 0.0), c.rgb);
+        float3 low = min(c.rgb, min(min(north, south), min(west, east)));
+        float3 high = max(c.rgb, max(max(north, south), max(west, east)));
+        float local_contrast = max(high.r - low.r, max(high.g - low.g, high.b - low.b));
+        float adaptive = 1.0 / (1.0 + local_contrast * 8.0);
+        float3 detail = c.rgb - (north + south + west + east) * 0.25;
+        float3 delta = clamp(detail * p0.x * adaptive * 2.0, -p0.z, p0.z);
+        return float4(max(c.rgb + delta, 0.0), c.a);
+    }
+    if (effect_id == 1) {
+        if (p0.x > 0.5) return fx02_median(uv, p0.y);
+        float3 total = float3(0.0, 0.0, 0.0);
+        float weights = 0.0;
+        float sigma2 = max(p0.z * p0.z * 2.0, 0.00001);
+        for (int iy = 0; iy < 5; iy++) {
+            for (int ix = 0; ix < 5; ix++) {
+                float2 grid = float2(float(ix) - 2.0, float(iy) - 2.0);
+                float4 tap = src(uv + grid * pixel_size * p0.y);
+                float3 difference = tap.rgb - c.rgb;
+                float weight = exp(-dot(grid, grid) / 4.0 - dot(difference, difference) / sigma2) * tap.a;
+                total += tap.rgb * weight;
+                weights += weight;
+            }
+        }
+        return float4(total / max(weights, 0.00001), c.a);
+    }
+    return c;
+}

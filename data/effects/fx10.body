@@ -1,0 +1,236 @@
+float2 fx10Rotate(float2 q, float angle)
+{
+    return float2(q.x * cos(angle) - q.y * sin(angle), q.x * sin(angle) + q.y * cos(angle));
+}
+
+float fx10GlassHeight(float2 q)
+{
+    if (p1.x > 0.5 && auxiliary_valid > 0.5) return luminance(aux(frac(q)).rgb);
+    return noise21(q) * 0.65 + noise21(q * 2.13 + 13.0) * 0.25
+        + sin(q.x * 3.0 + sin(q.y * 2.0)) * 0.1;
+}
+
+float2 fx10Mirror(float2 q)
+{
+    return 1.0 - abs(frac(q * 0.5) * 2.0 - 1.0);
+}
+
+float4 fxApply(float2 uv)
+{
+    float4 original = src(uv);
+    float aspect = canvas_size.x / max(canvas_size.y, 1.0);
+    if (effect_id == 0)
+    {
+        float2 tl = p0.xy;
+        float2 tr = p0.zw;
+        float2 br = p1.xy;
+        float2 bl = p1.zw;
+        float2 diff = tl - tr + br - bl;
+        float2 d1 = tr - br;
+        float2 d2 = bl - br;
+        float det = d1.x * d2.y - d2.x * d1.y;
+        if (abs(det) < 0.000001) return float4(0.0, 0.0, 0.0, 0.0);
+        float g = (diff.x * d2.y - d2.x * diff.y) / det;
+        float h = (d1.x * diff.y - diff.x * d1.y) / det;
+        float2 a = tr - tl + g * tr;
+        float2 b = bl - tl + h * bl;
+        float2 m1 = a - uv * g;
+        float2 m2 = b - uv * h;
+        float2 rhs = uv - tl;
+        float inverseDet = m1.x * m2.y - m2.x * m1.y;
+        if (abs(inverseDet) < 0.000001) return float4(0.0, 0.0, 0.0, 0.0);
+        float2 mapped = float2(rhs.x * m2.y - m2.x * rhs.y, m1.x * rhs.y - rhs.x * m1.y) / inverseDet;
+        return src(mapped);
+    }
+    if (effect_id == 1)
+    {
+        float2 q = uv;
+        if (p0.x > 0.5) q = q.yx;
+        float bend = abs(p0.y);
+        if (bend < 0.0001) return original;
+        float horizontal = (q.x - 0.5) * 2.0;
+        float sinBend = sin(bend);
+        float argument = horizontal * sinBend;
+        if (abs(argument) >= 1.0) return float4(0.0, 0.0, 0.0, 0.0);
+        float theta = asin(clamp(argument, -0.99999, 0.99999));
+        float u = theta / (2.0 * bend) + 0.5;
+        float compressed = 1.0 - p0.w * (1.0 - cos(theta));
+        float v = (q.y - 0.5) / max(compressed, 0.1) + 0.5;
+        float2 mapped = float2(u, v);
+        if (p0.x > 0.5) mapped = mapped.yx;
+        float4 curved = src(mapped);
+        float shade = lerp(1.0, cos(theta), p0.z);
+        shade += sin(theta) * p0.z * (p0.y > 0.0 ? 0.2 : -0.2);
+        curved.rgb *= max(shade, 0.0);
+        return curved;
+    }
+    if (effect_id == 2)
+    {
+        float2 metric = float2(aspect, 1.0);
+        float2 d = (uv - p0.zw) * metric;
+        float radius = p0.y;
+        float r = length(d) / max(radius, 0.01);
+        if (r >= 1.0) return original;
+        float exponent = exp(p0.x * 1.8);
+        float mappedRadius = pow(max(r, 0.00001), exponent);
+        float2 mapped = p0.zw + d * (mappedRadius / max(r, 0.00001)) / metric;
+        return src(mapped);
+    }
+    if (effect_id == 3)
+    {
+        float2 metric = float2(aspect, 1.0);
+        float2 d = (uv - p0.zw) * metric * 2.0 / max(p0.y, 0.1);
+        float r = length(d);
+        float amount = p0.x;
+        float mappedRadius = atan(r * amount) / atan(amount);
+        if (p1.x > 0.5)
+        {
+            float angle = min(r * atan(amount), 1.55);
+            mappedRadius = tan(angle) / max(amount, 0.01);
+        }
+        float2 mapped = p0.zw + d * (mappedRadius / max(r, 0.00001)) * 0.5 / metric;
+        return src(mapped);
+    }
+    if (effect_id == 4)
+    {
+        float2 q = uv * float2(aspect, 1.0) * p0.y + elapsed * p0.z * float2(0.7, 0.3);
+        float delta = 0.02;
+        float height = fx10GlassHeight(q);
+        float2 gradient = float2(fx10GlassHeight(q + float2(delta, 0.0)) - height,
+            fx10GlassHeight(q + float2(0.0, delta)) - height) / delta;
+        gradient = clamp(gradient, -2.0, 2.0);
+        float4 glass = src(uv + gradient * p0.x * pixel_size);
+        float light = pow(saturate(dot(normalize(float3(-gradient, 1.0)), normalize(float3(-0.5, -0.5, 1.0)))), 12.0);
+        glass.rgb += light * p0.w;
+        return glass;
+    }
+    if (effect_id == 5)
+    {
+        if (auxiliary_valid < 0.5) return original;
+        float2 q = frac((uv - 0.5) * p0.w + 0.5 + p1.xy);
+        float4 mapColor = aux(q);
+        float2 offset = (mapColor.rg - 0.5) * 2.0;
+        if (p0.z > 0.5 && p0.z < 1.5)
+        {
+            float luma = luminance(mapColor.rgb) * 2.0 - 1.0;
+            offset = float2(luma, luma);
+        }
+        if (p0.z >= 1.5)
+        {
+            float center = luminance(mapColor.rgb);
+            float dx = luminance(aux(frac(q + float2(pixel_size.x, 0.0))).rgb) - center;
+            float dy = luminance(aux(frac(q + float2(0.0, pixel_size.y))).rgb) - center;
+            offset = clamp(float2(dx, dy) * 8.0, -1.0, 1.0);
+        }
+        return src(uv + offset * p0.xy * pixel_size * mapColor.a);
+    }
+    if (effect_id == 6)
+    {
+        float2 metric = float2(aspect, 1.0);
+        float angle = p1.x * 0.017453293;
+        float2 q = fx10Rotate((uv - 0.5) * metric, angle) * p0.z;
+        float t = elapsed * p0.w;
+        float2 offset = float2(0.0, 0.0);
+        if (p0.x < 0.5)
+        {
+            float warp = noise21(q * 0.7 + t * 0.3);
+            offset = float2(noise21(q + t + warp), noise21(q + float2(17.0, 23.0) - t + warp)) * 2.0 - 1.0;
+        }
+        else if (p0.x < 1.5)
+        {
+            offset = float2(sin(q.y * 6.283185 + t * 2.0), cos(q.x * 6.283185 - t * 1.7)) * 0.65;
+        }
+        else if (p0.x < 2.5)
+        {
+            offset = float2(sin(q.y * 1.7 + t) + sin(t * 0.7) * 0.5, sin(q.x * 1.3 + t * 1.4)) * 0.7;
+        }
+        else
+        {
+            float zig = 1.0 - abs(frac(q.y + t * 0.25) * 2.0 - 1.0);
+            offset = float2(zig * 2.0 - 1.0, 0.0);
+        }
+        offset = fx10Rotate(offset, -angle) * p0.y * pixel_size;
+        float4 distorted = src(uv + offset);
+        if (p0.x > 0.5 && p0.x < 1.5)
+        {
+            distorted.r = src(uv + offset * (1.0 + p1.y)).r;
+            distorted.b = src(uv + offset * (1.0 - p1.y)).b;
+        }
+        return distorted;
+    }
+    if (effect_id == 7)
+    {
+        float2 q = uv;
+        float2 unitPixel = pixel_size;
+        if (p0.x > 0.5) { q = q.yx; unitPixel = unitPixel.yx; }
+        float grid = q.y * p0.y;
+        float band = floor(grid);
+        float local = frac(grid);
+        if (local < p0.z * 0.5 || local > 1.0 - p0.z * 0.5) return float4(0.0, 0.0, 0.0, 0.0);
+        float alternate = frac(band * 0.5) < 0.25 ? -1.0 : 1.0;
+        float displacement = alternate * p0.w + sin(elapsed * p1.y + band * 0.9) * p1.x;
+        q.x += displacement * unitPixel.x;
+        if (p0.x > 0.5) q = q.yx;
+        return src(q);
+    }
+    if (effect_id == 8)
+    {
+        if (p0.y <= 0.00001) return original;
+        if (p0.y >= 0.99999) return float4(0.0, 0.0, 0.0, 0.0);
+        float2 q = uv;
+        if (p0.x < 0.5 || (p0.x > 1.5 && p0.x < 2.5)) q.x = 1.0 - q.x;
+        if (p0.x > 1.5) q.y = 1.0 - q.y;
+        float2 normal = normalize(float2(1.0, -1.0));
+        float distance = dot(q - float2(1.0, 0.0), normal) + p0.y * 1.414214;
+        float radius = max(p0.z, 0.01);
+        if (distance > radius) return float4(0.0, 0.0, 0.0, 0.0);
+        if (distance <= 0.0)
+        {
+            original.rgb *= 1.0 - exp(distance / radius * 5.0) * 0.22;
+            return original;
+        }
+        float theta = asin(saturate(distance / radius));
+        float sourceDistance = radius * (3.141593 - theta);
+        float2 backUv = q + normal * (sourceDistance - distance);
+        if (p0.x < 0.5 || (p0.x > 1.5 && p0.x < 2.5)) backUv.x = 1.0 - backUv.x;
+        if (p0.x > 1.5) backUv.y = 1.0 - backUv.y;
+        float4 backColor = src(backUv);
+        float shade = 0.5 + 0.5 * cos(theta);
+        backColor.rgb = lerp(float3(p0.w, p0.w, p0.w), backColor.rgb, 0.18) * shade;
+        backColor.rgb += pow(saturate(sin(theta)), 8.0) * p1.x;
+        return backColor;
+    }
+    if (effect_id == 9)
+    {
+        float angle = p0.z * 0.017453293 + elapsed * p0.w;
+        float2 q = fx10Rotate((uv - 0.5) * float2(aspect, 1.0), angle) * p0.y;
+        if (p0.x < 0.5)
+        {
+            q /= float2(aspect, 1.0);
+            if (p1.x > 0.5) q = fx10Mirror(q + 0.5);
+            else q = frac(q + 0.5);
+            return src(q);
+        }
+        if (p0.x < 1.5)
+        {
+            q = q / float2(aspect, 1.0) + 0.5;
+            for (int level = 0; level < 5; level++)
+            {
+                if (float(level) < p1.y)
+                {
+                    float2 cell = floor(q * 2.0);
+                    float spin = (hash21(cell + float(level) * 13.0) > 0.5 ? 1.0 : -1.0) * 1.570796;
+                    q = fx10Rotate(frac(q * 2.0) - 0.5, spin + angle / max(p1.y, 1.0)) + 0.5;
+                }
+            }
+            return src(frac(q));
+        }
+        float r = length(q);
+        float theta = atan2(q.y, q.x);
+        float segment = 6.283185 / max(floor(p1.z + 0.5), 2.0);
+        theta = abs(frac(theta / segment + 0.5) * segment - segment * 0.5);
+        float2 mapped = float2(cos(theta), sin(theta)) * r / float2(aspect, 1.0) + 0.5;
+        return src(fx10Mirror(mapped));
+    }
+    return original;
+}

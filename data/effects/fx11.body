@@ -1,0 +1,46 @@
+float fx11Round(float2 uv,float radius)
+{
+    float2 q=abs((uv-0.5)*canvas_size)-(canvas_size*0.5-radius);
+    return length(max(q,0.0))+min(max(q.x,q.y),0.0)-radius;
+}
+float4 fx11Face(float2 uv)
+{
+    float4 face=src(uv);
+    if(p0.x<0.5){
+        float mask=1.0-smoothstep(-0.75,0.75,fx11Round(uv,min(p0.w,min(canvas_size.x,canvas_size.y)*0.49)));
+        face=over(face,float4(tint2.rgb,1.0));
+        face.a*=mask;
+    }
+    return face;
+}
+float4 fxApply(float2 uv)
+{
+    // Motion, scale and opacity effects are evaluated once by the shared scene evaluator.
+    if(effect_id==1)return src(uv);
+    if(effect_id==2)return src(uv);
+    if(effect_id==3)return src(uv);
+    if(effect_id==4)return src(uv);
+    if(effect_id==0){
+        float angle=p0.z*0.01745329252;
+        float2 extrusion=float2(cos(angle),sin(angle))*p0.y*pixel_size;
+        // Keep the complete extrusion inside the finite render rectangle.
+        float2 margin=min(abs(extrusion)+pixel_size*2.0,0.45);
+        float2 span=max(1.0-margin*2.0,0.1);
+        float2 faceuv=(uv-margin)/span;
+        float4 face=fx11Face(faceuv);
+        float cover=0.0;
+        for(int k=1;k<=20;k++){
+            float amount=float(k)/20.0;
+            float4 slice=fx11Face((uv-extrusion*amount-margin)/span);
+            cover=max(cover,slice.a);
+        }
+        float4 side=float4(tint.rgb*p1.x,cover);
+        if(p1.y>0.0&&face.a>0.0){
+            float2 rimStep=pixel_size*p1.y/span;
+            float edge=1.0-min(fx11Face(faceuv+rimStep).a,fx11Face(faceuv-rimStep).a);
+            face.rgb+=tint.rgb*edge*0.25;
+        }
+        return over(face,side);
+    }
+    return src(uv);
+}

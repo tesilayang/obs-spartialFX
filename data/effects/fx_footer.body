@@ -1,0 +1,20 @@
+uniform texture2d effect_result;
+float4 fxPremultiplied(float4 value) {
+ value.a=saturate(value.a);
+ value.rgb=max(value.rgb,float3(0,0,0));
+ return float4(value.rgb*value.a,value.a);
+}
+float4 FxPS(FxVert v):TARGET {
+ // Interpolate in premultiplied alpha to avoid dark fringes at transparent edges.
+ return lerp(fxPremultiplied(src(v.uv)),fxPremultiplied(fxApply(v.uv)),strength);
+}
+float4 FxPSRaw(FxVert v):TARGET {
+ // Temporal state is the unmixed effect result, independent of display strength.
+ return fxPremultiplied(fxApply(v.uv));
+}
+float4 FxPSMix(FxVert v):TARGET {
+ return lerp(fxPremultiplied(src(v.uv)),effect_result.Sample(fx_sampler,v.uv),strength);
+}
+technique Draw { pass { vertex_shader=FxVS(v); pixel_shader=FxPS(v); } }
+technique CaptureHistory { pass { vertex_shader=FxVS(v); pixel_shader=FxPSRaw(v); } }
+technique MixHistory { pass { vertex_shader=FxVS(v); pixel_shader=FxPSMix(v); } }

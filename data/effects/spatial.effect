@@ -1,0 +1,121 @@
+uniform float4x4 ViewProj;
+uniform texture2d image;
+uniform texture2d shadow_map;
+uniform texture2d caster_image;
+uniform float4 depths;
+uniform int pass_mode;
+uniform float opacity;
+uniform float ambient;
+uniform float shadow_opacity;
+uniform float3 light_position;
+uniform float3 light_color;
+uniform float3 shadow_color;
+uniform float light_intensity;
+uniform float light_range;
+uniform float light_falloff;
+uniform float soft_radius;
+uniform float light_extent;
+uniform float3 plane_center;
+uniform float3 plane_right;
+uniform float3 plane_down;
+uniform float3 plane_normal;
+uniform float3 caster_center;
+uniform float3 caster_right;
+uniform float3 caster_down;
+uniform float3 caster_normal;
+uniform float caster_opacity;
+uniform float4 uv_rect;
+uniform float4 caster_crop;
+uniform float2 texel_size;
+uniform float rim_strength;
+uniform float rim_width;
+uniform float rim_softness;
+uniform float dof_radius;
+uniform float exposure;
+uniform float saturation;
+uniform float vignette;
+uniform float4 output_transform;
+uniform float widescreen_amount;
+sampler_state linear_sampler { Filter = Linear; AddressU = Clamp; AddressV = Clamp; };
+struct VertData { float4 pos : POSITION; float2 uv : TEXCOORD0; };
+VertData VSDefault(VertData v) {
+    float depth=lerp(lerp(depths.x,depths.y,v.uv.x),lerp(depths.z,depths.w,v.uv.x),v.uv.y);
+    v.pos=mul(float4(v.pos.xyz,1.0),ViewProj)*max(depth,.001);
+    return v;
+}
+float3 colorFX(float3 rgb,float2 uv) {
+    float lum=dot(rgb,float3(.2126,.7152,.0722));
+    rgb=lerp(float3(lum,lum,lum),rgb,saturation)*exp2(exposure);
+    float2 edge=(uv-.5)*1.41421356;
+    return max(rgb*(1.0-vignette*saturate(dot(edge,edge))),0.0);
+}
+float casterAlpha(float3 world,float2 offset) {
+    float3 origin=light_position+float3(offset*soft_radius,0);
+    float3 ray=origin-world;
+    float denominator=dot(caster_normal,ray);
+    if(abs(denominator)<.00001)return 0.0;
+    float t=dot(caster_normal,caster_center-world)/denominator;
+    if(t<=.0001||t>=.9999)return 0.0;
+    float3 hit=world+ray*t-caster_center;
+    float2 uv=float2(dot(hit,caster_right)/max(dot(caster_right,caster_right),.001),dot(hit,caster_down)/max(dot(caster_down,caster_down),.001))+.5;
+    if(uv.x<0.0||uv.x>1.0||uv.y<0.0||uv.y>1.0)return 0.0;
+    return caster_image.Sample(linear_sampler,caster_crop.xy+uv*caster_crop.zw).a*caster_opacity;
+}
+float directAmount(float3 world,float2 offset) {
+    float3 ray=light_position+float3(offset*light_extent,0)-world;
+    float distance=max(length(ray),.001);
+    return pow(saturate(1.0-distance/max(light_range,1.0)),light_falloff)*max(dot(normalize(plane_normal),ray/distance),0.0);
+}
+float4 PSDefault(VertData v) : TARGET {
+    if(pass_mode==4){
+        float2 scale=output_transform.xy;
+        float2 safeScale=float2(abs(scale.x)>.00001?scale.x:.00001,abs(scale.y)>.00001?scale.y:.00001);
+        float2 uv=(v.uv-.5)/safeScale+.5;
+        float inside=step(0.0,uv.x)*step(uv.x,1.0)*step(0.0,uv.y)*step(uv.y,1.0)*step(.00001,abs(scale.x))*step(.00001,abs(scale.y));
+        float4 result=image.Sample(linear_sampler,uv)*inside;
+        float outside=step(output_transform.z*.5,abs(v.uv.y-.5));
+        float4 bars=output_transform.w>.5?float4(0,0,0,0):float4(0,0,0,1);
+        return lerp(result,bars,outside*widescreen_amount)*opacity;
+    }
+    if(pass_mode==3){
+        float2 p=(v.uv-.5)*2.0;float radius=length(p);
+        float alpha=light_extent>.5?(1.0-smoothstep(.78,1.0,max(abs(p.x),abs(p.y)))):exp(-radius*radius*4.0)*(1.0-smoothstep(.7,1.0,radius));
+        alpha*=.95;return float4(light_color*min(light_intensity,2.0)*alpha,alpha);
+    }
+    float3 world=plane_center+(v.uv.x-.5)*plane_right+(v.uv.y-.5)*plane_down;
+    if(pass_mode==1) {
+        float a=casterAlpha(world,float2(0,0));
+        a+=casterAlpha(world,float2(-.8,-.8));a+=casterAlpha(world,float2(0,-.8));a+=casterAlpha(world,float2(.8,-.8));
+        a+=casterAlpha(world,float2(-.8,0));a+=casterAlpha(world,float2(.8,0));
+        a+=casterAlpha(world,float2(-.8,.8));a+=casterAlpha(world,float2(0,.8));a+=casterAlpha(world,float2(.8,.8));
+        return float4(0,0,0,saturate(a/9.0));
+    }
+    float2 uv=uv_rect.xy+v.uv*uv_rect.zw;
+    float2 blur=texel_size*dof_radius;
+    float4 tex=image.Sample(linear_sampler,uv);
+    if(dof_radius>.01)tex=(tex*4.0+image.Sample(linear_sampler,uv+float2(blur.x,0))+image.Sample(linear_sampler,uv-float2(blur.x,0))+image.Sample(linear_sampler,uv+float2(0,blur.y))+image.Sample(linear_sampler,uv-float2(0,blur.y)))/8.0;
+    float alpha=tex.a*opacity;
+    float3 rgb=tex.rgb/max(tex.a,.00001);
+    if(pass_mode==0)return float4(colorFX(rgb*ambient,v.uv)*alpha,alpha);
+    float3 ray=light_position-world;float distance=max(length(ray),.001);
+    float attenuation=pow(saturate(1.0-distance/max(light_range,1.0)),light_falloff);
+    float3 visibility=lerp(float3(1,1,1),shadow_color,saturate(shadow_map.Sample(linear_sampler,v.uv).a*shadow_opacity));
+    // Original soft inner-alpha contour; no external implementation is used.
+    float2 edgeStep=texel_size*rim_width;
+    float left=image.Sample(linear_sampler,uv-float2(edgeStep.x,0)).a;
+    float right=image.Sample(linear_sampler,uv+float2(edgeStep.x,0)).a;
+    float up=image.Sample(linear_sampler,uv-float2(0,edgeStep.y)).a;
+    float down=image.Sample(linear_sampler,uv+float2(0,edgeStep.y)).a;
+    float erosion=min(min(left,right),min(up,down));
+    float nearEdge=min(min(image.Sample(linear_sampler,uv-float2(edgeStep.x*.35,0)).a,image.Sample(linear_sampler,uv+float2(edgeStep.x*.35,0)).a),min(image.Sample(linear_sampler,uv-float2(0,edgeStep.y*.35)).a,image.Sample(linear_sampler,uv+float2(0,edgeStep.y*.35)).a));
+    float band=lerp(saturate(tex.a-nearEdge),saturate(tex.a-erosion),rim_softness);
+    float2 gradient=float2(left-right,up-down);
+    float2 toward=float2(dot(ray,normalize(plane_right)),dot(ray,normalize(plane_down)));
+    float direction=saturate(dot(gradient/max(length(gradient),.0001),toward/max(length(toward),.001)));
+    float rim=band*lerp(direction*direction,direction,rim_softness)*rim_strength;
+    float amount=directAmount(world,float2(0,0));
+    if(light_extent>.01)amount=(amount+directAmount(world,float2(-.8,-.8))+directAmount(world,float2(.8,-.8))+directAmount(world,float2(-.8,.8))+directAmount(world,float2(.8,.8)))/5.0;
+    float3 lit=(rgb*amount+sqrt(max(rgb,.02))*rim*attenuation)*light_color*light_intensity*visibility;
+    return float4(colorFX(lit,v.uv)*alpha,0.0);
+}
+technique Draw { pass { vertex_shader=VSDefault(v); pixel_shader=PSDefault(v); } }

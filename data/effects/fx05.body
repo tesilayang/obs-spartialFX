@@ -1,0 +1,156 @@
+float3 fx05_surface(float2 uv, float scale)
+{
+    return layer_position + ((uv.x - layer_uv_center.x) * layer_right + (uv.y - layer_uv_center.y) * layer_down) * scale;
+}
+
+float3 fx05_normal()
+{
+    return layer_normal / max(length(layer_normal), 0.00001);
+}
+
+float3 fx05_ray(float2 uv, float scale)
+{
+    return lamp_position - fx05_surface(uv, scale);
+}
+
+float3 fx05_controlled_ray(float2 uv, float scale, float2 offset, float size)
+{
+    // UV offsets follow the original lamp projection, including cropping and
+    // surface scale. Zero offsets and size one preserve the existing light.
+    float surface_scale = max(scale, 0.01);
+    float3 normal = fx05_normal();
+    float3 lamp_delta = lamp_position - layer_position;
+    float depth = dot(lamp_delta, normal);
+    float2 center = float2(layer_uv_center.x + offset.x + dot(lamp_delta, layer_right) / max(dot(layer_right, layer_right) * surface_scale, 0.00001),
+                           layer_uv_center.y + offset.y + dot(lamp_delta, layer_down) / max(dot(layer_down, layer_down) * surface_scale, 0.00001));
+    float3 tangent = ((center.x - uv.x) * layer_right + (center.y - uv.y) * layer_down) * surface_scale;
+    return normal * depth + tangent / max(size, 0.01);
+}
+
+float fx05_attenuation(float3 ray)
+{
+    float attenuation = saturate(1.0 - length(ray) / max(lamp_range, 1.0));
+    return attenuation * attenuation * max(lamp_intensity, 0.0);
+}
+
+float2 fx05_direction(float2 uv, float scale)
+{
+    float3 ray = fx05_ray(uv, scale);
+    float2 projected = float2(dot(ray, layer_right) / max(dot(layer_right, layer_right), 0.00001),
+                              dot(ray, layer_down) / max(dot(layer_down, layer_down), 0.00001));
+    float2 direction_pixels = projected * canvas_size;
+    return direction_pixels / max(length(direction_pixels), 0.00001);
+}
+
+float fx05_alpha(float2 uv, float radius)
+{
+    // Alpha beyond the source rectangle is transparent, never edge-clamped.
+    // This also gives opaque rectangular sources a usable inner rim/shadow.
+    float2 d = pixel_size * radius;
+    float value = src(uv).a * 0.25;
+    value += (src(uv + float2(d.x, 0.0)).a + src(uv - float2(d.x, 0.0)).a
+            + src(uv + float2(0.0, d.y)).a + src(uv - float2(0.0, d.y)).a) * 0.125;
+    value += (src(uv + d).a + src(uv - d).a
+            + src(uv + float2(d.x, -d.y)).a + src(uv + float2(-d.x, d.y)).a) * 0.0625;
+    return value;
+}
+
+float4 fxApply(float2 uv)
+{
+    float4 c = src(uv);
+    if (effect_id == 0) {
+        float3 reference = float3(0.0, 0.0, 0.0);
+        float weights = 0.0;
+        for (int iy = 0; iy < 3; iy++) {
+            for (int ix = 0; ix < 3; ix++) {
+                float2 offset = float2(float(ix) - 1.0, float(iy) - 1.0) * p0.y * pixel_size;
+                float4 tap = aux(uv + offset);
+                float weight = (ix == 1 ? 2.0 : 1.0) * (iy == 1 ? 2.0 : 1.0) * tap.a;
+                reference += tap.rgb * weight;
+                weights += weight;
+            }
+        }
+        reference = weights > 0.00001 ? reference / weights : float3(1.0, 1.0, 1.0);
+        float3 ray = fx05_ray(uv, p0.w);
+        float facing = saturate(dot(fx05_normal(), ray) / max(length(ray), 0.00001));
+        float amount = saturate(p0.x * fx05_attenuation(ray) * lerp(1.0, facing, p0.z));
+        // The source reference is optional; never multiply the subject by
+        // itself when no reference was selected (aux() otherwise falls back).
+        float3 illuminated = c.rgb * (float3(0.65, 0.65, 0.65) + lamp_color * 0.7);
+        if (auxiliary_valid > 0.5 && weights > 0.00001) {
+            illuminated = lerp(c.rgb, reference * lamp_color, 0.5);
+        }
+        return float4(lerp(c.rgb, illuminated, amount), c.a);
+    }
+    if (effect_id == 1) {
+        float3 ray = fx05_ray(uv, p0.w);
+        float2 displacement = fx05_direction(uv, p0.w) * p0.y * pixel_size;
+        float alpha = fx05_alpha(uv - displacement, p0.x);
+        float attenuation = fx05_attenuation(ray);
+        float glow_alpha = saturate(alpha * p0.z * attenuation);
+        float rim = saturate(c.a - fx05_alpha(uv + displacement, p0.x));
+        float4 lit = float4(c.rgb + tint.rgb * rim * p0.z * attenuation, c.a);
+        return over(lit, float4(tint.rgb, glow_alpha));
+    }
+    if (effect_id == 2) {
+        float3 ray = fx05_controlled_ray(uv, p1.x, p1.yz, p1.w);
+        float time = elapsed * p0.y;
+        float flutter = (noise21(float2(time, 0.7)) - 0.5) * 1.4;
+        flutter += (noise21(float2(time * 3.7, 9.3)) - 0.5) * 0.6;
+        float flicker = max(1.0 + flutter * p0.x, 0.0);
+        float3 warm = lerp(tint.rgb, tint.rgb * float3(1.0, 0.48, 0.12), p0.z);
+        float amount = fx05_attenuation(ray) * p0.w * flicker;
+        float facing = 0.3 + 0.7 * saturate(dot(fx05_normal(), ray) / max(length(ray), 0.00001));
+        return float4(c.rgb * (1.0 + warm * amount * facing), c.a);
+    }
+    if (effect_id == 3) {
+        float scale = p1.x;
+        float3 ray = fx05_controlled_ray(uv, scale, p1.yz, p1.w);
+        float3 right_dir = layer_right / max(length(layer_right), 0.00001);
+        float3 down_dir = layer_down / max(length(layer_down), 0.00001);
+        float2 tangent_ray = float2(dot(ray, right_dir), dot(ray, down_dir));
+        float radial = length(tangent_ray) / max(length(layer_right) * scale, 0.00001);
+        float spot = 1.0 - smoothstep(p0.x * (1.0 - p0.y), p0.x, radial);
+        float amount = spot * fx05_attenuation(ray) * p0.w;
+        return float4(c.rgb * (p0.z + tint.rgb * amount), c.a);
+    }
+    if (effect_id == 4) {
+        float3 ray = fx05_ray(uv, p1.z);
+        float3 light_dir = ray / max(length(ray), 0.00001);
+        float2 gradient = float2(0.0, 0.0);
+        if (p1.x > 0.5) {
+            gradient.x = luminance(src(uv + float2(pixel_size.x, 0.0)).rgb) - luminance(src(uv - float2(pixel_size.x, 0.0)).rgb);
+            gradient.y = luminance(src(uv + float2(0.0, pixel_size.y)).rgb) - luminance(src(uv - float2(0.0, pixel_size.y)).rgb);
+            gradient *= p1.y;
+        }
+        float3 right_dir = layer_right / max(length(layer_right), 0.00001);
+        float3 down_dir = layer_down / max(length(layer_down), 0.00001);
+        float3 normal = normalize(fx05_normal() + right_dir * (p0.x - gradient.x) + down_dir * (p0.y - gradient.y));
+        float3 view = camera_position - fx05_surface(uv, p1.z);
+        float3 view_dir = view / max(length(view), 0.00001);
+        float3 half_vector = light_dir + view_dir;
+        half_vector /= max(length(half_vector), 0.00001);
+        float exponent = max(2.0 / max(p0.z * p0.z, 0.0004) - 2.0, 1.0);
+        float specular = pow(saturate(dot(normal, half_vector)), exponent);
+        // Dielectric Fresnel keeps broad highlights from whitening the entire
+        // plane, while allowing stronger reflection at grazing view angles.
+        float fresnel = 0.04 + 0.96 * pow(1.0 - saturate(dot(view_dir, half_vector)), 5.0);
+        specular *= fresnel * saturate(dot(normal, light_dir)) * p0.w * fx05_attenuation(ray);
+        return float4(c.rgb + lamp_color * specular, c.a);
+    }
+    if (effect_id == 5) {
+        float3 ray = fx05_ray(uv, p1.x);
+        // Contact shadows use the lamp direction at the surface anchor. A
+        // radial direction evaluated per texel pulls every edge inward when
+        // the lamp projects inside the silhouette, erasing the inner shadow.
+        float2 displacement = -fx05_direction(layer_uv_center, p1.x) * p0.y * pixel_size;
+        float shadow_alpha = fx05_alpha(uv - displacement, p0.z);
+        float opacity = p0.w * saturate(fx05_attenuation(ray));
+        if (p0.x < 0.5) {
+            return over(c, float4(tint2.rgb, shadow_alpha * opacity));
+        }
+        float inside = saturate(1.0 - shadow_alpha) * opacity;
+        return float4(lerp(c.rgb, tint2.rgb, inside), c.a);
+    }
+    return c;
+}

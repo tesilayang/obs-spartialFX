@@ -1,0 +1,181 @@
+float fx9Stroke(float2 q, float2 a, float2 b, float width)
+{
+    float2 ab = b - a;
+    float dist = length(q - a - ab * saturate(dot(q - a, ab) / max(dot(ab, ab), 0.000001)));
+    return 1.0 - smoothstep(width, width + 0.02, dist);
+}
+
+float fx9Glyph(float2 q, float index, float width)
+{
+    if (index < 0.5) return 0.0;
+    float pointMask = 1.0 - smoothstep(width, width + 0.02, length(q - float2(0.5, 0.78)));
+    if (index < 1.5) return pointMask;
+    if (index < 2.5)
+        return max(pointMask, 1.0 - smoothstep(width, width + 0.02, length(q - float2(0.5, 0.33))));
+    float horizontal = fx9Stroke(q, float2(0.2, 0.5), float2(0.8, 0.5), width);
+    if (index < 3.5) return horizontal;
+    float plus = max(horizontal, fx9Stroke(q, float2(0.5, 0.2), float2(0.5, 0.8), width));
+    if (index < 4.5) return plus;
+    float star = max(plus, fx9Stroke(q, float2(0.25, 0.25), float2(0.75, 0.75), width));
+    star = max(star, fx9Stroke(q, float2(0.25, 0.75), float2(0.75, 0.25), width));
+    if (index < 5.5) return star;
+    float hashMask = fx9Stroke(q, float2(0.33, 0.15), float2(0.33, 0.85), width);
+    hashMask = max(hashMask, fx9Stroke(q, float2(0.67, 0.15), float2(0.67, 0.85), width));
+    hashMask = max(hashMask, fx9Stroke(q, float2(0.15, 0.35), float2(0.85, 0.35), width));
+    hashMask = max(hashMask, fx9Stroke(q, float2(0.15, 0.65), float2(0.85, 0.65), width));
+    if (index < 6.5) return hashMask;
+    float2 d = (q - 0.5) * float2(1.0, 0.85);
+    float ring = 1.0 - smoothstep(width, width + 0.02, abs(length(d) - 0.32));
+    float atMask = max(ring, fx9Stroke(q, float2(0.64, 0.3), float2(0.64, 0.62), width));
+    atMask = max(atMask, 1.0 - smoothstep(width, width + 0.02, abs(length(d + float2(0.02, 0.0)) - 0.14)));
+    return atMask;
+}
+
+float4 fx9Quadrant(float2 uv, float2 direction, float radius)
+{
+    float2 d = direction * radius * pixel_size;
+    float4 a = src(uv);
+    float4 b = src(uv + float2(d.x, 0.0));
+    float4 c = src(uv + float2(0.0, d.y));
+    float4 e = src(uv + d);
+    float4 f = src(uv + d * 0.5);
+    float weight = max(a.a + b.a + c.a + e.a + f.a, 0.00001);
+    float3 mean = (a.rgb * a.a + b.rgb * b.a + c.rgb * c.a + e.rgb * e.a + f.rgb * f.a) / weight;
+    float3 squares = (a.rgb * a.rgb * a.a + b.rgb * b.rgb * b.a + c.rgb * c.rgb * c.a
+        + e.rgb * e.rgb * e.a + f.rgb * f.rgb * f.a) / weight;
+    return float4(mean, dot(max(squares - mean * mean, 0.0), float3(0.299, 0.587, 0.114)));
+}
+
+float fx9Dither(float2 cell)
+{
+    float2 bit0 = frac(floor(cell) * 0.5) * 2.0;
+    float2 bit1 = frac(floor(cell * 0.5) * 0.5) * 2.0;
+    float small = (bit0.x == bit0.y ? 0.0 : 2.0) + bit0.y;
+    float large = (bit1.x == bit1.y ? 0.0 : 2.0) + bit1.y;
+    return (small * 4.0 + large + 0.5) / 16.0 - 0.5;
+}
+
+float3 fx9FourColor(float value, float3 a, float3 b, float3 c, float3 d)
+{
+    if (value < 0.25) return a;
+    if (value < 0.5) return b;
+    if (value < 0.75) return c;
+    return d;
+}
+
+float4 fxApply(float2 uv)
+{
+    float4 original = src(uv);
+    float2 pix = uv * canvas_size;
+    if (effect_id == 0)
+    {
+        float value = saturate((luminance(original.rgb) - 0.5) * p0.w + 0.5);
+        float spacing = max(p0.x, 2.0);
+        float width = p0.y / spacing;
+        float hatchA = 1.0 - smoothstep(width, width + 0.08, abs(frac((pix.x + pix.y) / spacing) - 0.5));
+        float hatchB = 1.0 - smoothstep(width, width + 0.08, abs(frac((pix.x - pix.y) / spacing) - 0.5));
+        float hatchC = 1.0 - smoothstep(width, width + 0.08, abs(frac(pix.x / spacing) - 0.5));
+        float ink = hatchA * (1.0 - smoothstep(0.35, 0.75, value));
+        ink = max(ink, hatchB * (1.0 - smoothstep(0.15, 0.5, value)));
+        ink = max(ink, hatchC * (1.0 - smoothstep(0.05, 0.25, value)));
+        ink = max(ink, saturate(edgeAt(uv, p0.y) * p0.z));
+        float paper = floor(value * 3.0 + 0.5) / 3.0 * 0.25 + 0.75;
+        return float4(float3(paper, paper, paper) * (1.0 - ink), original.a);
+    }
+    if (effect_id == 1)
+    {
+        float4 soft = blurAt(uv, p0.y);
+        float3 hsv = rgb2hsv(max(soft.rgb, 0.0));
+        hsv.y = saturate(hsv.y * p0.w);
+        hsv.z = floor(saturate(hsv.z) * (p0.x - 1.0) + 0.5) / max(p0.x - 1.0, 1.0);
+        float ink = saturate(edgeAt(uv, max(0.8, p0.y * 0.5)) * p0.z);
+        return float4(hsv2rgb(hsv) * (1.0 - ink), original.a);
+    }
+    if (effect_id == 2)
+    {
+        float base = luminance(original.rgb);
+        float blurred = luminance(blurAt(uv, p0.x).rgb);
+        float pencil = saturate(base / max(blurred, 0.015));
+        float edge = saturate(edgeAt(uv, 1.0) * p0.y);
+        float paper = (hash21(floor(pix)) - 0.5) * p0.z;
+        float marks = 0.5 + 0.5 * sin((pix.x + pix.y * 0.6) * 1.2 + noise21(pix * 0.07) * 4.0);
+        pencil = saturate(pencil * (1.0 - edge) + paper - marks * (1.0 - base) * p0.w * 0.3);
+        return float4(float3(pencil, pencil, pencil), original.a);
+    }
+    if (effect_id == 3)
+    {
+        float bestVariance = 10000.0;
+        float3 bestColor = original.rgb;
+        for (int quadrant = 0; quadrant < 4; quadrant++)
+        {
+            float dx = (quadrant == 0 || quadrant == 2) ? -1.0 : 1.0;
+            float dy = quadrant < 2 ? -1.0 : 1.0;
+            float4 stats = fx9Quadrant(uv, float2(dx, dy), p0.x);
+            if (stats.a < bestVariance)
+            {
+                bestVariance = stats.a;
+                bestColor = stats.rgb;
+            }
+        }
+        float canvas = sin(pix.x * 2.1) * sin(pix.y * 2.7) * p0.z;
+        return float4(max(lerp(original.rgb, bestColor, p0.y) * (1.0 + canvas), 0.0), original.a);
+    }
+    if (effect_id == 4)
+    {
+        if (history_valid > 0.5 && floor(elapsed * p0.w) == floor(history_time * p0.w)) return past(uv);
+        float2 cell = floor(pix / max(p0.y, 1.0));
+        float4 pixelColor = src((cell + 0.5) * max(p0.y, 1.0) * pixel_size);
+        float3 adjusted = saturate((pixelColor.rgb - 0.5) * p1.x + 0.5);
+        float dither = fx9Dither(cell) * p0.z;
+        float value = saturate(luminance(adjusted) + dither * 0.3);
+        float3 palette = fx9FourColor(value, float3(0.06, 0.18, 0.06), float3(0.19, 0.38, 0.19),
+            float3(0.55, 0.67, 0.06), float3(0.61, 0.74, 0.06));
+        if (p0.x > 0.5 && p0.x < 1.5) palette = floor(saturate(adjusted + dither / 31.0) * 31.0 + 0.5) / 31.0;
+        if (p0.x >= 1.5) palette = fx9FourColor(value, float3(0.07, 0.04, 0.16), float3(0.30, 0.16, 0.36),
+            float3(0.39, 0.57, 0.40), float3(0.88, 0.94, 0.71));
+        return float4(palette, pixelColor.a);
+    }
+    if (effect_id == 5)
+    {
+        float2 dimensions = float2(p0.x * 0.65, p0.x);
+        float2 grid = pix / max(dimensions, float2(3.0, 6.0));
+        float2 cell = floor(grid);
+        float4 cellColor = src((cell + 0.5) * dimensions * pixel_size);
+        float value = saturate((luminance(cellColor.rgb) - 0.5) * p0.w + 0.5);
+        float glyph = fx9Glyph(frac(grid), min(floor(value * 8.0), 7.0), p1.x);
+        float3 foreground = lerp(tint.rgb, cellColor.rgb * 1.5 + 0.08, p0.y);
+        float3 color = lerp(float3(p0.z, p0.z, p0.z), foreground, glyph);
+        return float4(color, original.a);
+    }
+    if (effect_id == 6)
+    {
+        float angle = p0.x * 0.017453293;
+        float2 offset = float2(cos(angle), sin(angle)) * p0.y * pixel_size;
+        float difference = luminance(src(uv + offset).rgb) - luminance(src(uv - offset).rgb);
+        float height = saturate(0.5 + difference * p0.z);
+        float3 color = lerp(float3(height, height, height), original.rgb * (height * 1.6 + 0.2), p0.w);
+        return float4(max(color, 0.0), original.a);
+    }
+    if (effect_id == 7)
+    {
+        float value = saturate((luminance(original.rgb) - 0.5) * p0.y + 0.5 + p0.z);
+        if (p0.w > 0.5) value = 1.0 - value;
+        float3 color = float3(saturate(value * 3.0 - 0.3), saturate(value * 3.0 - 1.1), saturate(value * 3.0 - 2.0));
+        color += float3(0.15, 0.0, 0.3) * (1.0 - smoothstep(0.0, 0.5, value));
+        if (p0.x > 0.5 && p0.x < 1.5) color = hsv2rgb(float3((1.0 - value) * 0.72, 1.0, 0.25 + value * 0.75));
+        if (p0.x >= 1.5) color = lerp(tint2.rgb, tint.rgb, value);
+        return float4(color, original.a);
+    }
+    if (effect_id == 8)
+    {
+        float tick = floor(elapsed * p0.y);
+        float2 q = uv * p0.z;
+        float2 wobble = float2(noise21(q + tick * 13.0), noise21(q + tick * 7.0 + 27.0)) * 2.0 - 1.0;
+        float2 shiftedUv = uv + wobble * p0.x * pixel_size;
+        float4 drawn = src(shiftedUv);
+        float ink = saturate(edgeAt(shiftedUv, 1.0) * p0.w);
+        drawn.rgb *= 1.0 - ink;
+        return drawn;
+    }
+    return original;
+}

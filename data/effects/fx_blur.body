@@ -1,0 +1,72 @@
+// Independent implementation of normalized convolution; no copied project code.
+uniform float4x4 ViewProj;
+uniform texture2d image;
+uniform float2 pixel_size;
+uniform float2 kernel_radius;
+uniform float2 axis;
+uniform float algorithm;
+uniform float edge_mode;
+uniform float aperture;
+uniform float rotation;
+uniform float threshold;
+uniform float boost;
+uniform float field_mode;
+uniform float4 field_params;
+uniform float2 canvas_size;
+sampler_state linear_sampler {Filter=Linear; AddressU=Clamp; AddressV=Clamp;};
+struct BlurVert {float4 pos:POSITION;float2 uv:TEXCOORD0;};
+BlurVert BlurVS(BlurVert v){BlurVert r;r.pos=mul(float4(v.pos.xyz,1),ViewProj);r.uv=v.uv;return r;}
+float4 tap(float2 uv){
+ if(edge_mode>1.5&&(uv.x<0||uv.y<0||uv.x>1||uv.y>1))return float4(0,0,0,0);
+ float2 lo=pixel_size*.5,hi=1-lo;
+ if(edge_mode>.5&&edge_mode<1.5){float2 span=max(hi-lo,pixel_size);float2 phase=(uv-lo)/span;uv=lo+(1-abs(frac(phase*.5)*2-1))*span;}
+ return image.SampleLevel(linear_sampler,clamp(uv,lo,hi),0);
+}
+float4 ReducePS(BlurVert v):TARGET{
+ // Explicit footprint average also suppresses Nyquist detail at odd dimensions,
+ // where a single bilinear fetch is not an area average at a 2:1 ratio.
+ float2 d=pixel_size*.5;
+ return (image.Sample(linear_sampler,v.uv+d)+image.Sample(linear_sampler,v.uv-d)
+       +image.Sample(linear_sampler,v.uv+float2(d.x,-d.y))
+       +image.Sample(linear_sampler,v.uv+float2(-d.x,d.y)))*.25;
+}
+float defocus(float2 uv){
+ if(field_mode<.5)return 1;
+ if(field_mode<1.5){float2 delta=(uv-field_params.xy)*canvas_size/max(min(canvas_size.x,canvas_size.y),1);return smoothstep(field_params.z,field_params.z+field_params.w,length(delta));}
+ float angle=field_params.x*.01745329252;
+ float2 coords=(uv-.5)*canvas_size/max(min(canvas_size.x,canvas_size.y),1);
+ float distance=abs(dot(coords,float2(-sin(angle),cos(angle)))-(field_params.y-.5));
+ return smoothstep(field_params.z*.5,field_params.z*.5+field_params.w,distance);
+}
+float4 ConvolvePS(BlurVert v):TARGET{
+ float radius=dot(kernel_radius,axis)*defocus(v.uv);
+ float sigma=max(radius/3,.33);
+ float4 total=float4(0,0,0,0);float norm=0;
+ // Adjacent reduced pixels are always adjacent taps, never widely spaced copies.
+ int extent=int(ceil(min(radius,100)));
+ for(int i=-extent;i<=extent;++i){
+  float position=float(i);float weight=saturate(radius+1-abs(position));
+  if(algorithm<.5)weight*=exp(-.5*position*position/(sigma*sigma));
+  total+=tap(v.uv+axis*pixel_size*position)*weight;norm+=weight;
+ }
+ return total/max(norm,.00001);
+}
+float4 AperturePS(BlurVert v):TARGET{
+ float4 total=float4(0,0,0,0);float norm=0;
+ float blades=0;if(aperture>.5)blades=5;if(aperture>1.5)blades=6;if(aperture>2.5)blades=8;
+ int extent_x=int(ceil(min(kernel_radius.x,100)));
+ int extent_y=int(ceil(min(kernel_radius.y,100)));
+ for(int y=-extent_y;y<=extent_y;++y){for(int x=-extent_x;x<=extent_x;++x){
+  float2 sample_pos=float2(float(x),float(y))/max(kernel_radius,float2(.01,.01));
+  float distance=length(sample_pos),boundary=1;
+  if(blades>.5){float sector=6.283185307/blades;float angle=atan2(sample_pos.y,sample_pos.x)-rotation*.01745329252;float relative=frac(angle/sector+.5)*sector-sector*.5;boundary=cos(3.141592654/blades)/max(cos(relative),.1);}
+  float weight=saturate((boundary-distance)*min(kernel_radius.x,kernel_radius.y)+.5);
+  float4 c=tap(v.uv+float2(float(x),float(y))*pixel_size);
+  float luma=dot(c.rgb/max(c.a,.00001),float3(.2126,.7152,.0722));
+  total+=float4(c.rgb*(1+max(luma-threshold,0)*boost),c.a)*weight;norm+=weight;
+ }}
+ return total/max(norm,.00001);
+}
+technique Reduce {pass {vertex_shader=BlurVS(v);pixel_shader=ReducePS(v);}}
+technique Convolve {pass {vertex_shader=BlurVS(v);pixel_shader=ConvolvePS(v);}}
+technique Aperture {pass {vertex_shader=BlurVS(v);pixel_shader=AperturePS(v);}}

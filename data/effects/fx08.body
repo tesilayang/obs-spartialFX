@@ -1,0 +1,267 @@
+float2 fx8Gradient(float2 cell)
+{
+    float angle = hash21(cell) * 6.283185;
+    return float2(cos(angle), sin(angle));
+}
+
+float fx8Perlin(float2 q)
+{
+    float2 cell = floor(q);
+    float2 f = frac(q);
+    float2 fade = f * f * f * (f * (f * 6.0 - 15.0) + 10.0);
+    float a = dot(fx8Gradient(cell), f);
+    float b = dot(fx8Gradient(cell + float2(1.0, 0.0)), f - float2(1.0, 0.0));
+    float c = dot(fx8Gradient(cell + float2(0.0, 1.0)), f - float2(0.0, 1.0));
+    float d = dot(fx8Gradient(cell + float2(1.0, 1.0)), f - float2(1.0, 1.0));
+    return lerp(lerp(a, b, fade.x), lerp(c, d, fade.x), fade.y) * 1.414214;
+}
+
+float fx8SimplexCorner(float2 cell, float2 d)
+{
+    float kernel = max(0.5 - dot(d, d), 0.0);
+    return kernel * kernel * kernel * kernel * dot(fx8Gradient(cell), d);
+}
+
+float fx8Simplex(float2 q)
+{
+    float skew = (q.x + q.y) * 0.3660254038;
+    float2 cell = floor(q + skew);
+    float unskew = (cell.x + cell.y) * 0.2113248654;
+    float2 d0 = q - cell + unskew;
+    float2 side = d0.x > d0.y ? float2(1.0, 0.0) : float2(0.0, 1.0);
+    float2 d1 = d0 - side + 0.2113248654;
+    float2 d2 = d0 - 1.0 + 0.4226497308;
+    return 70.0 * (fx8SimplexCorner(cell, d0) + fx8SimplexCorner(cell + side, d1)
+        + fx8SimplexCorner(cell + 1.0, d2));
+}
+
+float3 fx8Yiq(float3 rgb)
+{
+    return float3(dot(rgb, float3(0.299, 0.587, 0.114)),
+        dot(rgb, float3(0.596, -0.274, -0.322)), dot(rgb, float3(0.211, -0.523, 0.312)));
+}
+
+float3 fx8Rgb(float3 yiq)
+{
+    return float3(yiq.x + yiq.y * 0.956 + yiq.z * 0.621,
+        yiq.x - yiq.y * 0.272 - yiq.z * 0.647, yiq.x - yiq.y * 1.106 + yiq.z * 1.703);
+}
+
+float fx8Stroke(float2 q, float2 a, float2 b, float width)
+{
+    float2 ab = b - a;
+    float d = length(q - a - ab * saturate(dot(q - a, ab) / max(dot(ab, ab), 0.000001)));
+    return 1.0 - smoothstep(width, width + 0.025, d);
+}
+
+// Seven-segment digits, with explicit segment membership rather than random dots.
+float fx8Glyph(float2 q, float digit)
+{
+    float a = (digit == 1.0 || digit == 4.0) ? 0.0 : 1.0;
+    float b = (digit == 5.0 || digit == 6.0) ? 0.0 : 1.0;
+    float c = digit == 2.0 ? 0.0 : 1.0;
+    float d = (digit == 1.0 || digit == 4.0 || digit == 7.0) ? 0.0 : 1.0;
+    float e = (digit == 0.0 || digit == 2.0 || digit == 6.0 || digit == 8.0) ? 1.0 : 0.0;
+    float f = (digit == 1.0 || digit == 2.0 || digit == 3.0 || digit == 7.0) ? 0.0 : 1.0;
+    float g = (digit == 0.0 || digit == 1.0 || digit == 7.0) ? 0.0 : 1.0;
+    float mask = fx8Stroke(q, float2(0.25, 0.16), float2(0.75, 0.16), 0.055) * a;
+    mask = max(mask, fx8Stroke(q, float2(0.77, 0.2), float2(0.77, 0.46), 0.055) * b);
+    mask = max(mask, fx8Stroke(q, float2(0.77, 0.54), float2(0.77, 0.8), 0.055) * c);
+    mask = max(mask, fx8Stroke(q, float2(0.25, 0.84), float2(0.75, 0.84), 0.055) * d);
+    mask = max(mask, fx8Stroke(q, float2(0.23, 0.54), float2(0.23, 0.8), 0.055) * e);
+    mask = max(mask, fx8Stroke(q, float2(0.23, 0.2), float2(0.23, 0.46), 0.055) * f);
+    mask = max(mask, fx8Stroke(q, float2(0.25, 0.5), float2(0.75, 0.5), 0.055) * g);
+    return mask;
+}
+
+float4 fxApply(float2 uv)
+{
+    float4 original = src(uv);
+    if (effect_id == 0)
+    {
+        float tick = floor(elapsed * p0.z);
+        float band = floor(uv.y * p0.y);
+        float block = floor(uv.x * max(p0.y * 0.25, 1.0));
+        float active = step(1.0 - p0.w, hash21(float2(band, tick)));
+        float blockActive = step(0.5, hash21(float2(block + tick, band)));
+        float shift = (hash21(float2(band + 41.0, tick)) - 0.5) * 2.0 * p0.x * active;
+        float2 q = uv + float2(shift * pixel_size.x, 0.0);
+        float split = p1.x * pixel_size.x * active * (0.5 + blockActive);
+        float4 glitched = src(q);
+        glitched.r = src(q + float2(split, 0.0)).r;
+        glitched.b = src(q - float2(split, 0.0)).b;
+        glitched.rgb = lerp(glitched.rgb, floor(glitched.rgb * 5.0 + 0.5) / 5.0, active * blockActive * 0.7);
+        return glitched;
+    }
+    if (effect_id == 1)
+    {
+        float scanLineIndex = floor(uv.y * canvas_size.y);
+        float tick = floor(elapsed * p0.w);
+        float jitter = (hash21(float2(scanLineIndex, tick)) - 0.5) * p0.x;
+        float rollBand = exp(-pow((frac(uv.y + elapsed * 0.13) - 0.5) * 16.0, 2.0));
+        float2 q = float2(uv.x + (jitter + rollBand * p0.x * 3.0) * pixel_size.x, frac(uv.y + elapsed * p0.y));
+        float4 analog = src(q);
+        analog.r = src(q + float2(p1.x * pixel_size.x, 0.0)).r;
+        analog.b = src(q - float2(p1.x * pixel_size.x, 0.0)).b;
+        float grain = hash21(uv * canvas_size + tick * 19.0) - 0.5;
+        analog.rgb = max(analog.rgb * (1.0 - rollBand * 0.2) + grain * p0.z, 0.0);
+        return analog;
+    }
+    if (effect_id == 2)
+    {
+        float t = elapsed;
+        float tracking = smoothstep(0.9, 1.0, uv.y) * p0.z;
+        float wobble = sin(uv.y * 18.0 + t * 2.0) + sin(uv.y * 73.0 - t * 3.0) * 0.3;
+        float randomLine = hash21(float2(floor(uv.y * canvas_size.y), floor(t * 30.0))) - 0.5;
+        float2 q = uv + float2((wobble * p0.y + randomLine * tracking * 80.0) * pixel_size.x, 0.0);
+        float4 tape = src(q);
+        float3 center = fx8Yiq(tape.rgb);
+        float lag = p0.x * pixel_size.x;
+        float3 chroma = (fx8Yiq(src(q - float2(lag, 0.0)).rgb)
+            + fx8Yiq(src(q - float2(lag * 1.5, 0.0)).rgb)) * 0.5;
+        center.yz = chroma.yz * p1.x;
+        float grain = hash21(uv * canvas_size + floor(t * 30.0) * 31.0) - 0.5;
+        tape.rgb = max(fx8Rgb(center) + grain * (p0.w + tracking * 0.7), 0.0);
+        return tape;
+    }
+    if (effect_id == 3)
+    {
+        float2 d = uv * 2.0 - 1.0;
+        float2 q = (d * (1.0 + p0.x * dot(d, d)) + 1.0) * 0.5;
+        float4 crt = src(q);
+        float channel = floor(frac(uv.x * canvas_size.x / max(p0.z * 3.0, 0.5)) * 3.0);
+        float3 mask = float3(channel == 0.0 ? 1.0 : 0.25, channel == 1.0 ? 1.0 : 0.25, channel == 2.0 ? 1.0 : 0.25);
+        float edge = 1.0 - p0.w * saturate(dot(d, d) * 0.5);
+        crt.rgb *= lerp(float3(1.0, 1.0, 1.0), mask * 1.5, p0.y) * edge * p1.x;
+        return crt;
+    }
+    if (effect_id == 4)
+    {
+        float scanLineIndex = floor(uv.y * canvas_size.y / max(p0.y, 1.0));
+        if (p0.x > 0.5)
+        {
+            float parity = frac((scanLineIndex + floor(frame_index) + p1.x) * 0.5) * 2.0;
+            if (parity > 0.5 && history_valid > 0.5)
+            {
+                float4 previous = past(uv);
+                previous.rgb *= 1.0 - p0.z;
+                return previous;
+            }
+            return original;
+        }
+        float scan = 0.5 + 0.5 * cos((uv.y * canvas_size.y / max(p0.y, 1.0) - elapsed * p0.w * 10.0) * 3.141593);
+        return float4(original.rgb * (1.0 - scan * p0.z), original.a);
+    }
+    if (effect_id == 5)
+    {
+        float scanLineIndex = floor(uv.y * canvas_size.y);
+        float carrier = uv.x * canvas_size.x * 1.570796 + scanLineIndex * 3.141593 + elapsed * p0.w * 3.141593;
+        float phase = p0.z * 0.017453293;
+        float yDecoded = 0.0;
+        float2 iqDecoded = float2(0.0, 0.0);
+        float2 iqFiltered = float2(0.0, 0.0);
+        for (int k = -4; k <= 4; k++)
+        {
+            float weight = (5.0 - abs(float(k))) / 25.0;
+            float3 signalYiq = fx8Yiq(src(uv + float2(float(k) * p0.x * 0.5 * pixel_size.x, 0.0)).rgb);
+            float angle = carrier + float(k) * 1.570796;
+            float encoded = signalYiq.x + signalYiq.y * cos(angle) + signalYiq.z * sin(angle);
+            yDecoded += encoded * weight;
+            iqDecoded += encoded * float2(cos(angle + phase), sin(angle + phase)) * (2.0 * weight);
+            iqFiltered += signalYiq.yz * weight;
+        }
+        float2 rotated = float2(iqFiltered.x * cos(phase) - iqFiltered.y * sin(phase),
+            iqFiltered.x * sin(phase) + iqFiltered.y * cos(phase));
+        float3 yiq = fx8Yiq(original.rgb);
+        yiq.x = lerp(yiq.x, yDecoded, p0.y);
+        yiq.yz = lerp(rotated, iqDecoded, p0.y);
+        return float4(max(fx8Rgb(yiq), 0.0), original.a);
+    }
+    if (effect_id == 6)
+    {
+        float progress = p0.x > 0.5 ? 1.0 - p0.y : p0.y;
+        if (progress <= 0.0001) return float4(0.0, 0.0, 0.0, 0.0);
+        float height = max(pixel_size.y * p0.z, smoothstep(0.35, 1.0, progress));
+        float width = max(pixel_size.x * p0.z, smoothstep(0.0, 0.35, progress));
+        float2 q = (uv - 0.5) / float2(width, height) + 0.5;
+        float4 crt = src(q);
+        float flash = (1.0 - smoothstep(0.25, 0.7, progress)) * p0.w;
+        crt.rgb = lerp(crt.rgb, float3(1.0, 1.0, 1.0), saturate(flash)) + flash * 0.2;
+        crt.a *= smoothstep(0.0, 0.03, progress);
+        return crt;
+    }
+    if (effect_id == 7)
+    {
+        float2 pix = uv * canvas_size;
+        float block = max(floor(p0.x + 0.5), 2.0);
+        float2 base = floor(pix / block) * block;
+        float4 center = src((base + block * 0.5) * pixel_size);
+        float3 endpointA = src((base + block * 0.2) * pixel_size).rgb;
+        float3 endpointB = src((base + block * 0.8) * pixel_size).rgb;
+        float yA = luminance(endpointA);
+        float yB = luminance(endpointB);
+        float y = luminance(original.rgb);
+        float ramp = saturate((y - min(yA, yB)) / max(abs(yA - yB), 0.05));
+        ramp = floor(ramp * 3.0 + 0.5) / 3.0;
+        float3 low = yA < yB ? endpointA : endpointB;
+        float3 high = yA < yB ? endpointB : endpointA;
+        float3 limited = lerp(low, high, ramp);
+        float3 yiq = fx8Yiq(lerp(original.rgb, limited, p0.z));
+        yiq.yz = fx8Yiq(center.rgb).yz;
+        float checker = frac((floor(pix.x) + floor(pix.y) * 0.5) * 0.5) - 0.375;
+        float3 decoded = fx8Rgb(yiq);
+        decoded = floor(saturate(decoded + checker * p0.w / p0.y) * (p0.y - 1.0) + 0.5) / max(p0.y - 1.0, 1.0);
+        return float4(decoded, original.a);
+    }
+    if (effect_id == 8)
+    {
+        float tick = floor(elapsed * p0.w);
+        float2 q = uv * canvas_size / max(p0.z, 0.5) + float2(tick * 13.17, tick * 7.31);
+        float n = hash21(floor(q)) * 2.0 - 1.0;
+        float n2 = hash21(floor(q) + 31.7) * 2.0 - 1.0;
+        float n3 = hash21(floor(q) + 73.1) * 2.0 - 1.0;
+        if (p0.x > 0.5 && p0.x < 1.5)
+        {
+            n = fx8Perlin(q); n2 = fx8Perlin(q + 31.7); n3 = fx8Perlin(q + 73.1);
+        }
+        if (p0.x >= 1.5)
+        {
+            n = fx8Simplex(q); n2 = fx8Simplex(q + 31.7); n3 = fx8Simplex(q + 73.1);
+        }
+        float3 grain = lerp(float3(n, n, n), float3(n, n2, n3), p1.z);
+        float scratchCell = floor(uv.x * 80.0);
+        float scratchX = frac(uv.x * 80.0);
+        float scratchActive = step(1.0 - p1.x * 0.08, hash21(float2(scratchCell, floor(tick * 0.2))));
+        float scratch = (1.0 - smoothstep(0.015, 0.09, abs(scratchX - 0.5))) * scratchActive;
+        float2 dustQ = uv * float2(90.0 * canvas_size.x / max(canvas_size.y, 1.0), 90.0);
+        float dustSeed = hash21(floor(dustQ) + tick * 3.0);
+        float dust = (1.0 - smoothstep(0.04, 0.22, length(frac(dustQ) - 0.5))) * step(1.0 - p1.y * 0.08, dustSeed);
+        float3 worn = original.rgb + grain * p0.y + scratch * 0.65 - dust * 0.8;
+        return float4(max(worn, 0.0), original.a);
+    }
+    if (effect_id == 9)
+    {
+        if (p0.x < 0.5)
+        {
+            float scan = 0.65 + 0.35 * sin(uv.y * canvas_size.y * 1.570796 - elapsed * p0.z * 12.0);
+            float flicker = 0.9 + 0.1 * hash21(float2(floor(elapsed * 20.0), 7.0));
+            float edge = edgeAt(uv, 1.0);
+            float3 hologram = tint.rgb * (luminance(original.rgb) * scan + edge * 0.7) * p0.w * flicker;
+            return float4(hologram, original.a * p1.y);
+        }
+        float2 dims = float2(max(p0.y * 0.6, 3.0), max(p0.y, 6.0));
+        float2 grid = uv * canvas_size / dims;
+        float2 cell = floor(grid);
+        float rnd = hash21(float2(cell.x, 13.0));
+        float travel = elapsed * p0.z * (3.0 + rnd * 7.0);
+        float head = frac((cell.y - travel) / 24.0 + rnd);
+        float trail = pow(1.0 - head, 5.0);
+        float digit = floor(hash21(cell + float2(0.0, floor(travel))) * 10.0);
+        float glyph = fx8Glyph(frac(grid), digit);
+        float sourceLuma = luminance(src((cell + 0.5) * dims * pixel_size).rgb);
+        float value = glyph * trail * lerp(0.7, 0.2 + sourceLuma, p1.x) * p0.w;
+        float3 color = lerp(tint.rgb, float3(1.0, 1.0, 1.0), pow(1.0 - head, 30.0)) * value;
+        return float4(color, original.a * p1.y);
+    }
+    return original;
+}

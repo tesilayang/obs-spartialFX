@@ -1,0 +1,31 @@
+/build*/
+/third_party/
+/msvc/
+/downloads/
+/runtime/
+/tools/sdk/
+*.partial
+
+# Local builds, test evidence and downloadable release artifacts
+/dist/
+/work/
+/logs/
+/tools/sdk-staging/
+/tools/vsmanifest.json
+
+# Editor and language caches
+/.vs/
+**/__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+node_modules/
+
+# Local credentials and signing keys
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.pfx
+*.p12

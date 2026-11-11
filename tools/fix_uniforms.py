@@ -1,0 +1,3 @@
+from pathlib import Path
+p=Path('src/stage.cpp');s=p.read_text(encoding='utf-8');anchor='scalar(s.effect,"exposure",m.fx.exposure);scalar(s.effect,"saturation",m.fx.saturation);scalar(s.effect,"vignette",m.fx.vignette);'
+s=s.replace(anchor,anchor+'\n    // Set every uniform before the first receiver draw; D3D validates the whole constant buffer.\n    scalar(s.effect,"opacity",1);scalar(s.effect,"shadow_opacity",m.light.shadowOpacity);vec3param(s.effect,"plane_center",{});vec3param(s.effect,"plane_right",{1,0,0});vec3param(s.effect,"plane_down",{0,1,0});vec3param(s.effect,"plane_normal",{0,0,-1});');p.write_text(s,encoding='utf-8')

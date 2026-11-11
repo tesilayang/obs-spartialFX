@@ -1,0 +1,71 @@
+float3 fx13Soft(float3 base,float3 blendcol)
+{
+    float3 d=lerp(((16.0*base-12.0)*base+4.0)*base,sqrt(max(base,0.0)),step(0.25,base));
+    return lerp(base-(1.0-2.0*blendcol)*base*(1.0-base),base+(2.0*blendcol-1.0)*(d-base),step(0.5,blendcol));
+}
+float4 fxApply(float2 uv)
+{
+    float4 col=src(uv);
+    if(effect_id==0){
+        // BillboardLive reference principle: sample once per cell, dark gaps,
+        // circular emitters. Reimplemented here with optional RGB subpixels.
+        float pitch=max(p0.x,3.0);
+        float2 grid=uv*canvas_size/pitch;
+        float2 cell=floor(grid);
+        float2 local=frac(grid)-.5;
+        float2 center=(cell+.5)*pitch*pixel_size;
+        float4 sampled=src(center);
+        float radius=clamp(p0.y,.1,.95)*.5;
+        float feather=max(.015,.75/pitch);
+        float3 emit;
+        if(p0.w<.5){
+            float mask=1.0-smoothstep(radius-feather,radius,length(local));
+            emit=sampled.rgb*mask;
+        }else{
+            float subRadius=radius/3.0;
+            float aa=min(feather,subRadius*.5);
+            float red=1.0-smoothstep(subRadius-aa,subRadius,length(local-float2(-.29,0.0)));
+            float green=1.0-smoothstep(subRadius-aa,subRadius,length(local));
+            float blue=1.0-smoothstep(subRadius-aa,subRadius,length(local-float2(.29,0.0)));
+            emit=sampled.rgb*float3(red,green,blue)*2.4;
+        }
+        float rowScan=1.0-p1.y*(.5+.5*sin(cell.y*.27-elapsed*p1.z*6.283185307));
+        col.rgb=emit*p0.z*rowScan;
+        if(p1.x>.0001){
+            float4 glow=blurAt(center,pitch*.7);
+            col.rgb+=glow.rgb*glow.a*p1.x*.4;
+        }
+        // Preserve alpha from the original pixel, including transparent edges.
+        return col;
+    }
+    if(effect_id==1)return col; // Final stage mask is evaluated after composition.
+    if(effect_id==2){
+        float4 softcol=blurAt(uv,p0.x);
+        float3 blurred=lerp(softcol.rgb,softcol.rgb*tint.rgb,p1.x);
+        float3 mixed=1.0-(1.0-col.rgb)*(1.0-blurred);
+        if(p0.z>0.5&&p0.z<1.5)mixed=fx13Soft(col.rgb,blurred);
+        if(p0.z>1.5)mixed=col.rgb*blurred;
+        col.rgb=lerp(col.rgb,mixed,p0.y*softcol.a);
+        float lum=luminance(col.rgb);
+        col.rgb=max(lerp(float3(lum,lum,lum),col.rgb,p0.w),0.0);
+        return col;
+    }
+    if(effect_id==3){
+        float phase=elapsed*p0.y*6.28318530718;
+        float zoom=1.0+p1.x*sin(phase*1.17);
+        float2 coord=(uv-0.5)/max(zoom,0.1)+0.5;
+        coord+=p0.x*float2(sin(phase),cos(phase*0.83));
+        float radius=p0.z*(0.65+0.35*sin(phase*0.71));
+        float4 focused=src(coord);
+        float4 blurred=circleBlur(coord,radius);
+        col.rgb=lerp(focused.rgb,blurred.rgb,0.75);
+        float2 doubleShift=float2(cos(phase*0.7),sin(phase*0.9))*p1.y*pixel_size;
+        float4 doublecol=src(coord+doubleShift);
+        col.rgb=lerp(col.rgb,doublecol.rgb,0.25*doublecol.a);
+        float high=smoothstep(0.4,0.95,luminance(blurred.rgb));
+        col.rgb+=blurred.rgb*blurred.a*high*p0.w;
+        col.a=focused.a;
+        return col;
+    }
+    return col;
+}

@@ -1,0 +1,128 @@
+float3 fx04_bright(float4 c, float threshold)
+{
+    float y = luminance(c.rgb);
+    return c.rgb * c.a * max(y - threshold, 0.0) / max(y, 0.00001);
+}
+
+float3 fx04_bloom(float2 uv, float radius, float threshold)
+{
+    float3 total = fx04_bright(src(uv), threshold) * 2.0;
+    float weights = 2.0;
+    for (int k = 0; k < 12; k++) {
+        float angle = float(k) * 2.39996323;
+        float r = sqrt((float(k) + 0.5) / 12.0);
+        float weight = exp(-2.0 * r * r);
+        float2 offset = float2(cos(angle), sin(angle)) * r * radius * pixel_size;
+        total += fx04_bright(src(uv + offset), threshold) * weight;
+        weights += weight;
+    }
+    return total / weights;
+}
+
+float4 fxApply(float2 uv)
+{
+    float4 c = src(uv);
+    if (effect_id == 0) {
+        if (p0.x < 0.5) {
+            float3 bloom = fx04_bloom(uv, p0.y, p0.z);
+            return float4(c.rgb + bloom * p0.w, c.a);
+        }
+        float3 blurred = blurAt(uv, p0.y).rgb;
+        float3 soft = (1.0 - 2.0 * blurred) * c.rgb * c.rgb + 2.0 * blurred * c.rgb;
+        return float4(max(lerp(c.rgb, soft, min(p0.w, 1.0)) + blurred * max(p0.w - 1.0, 0.0) * 0.25, 0.0), c.a);
+    }
+    if (effect_id == 1) {
+        float rays = 4.0;
+        if (p0.z > 0.5) rays = 6.0;
+        if (p0.z > 1.5) rays = 8.0;
+        float3 streak = float3(0.0, 0.0, 0.0);
+        float weights = 0.0;
+        for (int k = 0; k < 24; k++) {
+            float ring = floor(float(k) / rays) + 1.0;
+            float ray = float(k) - floor(float(k) / rays) * rays;
+            float angle = ray * 6.283185307 / rays + p0.w * 0.01745329252;
+            float distance_ray = ring / (24.0 / rays);
+            float weight = exp(-distance_ray * 2.3);
+            float2 offset = float2(cos(angle), sin(angle)) * p0.x * distance_ray * pixel_size;
+            streak += fx04_bright(src(uv + offset), p0.y) * weight;
+            weights += weight;
+        }
+        return float4(c.rgb + streak / max(weights, 0.00001) * p1.x, c.a);
+    }
+    if (effect_id == 2) {
+        float angle = p0.z * 0.01745329252;
+        float2 displacement = float2(cos(angle), sin(angle)) * p0.y * pixel_size;
+        if (p0.x < 0.5) {
+            float2 radial = uv - float2(p0.w, p1.x);
+            float2 distance_pixels = radial * canvas_size;
+            float magnitude = length(distance_pixels);
+            float edge = saturate(magnitude / max(length(canvas_size * 0.5), 1.0));
+            displacement = distance_pixels / max(magnitude, 0.00001) * p0.y * edge * edge * pixel_size;
+        }
+        return float4(src(uv + displacement).r, c.g, src(uv - displacement).b, c.a);
+    }
+    if (effect_id == 3) {
+        float angle = p0.z * 0.01745329252;
+        float2 coords = (uv - 0.5) * canvas_size / max(min(canvas_size.x, canvas_size.y), 1.0);
+        float projected = dot(coords, float2(cos(angle), sin(angle)));
+        float span = (abs(cos(angle)) * canvas_size.x + abs(sin(angle)) * canvas_size.y) / max(min(canvas_size.x, canvas_size.y), 1.0);
+        float phase = frac(elapsed * p0.x + 0.5);
+        float center = (phase - 0.5) * (span + 2.0 * p0.y);
+        float band = exp(-pow((projected - center) / max(p0.y * 0.45, 0.001), 2.0));
+        return float4(c.rgb + tint.rgb * band * p0.w, c.a);
+    }
+    if (effect_id == 4) {
+        float roundness = p0.x;
+        float2 radial = abs((uv - float2(p0.y, p0.z)) * 2.0 / max(p0.w, 0.1));
+        float rectangle = max(radial.x, radial.y);
+        float ellipse = length(radial);
+        float distance_edge = lerp(rectangle, ellipse, roundness);
+        float edge = smoothstep(1.0 - p1.x, 1.0, distance_edge);
+        return float4(c.rgb * (1.0 - edge * p1.y), c.a);
+    }
+    if (effect_id == 5) {
+        float2 toward_center = (float2(p0.x, p0.y) - uv) * p0.z;
+        float3 beams = float3(0.0, 0.0, 0.0);
+        float weights = 0.0;
+        for (int k = 0; k < 12; k++) {
+            float t = (float(k) + 0.5) / 12.0;
+            float weight = exp(-t * p1.x);
+            beams += fx04_bright(src(uv + toward_center * t), p0.w) * weight;
+            weights += weight;
+        }
+        return float4(c.rgb + beams / max(weights, 0.00001) * p1.y, c.a);
+    }
+    if (effect_id == 6) {
+        float3 ghosts = float3(0.0, 0.0, 0.0);
+        for (int k = 0; k < 6; k++) {
+            if (float(k) < floor(p1.x + 0.5)) {
+                float scale = 0.4 + (float(k) + 1.0) * p0.y;
+                float2 ghost_uv = 0.5 - (uv - 0.5) / scale;
+                float2 dx = float2(pixel_size.x * p0.z, 0.0);
+                float2 dy = float2(0.0, pixel_size.y * p0.z);
+                float3 bright = fx04_bright(src(ghost_uv - dx), p0.x);
+                bright += fx04_bright(src(ghost_uv + dx), p0.x);
+                bright += fx04_bright(src(ghost_uv - dy), p0.x);
+                bright += fx04_bright(src(ghost_uv + dy), p0.x);
+                float3 spectral = 0.65 + 0.35 * cos(float3(0.0, 2.1, 4.2) + float(k) * 1.7);
+                ghosts += bright * spectral * 0.25 / (1.0 + float(k) * 0.5);
+            }
+        }
+        return float4(c.rgb + ghosts * p0.w, c.a);
+    }
+    if (effect_id == 7) {
+        float edge_distance = uv.x;
+        float along = uv.y;
+        if (p0.x > 0.5) { edge_distance = 1.0 - uv.x; along = uv.y; }
+        if (p0.x > 1.5) { edge_distance = uv.y; along = uv.x; }
+        if (p0.x > 2.5) { edge_distance = 1.0 - uv.y; along = uv.x; }
+        float time = elapsed * p0.z;
+        float noise = noise21(float2(along * 3.0, time * 0.35));
+        float width = p0.y * (0.6 + 0.7 * noise);
+        float edge = exp(-edge_distance / max(width, 0.001) * 3.0);
+        float glow = edge * (0.6 + 0.4 * sin(along * 7.0 + time)) * p0.w;
+        float3 leak_color = lerp(tint.rgb, tint.rgb * float3(1.0, 0.25, 0.12), saturate(edge_distance / max(width, 0.001)));
+        return float4(c.rgb + leak_color * glow, c.a);
+    }
+    return c;
+}

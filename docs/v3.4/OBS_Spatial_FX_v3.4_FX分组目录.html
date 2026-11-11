@@ -1,0 +1,1989 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-hf-style="swiss" data-family="swiss" data-medium="page" data-theme="ikb" data-scheme="light" style="color-scheme:light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OBS Spatial FX v3.4 · FX 分组目录</title>
+<style>/* GZ:TOKENS:START · guizang-design v0.1.0 生成，不要手改；改设计请改 guizang-design 后运行 scripts/sync-skill.mjs */
+:root{
+  --font-display:'Inter','Noto Sans SC','PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,sans-serif;
+  --font-sans:'Inter','Noto Sans SC','PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,sans-serif;
+  --font-mono:'JetBrains Mono','Noto Sans SC',ui-monospace,'SF Mono',Menlo,monospace;
+  --sp-1:2px;
+  --sp-2:4px;
+  --sp-3:8px;
+  --sp-4:12px;
+  --sp-5:16px;
+  --sp-6:24px;
+  --sp-7:32px;
+  --sp-8:40px;
+  --sp-9:48px;
+  --sp-10:64px;
+  --sp-11:80px;
+  --sp-12:96px;
+  --sp-13:160px;
+  --radius-none:0px;
+  --radius-xs:0px;
+  --radius-sm:4px;
+  --radius-md:10px;
+  --radius-pill:999px;
+  --ease-standard:cubic-bezier(.2,0,.38,.9);
+  --ease-expressive:cubic-bezier(.4,.14,.3,1);
+  --ease-entrance:cubic-bezier(0,0,.3,1);
+  --ease-entrance-standard:cubic-bezier(0,0,.38,.9);
+  --ease-editorial:cubic-bezier(.22,1,.36,1);
+  --ease-page:cubic-bezier(.77,0,.175,1);
+  --dur-fast-1:70ms;
+  --dur-fast-2:110ms;
+  --dur-moderate-1:150ms;
+  --dur-moderate-2:240ms;
+  --dur-slow-1:400ms;
+  --dur-slow-2:700ms;
+  --dur-page:900ms;
+  --stagger-tight:70ms;
+  --stagger-base:100ms;
+  --stagger-loose:160ms;
+  --move-sm:8px;
+  --move-md:16px;
+  --move-lg:24px;
+  --paper:#fafaf8;
+  --paper-2:#f0f0ee;
+  --ink:#0a0a0a;
+  --muted:#737373;
+  --grey-1:#f0f0ee;
+  --grey-2:#d4d4d2;
+  --grey-3:#737373;
+  --accent:#002FA7;
+  --accent-on:#ffffff;
+  --accent-ink:#002FA7;
+  --accent-bright:#5B7BFF;
+  --accent-deep:#001d6b;
+  --accent-display:#002FA7;
+  --accent-ink-inverse:#96b0ff;
+  --accent-soft:#d5deef;
+  --text-primary:#0a0a0a;
+  --text-body:#252524;
+  --text-secondary:#525252;
+  --text-helper:#737373;
+  --text-placeholder:#a3a3a3;
+  --text-on-color:#ffffff;
+  --line-strong:#a3a3a3;
+  --line:#d4d4d2;
+  --line-subtle:#e0e0e0;
+  --ink-rgb:10,10,10;
+  --paper-rgb:250,250,248;
+  --accent-rgb:0,47,167;
+  --accent-on-rgb:255,255,255;
+  --accent-on-text:#ffffff;
+  --accent-on-text-rgb:255,255,255;
+  color-scheme:light;
+}
+[data-theme="ikb"]{
+  --paper:#fafaf8;
+  --paper-2:#f0f0ee;
+  --ink:#0a0a0a;
+  --muted:#737373;
+  --grey-1:#f0f0ee;
+  --grey-2:#d4d4d2;
+  --grey-3:#737373;
+  --accent:#002FA7;
+  --accent-on:#ffffff;
+  --accent-ink:#002FA7;
+  --accent-bright:#5B7BFF;
+  --accent-deep:#001d6b;
+  --accent-display:#002FA7;
+  --accent-ink-inverse:#96b0ff;
+  --accent-soft:#d5deef;
+  --text-primary:#0a0a0a;
+  --text-body:#252524;
+  --text-secondary:#525252;
+  --text-helper:#737373;
+  --text-placeholder:#a3a3a3;
+  --text-on-color:#ffffff;
+  --line-strong:#a3a3a3;
+  --line:#d4d4d2;
+  --line-subtle:#e0e0e0;
+  --ink-rgb:10,10,10;
+  --paper-rgb:250,250,248;
+  --accent-rgb:0,47,167;
+  --accent-on-rgb:255,255,255;
+  --accent-on-text:#ffffff;
+  --accent-on-text-rgb:255,255,255;
+  color-scheme:light;
+}
+[data-theme="lemon"]{
+  --paper:#fafaf8;
+  --paper-2:#f0f0ee;
+  --ink:#0a0a0a;
+  --muted:#737373;
+  --grey-1:#f0f0ee;
+  --grey-2:#d4d4d2;
+  --grey-3:#737373;
+  --accent:#FFD500;
+  --accent-on:#0a0a0a;
+  --accent-ink:#7a5f00;
+  --accent-bright:#FFE34D;
+  --accent-deep:#5e4900;
+  --accent-display:#7a5f00;
+  --accent-ink-inverse:#FFE34D;
+  --accent-soft:#fbf6e1;
+  --text-primary:#0a0a0a;
+  --text-body:#252524;
+  --text-secondary:#525252;
+  --text-helper:#737373;
+  --text-placeholder:#a3a3a3;
+  --text-on-color:#0a0a0a;
+  --line-strong:#a3a3a3;
+  --line:#d4d4d2;
+  --line-subtle:#e0e0e0;
+  --ink-rgb:10,10,10;
+  --paper-rgb:250,250,248;
+  --accent-rgb:255,213,0;
+  --accent-on-rgb:10,10,10;
+  --accent-on-text:#0a0a0a;
+  --accent-on-text-rgb:10,10,10;
+  color-scheme:light;
+}
+[data-theme="lemon-green"]{
+  --paper:#fafaf8;
+  --paper-2:#f0f0ee;
+  --ink:#0a0a0a;
+  --muted:#737373;
+  --grey-1:#f0f0ee;
+  --grey-2:#d4d4d2;
+  --grey-3:#737373;
+  --accent:#C5E803;
+  --accent-on:#0a0a0a;
+  --accent-ink:#4a6400;
+  --accent-bright:#D4F040;
+  --accent-deep:#3a5000;
+  --accent-display:#4a6400;
+  --accent-ink-inverse:#D4F040;
+  --accent-soft:#f2f8e1;
+  --text-primary:#0a0a0a;
+  --text-body:#252524;
+  --text-secondary:#525252;
+  --text-helper:#737373;
+  --text-placeholder:#a3a3a3;
+  --text-on-color:#0a0a0a;
+  --line-strong:#a3a3a3;
+  --line:#d4d4d2;
+  --line-subtle:#e0e0e0;
+  --ink-rgb:10,10,10;
+  --paper-rgb:250,250,248;
+  --accent-rgb:197,232,3;
+  --accent-on-rgb:10,10,10;
+  --accent-on-text:#0a0a0a;
+  --accent-on-text-rgb:10,10,10;
+  color-scheme:light;
+}
+[data-theme="safety-orange"]{
+  --paper:#fafaf8;
+  --paper-2:#f0f0ee;
+  --ink:#0a0a0a;
+  --muted:#737373;
+  --grey-1:#f0f0ee;
+  --grey-2:#d4d4d2;
+  --grey-3:#737373;
+  --accent:#FF6B35;
+  --accent-on:#ffffff;
+  --accent-ink:#c2410c;
+  --accent-bright:#FF9A6C;
+  --accent-deep:#9a3409;
+  --accent-display:#FF6B35;
+  --accent-ink-inverse:#FF9A6C;
+  --accent-soft:#fee8de;
+  --text-primary:#0a0a0a;
+  --text-body:#252524;
+  --text-secondary:#525252;
+  --text-helper:#737373;
+  --text-placeholder:#a3a3a3;
+  --text-on-color:#ffffff;
+  --line-strong:#a3a3a3;
+  --line:#d4d4d2;
+  --line-subtle:#e0e0e0;
+  --ink-rgb:10,10,10;
+  --paper-rgb:250,250,248;
+  --accent-rgb:255,107,53;
+  --accent-on-rgb:255,255,255;
+  --accent-on-text:#0a0a0a;
+  --accent-on-text-rgb:10,10,10;
+  color-scheme:light;
+}
+
+:root{
+  --fs-display:3.4rem;
+  --fw-display:200;
+  --lh-display:1.08;
+  --ls-display:-.03em;
+  --ff-display:var(--font-display);
+  --fst-display:normal;
+  --tt-display:none;
+  --fs-heading:1.8rem;
+  --fw-heading:200;
+  --lh-heading:1.2;
+  --ls-heading:-.015em;
+  --ff-heading:var(--font-sans);
+  --fst-heading:normal;
+  --tt-heading:none;
+  --fs-subhead:1.05rem;
+  --fw-subhead:500;
+  --lh-subhead:1.3;
+  --ls-subhead:0;
+  --ff-subhead:var(--font-sans);
+  --fst-subhead:normal;
+  --tt-subhead:none;
+  --fs-lead:1.05rem;
+  --fw-lead:400;
+  --lh-lead:1.6;
+  --ls-lead:0;
+  --ff-lead:var(--font-sans);
+  --fst-lead:normal;
+  --tt-lead:none;
+  --fs-body:1.0625rem;
+  --fw-body:400;
+  --lh-body:1.8;
+  --ls-body:0;
+  --ff-body:var(--font-sans);
+  --fst-body:normal;
+  --tt-body:none;
+  --fs-small:0.92rem;
+  --fw-small:400;
+  --lh-small:1.6;
+  --ls-small:0;
+  --ff-small:var(--font-sans);
+  --fst-small:normal;
+  --tt-small:none;
+  --fs-caption:0.75rem;
+  --fw-caption:400;
+  --lh-caption:1.55;
+  --ls-caption:0;
+  --ff-caption:var(--font-sans);
+  --fst-caption:normal;
+  --tt-caption:none;
+  --fs-label:0.875rem;
+  --fw-label:500;
+  --lh-label:1.3;
+  --ls-label:.14em;
+  --ff-label:var(--font-mono);
+  --fst-label:normal;
+  --tt-label:uppercase;
+  --fs-meta:0.75rem;
+  --fw-meta:500;
+  --lh-meta:1.3;
+  --ls-meta:.14em;
+  --ff-meta:var(--font-mono);
+  --fst-meta:normal;
+  --tt-meta:uppercase;
+  --fs-quote:2rem;
+  --fw-quote:300;
+  --lh-quote:1.45;
+  --ls-quote:-.02em;
+  --ff-quote:var(--font-sans);
+  --fst-quote:normal;
+  --tt-quote:none;
+  --fs-num-xl:3rem;
+  --fw-num-xl:800;
+  --lh-num-xl:0.88;
+  --ls-num-xl:-.04em;
+  --ff-num-xl:var(--font-display);
+  --fst-num-xl:normal;
+  --tt-num-xl:none;
+  --fs-display-zh:3.4rem;
+  --fw-display-zh:200;
+  --lh-display-zh:1.08;
+  --ls-display-zh:-.03em;
+  --ff-display-zh:var(--font-display);
+  --fst-display-zh:normal;
+  --tt-display-zh:none;
+  --fs-title:3.4rem;
+  --fw-title:200;
+  --lh-title:1.08;
+  --ls-title:-.03em;
+  --ff-title:var(--font-display);
+  --fst-title:normal;
+  --tt-title:none;
+  --fs-title-zh:3.4rem;
+  --fw-title-zh:200;
+  --lh-title-zh:1.08;
+  --ls-title-zh:-.03em;
+  --ff-title-zh:var(--font-display);
+  --fst-title-zh:normal;
+  --tt-title-zh:none;
+  --fs-num-l:3rem;
+  --fw-num-l:800;
+  --lh-num-l:0.88;
+  --ls-num-l:-.04em;
+  --ff-num-l:var(--font-display);
+  --fst-num-l:normal;
+  --tt-num-l:none;
+  --fs-num-m:3rem;
+  --fw-num-m:800;
+  --lh-num-m:0.88;
+  --ls-num-m:-.04em;
+  --ff-num-m:var(--font-display);
+  --fst-num-m:normal;
+  --tt-num-m:none;
+  --canvas-container:1200px;
+  --canvas-margin:80px;
+  --canvas-gutter:20px;
+  --canvas-measure:calc(32 * 1.0625rem);
+  --canvas-wide:800px;
+  --canvas-rail:200px;
+  --canvas-rail-gap:40px;
+}
+.gz-t-display{font-family:var(--ff-display);font-size:var(--fs-display);font-weight:var(--fw-display);line-height:var(--lh-display);letter-spacing:var(--ls-display);font-style:var(--fst-display);text-transform:var(--tt-display)}
+.gz-t-heading{font-family:var(--ff-heading);font-size:var(--fs-heading);font-weight:var(--fw-heading);line-height:var(--lh-heading);letter-spacing:var(--ls-heading);font-style:var(--fst-heading);text-transform:var(--tt-heading)}
+.gz-t-subhead{font-family:var(--ff-subhead);font-size:var(--fs-subhead);font-weight:var(--fw-subhead);line-height:var(--lh-subhead);letter-spacing:var(--ls-subhead);font-style:var(--fst-subhead);text-transform:var(--tt-subhead)}
+.gz-t-lead{font-family:var(--ff-lead);font-size:var(--fs-lead);font-weight:var(--fw-lead);line-height:var(--lh-lead);letter-spacing:var(--ls-lead);font-style:var(--fst-lead);text-transform:var(--tt-lead)}
+.gz-t-body{font-family:var(--ff-body);font-size:var(--fs-body);font-weight:var(--fw-body);line-height:var(--lh-body);letter-spacing:var(--ls-body);font-style:var(--fst-body);text-transform:var(--tt-body)}
+.gz-t-small{font-family:var(--ff-small);font-size:var(--fs-small);font-weight:var(--fw-small);line-height:var(--lh-small);letter-spacing:var(--ls-small);font-style:var(--fst-small);text-transform:var(--tt-small)}
+.gz-t-caption{font-family:var(--ff-caption);font-size:var(--fs-caption);font-weight:var(--fw-caption);line-height:var(--lh-caption);letter-spacing:var(--ls-caption);font-style:var(--fst-caption);text-transform:var(--tt-caption)}
+.gz-t-label{font-family:var(--ff-label);font-size:var(--fs-label);font-weight:var(--fw-label);line-height:var(--lh-label);letter-spacing:var(--ls-label);font-style:var(--fst-label);text-transform:var(--tt-label)}
+.gz-t-meta{font-family:var(--ff-meta);font-size:var(--fs-meta);font-weight:var(--fw-meta);line-height:var(--lh-meta);letter-spacing:var(--ls-meta);font-style:var(--fst-meta);text-transform:var(--tt-meta)}
+.gz-t-quote{font-family:var(--ff-quote);font-size:var(--fs-quote);font-weight:var(--fw-quote);line-height:var(--lh-quote);letter-spacing:var(--ls-quote);font-style:var(--fst-quote);text-transform:var(--tt-quote)}
+.gz-t-num-xl{font-family:var(--ff-num-xl);font-size:var(--fs-num-xl);font-weight:var(--fw-num-xl);line-height:var(--lh-num-xl);letter-spacing:var(--ls-num-xl);font-style:var(--fst-num-xl);text-transform:var(--tt-num-xl)}
+.gz-t-display-zh{font-family:var(--ff-display-zh);font-size:var(--fs-display-zh);font-weight:var(--fw-display-zh);line-height:var(--lh-display-zh);letter-spacing:var(--ls-display-zh);font-style:var(--fst-display-zh);text-transform:var(--tt-display-zh)}
+.gz-t-title{font-family:var(--ff-title);font-size:var(--fs-title);font-weight:var(--fw-title);line-height:var(--lh-title);letter-spacing:var(--ls-title);font-style:var(--fst-title);text-transform:var(--tt-title)}
+.gz-t-title-zh{font-family:var(--ff-title-zh);font-size:var(--fs-title-zh);font-weight:var(--fw-title-zh);line-height:var(--lh-title-zh);letter-spacing:var(--ls-title-zh);font-style:var(--fst-title-zh);text-transform:var(--tt-title-zh)}
+.gz-t-num-l{font-family:var(--ff-num-l);font-size:var(--fs-num-l);font-weight:var(--fw-num-l);line-height:var(--lh-num-l);letter-spacing:var(--ls-num-l);font-style:var(--fst-num-l);text-transform:var(--tt-num-l)}
+.gz-t-num-m{font-family:var(--ff-num-m);font-size:var(--fs-num-m);font-weight:var(--fw-num-m);line-height:var(--lh-num-m);letter-spacing:var(--ls-num-m);font-style:var(--fst-num-m);text-transform:var(--tt-num-m)}
+
+:lang(zh){line-break:strict;text-spacing-trim:normal;text-autospace:normal;overflow-wrap:break-word}
+:lang(zh) .gz-prose em:not(:lang(en)){font-style:normal;text-emphasis:filled dot;text-emphasis-position:under right}
+.gz-tnum{font-variant-numeric:tabular-nums}
+
+/* 歸藏设计系统 · 共享组件
+ *
+ * 一份结构，三种介质：根节点 <html data-family="magazine|swiss" data-medium="slide|card|page">。
+ * 这里只管布局、颜色和间距；字号、字重、行高一律由 gz-t-<角色> 类提供，
+ * 所以同一个组件放进 PPT、卡片、网页会自动换成各自的字号。
+ * 颜色只用语义 token（--text-* / --line-* / --accent*），换主题不需要改组件。
+ */
+
+/* ---------- 家族差异 ---------- */
+/* 单张卡片 / 单页换主题（[data-theme]）或反色（[data-surface]）时，线条变量要在那一层重新计算，否则沿用根节点的颜色 */
+[data-family="magazine"], [data-family="magazine"] [data-theme], [data-family="magazine"] [data-surface] { --img-pos: center top; --rule: 1px solid var(--line-strong); --rule-strong: 1px solid var(--line-strong) }
+[data-family="swiss"], [data-family="swiss"] [data-theme], [data-family="swiss"] [data-surface] { --img-pos: center center; --rule: 1px solid var(--line); --rule-strong: 2px solid var(--ink) }
+
+/* ---------- 表面：反色块里文字角色跟着换 ---------- */
+[data-surface="ink"] {
+  background: var(--ink); color: var(--paper);
+  --text-primary: var(--paper); --text-body: rgba(var(--paper-rgb), .86); --text-secondary: rgba(var(--paper-rgb), .72);
+  --text-helper: rgba(var(--paper-rgb), .62); --line: rgba(var(--paper-rgb), .22); --line-strong: rgba(var(--paper-rgb), .45);
+  --accent-ink: var(--accent-ink-inverse); --accent-display: var(--accent-ink-inverse); --rule-strong: 2px solid var(--paper);
+}
+[data-family="magazine"] [data-surface="ink"], [data-family="magazine"][data-surface="ink"] { --rule-strong: 1px solid rgba(var(--paper-rgb), .45) }
+[data-surface="accent"] {
+  background: var(--accent); color: var(--accent-on);
+  --text-primary: var(--accent-on); --text-body: rgba(var(--accent-on-rgb), .88); --text-secondary: rgba(var(--accent-on-rgb), .78);
+  --text-helper: rgba(var(--accent-on-rgb), .7); --line: rgba(var(--accent-on-rgb), .3); --line-strong: rgba(var(--accent-on-rgb), .55);
+  --accent-ink: var(--accent-on); --accent-display: var(--accent-on); --rule-strong: 2px solid var(--accent-on);
+}
+[data-surface="paper-2"] { background: var(--paper-2) }
+
+/* 强调色文字：小字用 accent-ink，大字 / 大数字用 accent-display（浅色强调色在纸上会自动加深；反色块里自动切换） */
+.gz-c-accent { color: var(--accent-ink) }
+.gz-c-accent-display { color: var(--accent-display) }
+
+/* ---------- 页眉页脚 chrome ---------- */
+.gz-chrome { display: flex; justify-content: space-between; align-items: baseline; gap: var(--sp-6); color: var(--text-helper); border-top: var(--rule); padding-top: var(--sp-4) }
+.gz-chrome[data-pos="top"] { border-top: 0; border-bottom: var(--rule); padding: 0 0 var(--sp-4) }
+.gz-chrome__group { display: flex; gap: var(--sp-5); min-width: 0 }
+.gz-chrome__accent { color: var(--accent-ink) }
+
+/* ---------- 封面 cover ---------- */
+.gz-cover { display: flex; flex-direction: column; gap: var(--sp-6); color: var(--text-primary) }
+.gz-cover__kicker { color: var(--text-helper) }
+[data-family="swiss"] .gz-cover__kicker { color: var(--accent-ink) }
+.gz-cover__body { width: 100%; container-type: inline-size }
+/* 标题按最长一行的字数自动收字号：--chars 由 components/render.mjs 算好写进 style；手写时填最长一行的字数（中文 1、西文约 0.56）。上限仍是 token 定的展示字号 */
+.gz-cover__title { margin: 0; font-size: min(var(--fs-display-zh), calc(100cqi / var(--chars, 1) * .94)) }
+.gz-cover__rule { width: 96px; height: 0; border-top: 2px solid var(--accent) }
+[data-family="swiss"] .gz-cover__rule { border-top-width: 3px }
+.gz-cover__sub { margin: 0; color: var(--text-body); max-width: 32em }
+.gz-cover__meta { margin-top: auto }
+/* 幻灯片、卡片：封面撑满画布，标题压在下半部 */
+[data-medium="slide"] .gz-cover, [data-medium="card"] .gz-cover { height: 100% }
+[data-medium="slide"] .gz-cover__body, [data-medium="card"] .gz-cover__body { margin-top: auto; display: flex; flex-direction: column; gap: var(--sp-7) }
+[data-medium="slide"] .gz-cover__meta, [data-medium="card"] .gz-cover__meta { margin-top: var(--sp-10) }
+/* 网页：杂志风居中，瑞士风左对齐 */
+[data-medium="page"] .gz-cover { padding: var(--sp-11) 0 var(--sp-9); border-bottom: var(--rule) }
+[data-medium="page"] .gz-cover__body { display: flex; flex-direction: column; gap: var(--sp-6) }
+[data-medium="page"][data-family="magazine"] .gz-cover { align-items: center; text-align: center }
+[data-medium="page"][data-family="magazine"] .gz-cover__body { align-items: center }
+[data-medium="page"] .gz-cover__meta { margin-top: var(--sp-6); border-top: 0; padding-top: 0; justify-content: center }
+[data-medium="page"][data-family="swiss"] .gz-cover__meta { justify-content: flex-start }
+
+/* ---------- 大数字 stat ---------- */
+.gz-stats { display: grid; grid-template-columns: repeat(var(--cols, 3), minmax(0, 1fr)); gap: var(--sp-9) var(--sp-7) }
+.gz-stats[data-count="1"] { --cols: 1 } .gz-stats[data-count="2"] { --cols: 2 } .gz-stats[data-count="4"] { --cols: 4 }
+[data-medium="card"] .gz-stats { --cols: 2 }
+[data-medium="card"] .gz-stats[data-count="1"], [data-medium="card"] .gz-stats[data-count="3"] { --cols: 1 }
+.gz-stat { display: flex; flex-direction: column; gap: var(--sp-4); border-top: var(--rule-strong); padding-top: var(--sp-5); min-width: 0 }
+.gz-stat__label { color: var(--text-helper) }
+.gz-stat__value { display: flex; align-items: baseline; gap: .06em; font-variant-numeric: tabular-nums lining-nums; white-space: nowrap }
+.gz-stat__unit { font-size: .4em; font-weight: 500; letter-spacing: 0; color: var(--text-secondary) }
+.gz-stat.is-accent .gz-stat__num { color: var(--accent-ink) }
+.gz-stat__note { margin: 0; color: var(--text-secondary); max-width: 24em }
+[data-medium="card"] .gz-stats[data-count="3"] .gz-stat { display: grid; grid-template-columns: auto 1fr; align-items: end; column-gap: var(--sp-7) }
+[data-medium="card"] .gz-stats[data-count="3"] .gz-stat__label { grid-column: 1 / -1 }
+[data-medium="card"] .gz-stats[data-count="3"] .gz-stat__note { padding-bottom: .6em }
+
+/* ---------- 引言 quote ---------- */
+.gz-quote { margin: 0; display: flex; flex-direction: column; gap: var(--sp-7) }
+.gz-quote__text { margin: 0; color: var(--text-primary); text-wrap: balance }
+.gz-quote__text p { margin: 0; text-wrap: balance }
+[data-family="magazine"] .gz-quote__text::before { content: "\201C"; display: block; font-family: var(--font-display); font-style: normal; color: var(--accent); font-size: 1.8em; line-height: 1; height: .55em }
+[data-family="swiss"] .gz-quote { border-top: var(--rule-strong); padding-top: var(--sp-7) }
+.gz-quote__source { color: var(--text-helper) }
+[data-medium="page"][data-family="magazine"] .gz-quote { align-items: center; text-align: center; padding: var(--sp-9) 0 }
+
+/* ---------- 流程 process：幻灯片 / 网页横排，卡片竖排 ---------- */
+.gz-process { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(var(--n, 4), minmax(0, 1fr)); gap: var(--sp-7) }
+.gz-process__step { display: flex; flex-direction: column; gap: var(--sp-4); border-top: var(--rule-strong); padding-top: var(--sp-5); min-width: 0 }
+.gz-process__nb { color: var(--accent-ink) }
+.gz-process__title { margin: 0 }
+.gz-process__desc { margin: 0; color: var(--text-secondary) }
+[data-medium="card"] .gz-process { grid-template-columns: 1fr; gap: 0; border-bottom: var(--rule) }
+[data-medium="card"] .gz-process__step { display: grid; grid-template-columns: 112px minmax(0, 1fr); column-gap: var(--sp-6); row-gap: var(--sp-3); padding: var(--sp-7) 0 }
+[data-medium="card"] .gz-process__step + .gz-process__step { border-top: var(--rule) }
+[data-medium="card"] .gz-process__nb { grid-row: span 2 }
+[data-medium="page"] .gz-process { --n: 2; row-gap: var(--sp-8) }
+
+/* ---------- 对比 compare：左右分栏，卡片上下叠 ---------- */
+.gz-compare { display: grid; grid-template-columns: minmax(0, 1fr) 1px minmax(0, 1fr); gap: 0 var(--sp-9) }
+.gz-compare__rule { background: var(--line-strong) }
+.gz-compare__side { display: flex; flex-direction: column; gap: var(--sp-5); min-width: 0 }
+.gz-compare__tag { color: var(--text-helper) }
+.gz-compare__side[data-side="after"] .gz-compare__tag { color: var(--accent-ink) }
+.gz-compare__title { margin: 0 }
+.gz-compare__side[data-side="before"] .gz-compare__title { color: var(--text-secondary) }
+.gz-compare__desc { margin: 0; color: var(--text-secondary) }
+.gz-compare__list { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: var(--sp-3); color: var(--text-body) }
+.gz-compare__list li { padding-left: 1.2em; position: relative }
+.gz-compare__list li::before { content: ""; position: absolute; left: 0; top: .72em; width: .5em; border-top: 1px solid currentColor }
+[data-family="swiss"] .gz-compare__side[data-side="after"][data-surface] { padding: var(--sp-8) }
+[data-medium="card"] .gz-compare { grid-template-columns: 1fr; gap: var(--sp-8) 0 }
+[data-medium="card"] .gz-compare__rule { height: 1px }
+
+/* ---------- 图框 figure：照片 cover 裁切，截图 contain 放在底台上 ---------- */
+.gz-figure { margin: 0; display: flex; flex-direction: column; gap: var(--sp-4); min-width: 0 }
+.gz-figure__well { position: relative; aspect-ratio: var(--ratio, 16 / 10); overflow: hidden; background: var(--paper-2) }
+.gz-figure__well > img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: var(--img-pos) }
+.gz-figure[data-ratio="16x9"] { --ratio: 16 / 9 } .gz-figure[data-ratio="16x10"] { --ratio: 16 / 10 } .gz-figure[data-ratio="4x3"] { --ratio: 4 / 3 }
+.gz-figure[data-ratio="3x2"] { --ratio: 3 / 2 } .gz-figure[data-ratio="1x1"] { --ratio: 1 } .gz-figure[data-ratio="3x4"] { --ratio: 3 / 4 } .gz-figure[data-ratio="21x9"] { --ratio: 21 / 9 }
+.gz-figure[data-kind="screenshot"] .gz-figure__well { display: flex; align-items: center; justify-content: center; padding: var(--inset, var(--sp-8)) }
+.gz-figure[data-kind="screenshot"] .gz-figure__well > img { width: auto; height: auto; max-width: 100%; max-height: 100%; object-fit: contain; border-radius: var(--radius-sm); box-shadow: 0 0 0 1px var(--line) }
+[data-family="magazine"] .gz-figure[data-kind="screenshot"] .gz-figure__well > img { box-shadow: 0 0 0 1px var(--line), 0 18px 40px -24px rgba(var(--ink-rgb), .45) }
+[data-family="swiss"] .gz-figure[data-kind="screenshot"] .gz-figure__well { background: var(--grey-1); border-top: 3px solid var(--accent) }
+[data-family="swiss"] .gz-figure[data-kind="screenshot"] .gz-figure__well > img { border-radius: 0 }
+.gz-figure__cap { color: var(--text-helper); display: flex; gap: var(--sp-4) }
+.gz-figure__idx { color: var(--accent-ink); flex: none }
+
+/* ---------- 图片网格 gallery ---------- */
+.gz-gallery { display: grid; grid-template-columns: repeat(var(--cols, 3), minmax(0, 1fr)); gap: var(--sp-7) var(--sp-6) }
+[data-medium="card"] .gz-gallery { --cols: 2 }
+[data-medium="card"] .gz-gallery[data-count="3"] > :first-child { grid-column: 1 / -1; --ratio: 16 / 9 }
+
+/* ---------- 条目清单 ledger ---------- */
+.gz-ledger { list-style: none; margin: 0; padding: 0; border-top: var(--rule-strong) }
+.gz-ledger__row { display: grid; grid-template-columns: var(--nb-w, 3.2em) minmax(0, 1fr) auto; column-gap: var(--sp-6); align-items: baseline; padding: var(--sp-6) 0; border-bottom: var(--rule) }
+.gz-ledger__nb { color: var(--accent-ink) }
+.gz-ledger__title { margin: 0 }
+.gz-ledger__note { margin: var(--sp-2) 0 0; color: var(--text-secondary) }
+.gz-ledger__value { color: var(--text-helper); text-align: right; white-space: nowrap }
+[data-medium="card"] .gz-ledger__row { --nb-w: 72px; padding: var(--sp-7) 0 }
+
+/* 歸藏设计系统 · 纹理与特效图层（纯 CSS，颜色全部来自 token）
+ * 来源：PPT 瑞士风 .dots / .dot-mat / .ring-mat / .cross-mat / .hatch，卡片杂志风 .grain / .paper-wash。
+ */
+
+/* 特效画布：铺满父容器、在内容下面、不挡点击。父容器需要 position: relative */
+.gz-effect { position: absolute; inset: 0; width: 100%; height: 100%; display: block; pointer-events: none; z-index: 0 }
+.gz-layer-content { position: relative; z-index: 1 }
+
+/* 点阵：前景色画点，跟随所在表面的文字色 */
+.gz-dots      { background-image: radial-gradient(currentColor 1px, transparent 1.2px); background-size: 12px 12px; opacity: .18 }
+.gz-dots-fine { background-image: radial-gradient(currentColor .8px, transparent 1px); background-size: 8px 8px; opacity: .14 }
+.gz-dots-bold { background-image: radial-gradient(currentColor 1.4px, transparent 1.6px); background-size: 18px 18px; opacity: .22 }
+
+.gz-dot-mat         { --mat: 14px; background-image: radial-gradient(currentColor 1.4px, transparent 1.6px); background-size: var(--mat) var(--mat); opacity: .5 }
+.gz-dot-mat.is-lg   { --mat: 22px } .gz-dot-mat.is-xl { --mat: 34px }
+.gz-dot-mat.is-dense{ --mat: 9px; opacity: .62 }
+.gz-ring-mat        { --mat: 18px; background-image: radial-gradient(circle, transparent 2px, currentColor 2px, currentColor 2.7px, transparent 2.9px); background-size: var(--mat) var(--mat); opacity: .55 }
+.gz-ring-mat.is-lg  { --mat: 28px }
+.gz-cross-mat       { --mat: 22px; background: currentColor; opacity: .42;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22'%3E%3Cpath d='M8 8l6 6M14 8l-6 6' stroke='%23000' stroke-width='1.4'/%3E%3C/svg%3E") 0 0 / var(--mat) var(--mat);
+          mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22'%3E%3Cpath d='M8 8l6 6M14 8l-6 6' stroke='%23000' stroke-width='1.4'/%3E%3C/svg%3E") 0 0 / var(--mat) var(--mat) }
+.gz-cross-mat.is-lg { --mat: 32px }
+.gz-hatch           { background-image: repeating-linear-gradient(135deg, currentColor 0 1px, transparent 1px 8px); opacity: .55 }
+
+/* 纸张颗粒与墨色晕染：杂志风卡片的「氛围层」，叠在特效画布上、内容下 */
+.gz-grain      { position: absolute; inset: 0; pointer-events: none; z-index: 0; mix-blend-mode: multiply; opacity: .35;
+                 background-image: radial-gradient(rgba(0,0,0,.045) 1px, transparent 1px); background-size: 3px 3px }
+[data-scheme="dark"] .gz-grain, .gz-grain.is-dark { mix-blend-mode: screen; opacity: .26; background-image: radial-gradient(rgba(255,244,214,.10) 1px, transparent 1px) }
+.gz-paper-wash { position: absolute; inset: 0; pointer-events: none; z-index: 0;
+                 background: linear-gradient(180deg, rgba(var(--ink-rgb), .02), rgba(var(--ink-rgb), .05) 60%, rgba(var(--ink-rgb), .08)) }
+.gz-ink-vignette { position: absolute; inset: 0; pointer-events: none; z-index: 0;
+                 background: radial-gradient(circle at 18% 12%, rgba(var(--ink-rgb), .10), transparent 34%), radial-gradient(circle at 82% 80%, rgba(var(--accent-rgb), .10), transparent 38%) }
+
+/* PPT 杂志风：WebGL 背景上的纸 / 墨蒙版，保证文字可读（原 .slide.light/.dark::before） */
+.gz-veil       { position: absolute; inset: 0; pointer-events: none; z-index: 0; backdrop-filter: blur(3px); background: rgba(var(--paper-rgb), .78) }
+.gz-veil.is-ink{ background: rgba(var(--ink-rgb), .78) }
+.gz-veil.is-hero { backdrop-filter: none; background: rgba(var(--paper-rgb), .16) }
+.gz-veil.is-hero.is-ink { background: rgba(var(--ink-rgb), .12) }
+
+@media (prefers-reduced-motion: reduce) { .gz-effect { animation: none } }
+
+/* GZ:TOKENS:END */
+</style>
+<style>  /* ══════════════════════════════════════
+     ROOT VARIABLES
+     ══════════════════════════════════════ */
+  /* Colours, fonts, type roles and the --sp-* spacing scale come from the design system
+     (assets/gz-swiss.css, inlined before this file; theme = <html data-theme>).
+     Paper and greys stay the same in every theme; only the accent changes.
+     The names below are this stylesheet's own vocabulary, mapped onto its roles. */
+  :root {
+    --fg: var(--text-primary);
+    --fg-secondary: var(--text-secondary);
+    --fg-tertiary: var(--text-helper);
+    --fg-placeholder: var(--text-placeholder);
+    --bg: var(--paper);
+    --bg-card: var(--grey-1);
+    --hl-bg: var(--accent); --hl-fg: var(--accent-on-text); --hl-label: rgba(var(--accent-on-text-rgb), .6);
+    --hc-mute: rgba(var(--ink-rgb), .2);
+    --num-grey: rgba(var(--ink-rgb), .2);
+    --measure: 1200px;
+    --gutter: 20px;
+    --columns: 12;
+    --margin: 80px;
+    /* CJK body text (references/design-rules.md §中文排版) */
+    --text-size: var(--fs-body);
+    --text-leading: var(--lh-body);
+    --para-gap: 1em;            /* 段间距：不缩进，靠段距分段 */
+    /* Grid: one centred reading column; the rail hangs to its left */
+    --col: calc(32 * 1.0625rem);
+    --media: 800px;             /* wide media/table/chart width, same centre line */
+    --rail: 200px; --rail-gap: 40px;
+  }
+
+  /* ══════════════════════════════════════
+     BASE
+     ══════════════════════════════════════ */
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html { font-size: 16px; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+  body { font-family: var(--font-sans); color: var(--fg); background: var(--bg); line-height: 1.6; }
+  ::selection { background: var(--hl-bg); color: var(--hl-fg); }
+
+  /* ══════════════════════════════════════
+     CJK TYPOGRAPHY — 中文排版规则
+     Rules + sources: references/design-rules.md §中文排版,
+     references/cjk-typography-research.md.
+     ══════════════════════════════════════ */
+  :lang(zh) body {
+    letter-spacing: 0;              /* 汉字默认密排，不额外加字距 */
+    line-break: strict;             /* 避头尾：句读、闭括号等不出现在行首 */
+    word-break: normal;
+    overflow-wrap: break-word;      /* 长 URL / 长英文词允许断开，避免撑破版心 */
+    text-spacing-trim: normal;      /* 相邻标点挤压（Chrome 123+，需字体带 chws/halt） */
+    hanging-punctuation: allow-end; /* 行尾点号悬挂（目前仅 Safari） */
+    font-kerning: normal;
+  }
+  :lang(zh) .section > p,
+  :lang(zh) .section li {
+    font-size: var(--text-size);
+    line-height: var(--text-leading);
+    font-weight: 400;
+  }
+  :lang(zh) .section > p {
+    margin-bottom: var(--para-gap);
+    text-align: justify;            /* clreq §6.2：中文正文原则上两端对齐 */
+    text-justify: inter-character;
+  }
+  :lang(zh) .section li { margin-bottom: 0.35em; }
+  :lang(zh) .section li > p { margin-bottom: 0.35em; text-align: start; }
+  /* 汉字没有真正的斜体：*强调* 用着重号（clreq §5.3.1：横排置于字下） */
+  :lang(zh) em {
+    font-style: normal;
+    -webkit-text-emphasis: filled dot; text-emphasis: filled dot;
+    -webkit-text-emphasis-position: under right; text-emphasis-position: under right;
+  }
+  :lang(zh) em:lang(en), :lang(zh) code em { font-style: italic; text-emphasis: none; -webkit-text-emphasis: none; }
+  /* 中西文间距：render.mjs 插入 .hf-sp；支持 text-autospace 的浏览器用原生间距 */
+  .hf-sp { white-space: normal; }
+  @supports (text-autospace: normal) {
+    :lang(zh) body { text-autospace: normal; }
+    .hf-sp { display: none; }
+  }
+  /* 标题：中文不加负字距，避免笔画粘连；行高收紧 */
+  :lang(zh) h1, :lang(zh) h2, :lang(zh) h3 { letter-spacing: 0; line-break: strict; }
+  :lang(zh) h2, :lang(zh) h3 { line-height: 1.4; }
+
+  /* ══════════════════════════════════════
+     LAYOUT
+     ══════════════════════════════════════ */
+  .container {
+    max-width: var(--measure);
+    margin: 0 auto;
+    padding: 0 var(--margin);
+  }
+
+  /* Section grid: centred reading column (--col) with equal side tracks.
+     Body blocks sit in the column; media / tables / charts break out to
+     --media on the same centre line; accent blocks span the full width. */
+  .section {
+    display: grid;
+    grid-template-columns: minmax(0,1fr) minmax(0, var(--col)) minmax(0,1fr);
+    padding: 28px 0 var(--sp-7);
+    margin-top: 56px;
+    border-top: 2px solid var(--fg);
+  }
+  .section > * { grid-column: 2 / 3; }
+  .section > .figure-card, .section > .img-row, .section > .img-strip-wrap,
+  .section > .table-wrap, .section > .hchart, .section > .gallery-grid {
+    grid-column: 1 / 4; justify-self: center; width: 100%; max-width: var(--media);
+  }
+  .section > .pullquote, .section > .highlight-card { grid-column: 1 / 4; }
+
+  /* ══════════════════════════════════════
+     CHROME — doc bar, tags left / meta right
+     ══════════════════════════════════════ */
+  .doc-chrome {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-areas: "bar bar" "tags meta";
+    gap: 22px var(--gutter);
+    align-items: center;
+    padding: 56px 0 14px;
+  }
+
+  .doc-chrome-bar {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: var(--fs-label); font-weight: 500;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--fg-tertiary);
+    background: var(--bg-card);
+    padding: var(--sp-5) var(--sp-6) 18px;
+    margin-bottom: var(--sp-5);
+  }
+  .doc-chrome > .doc-chrome-bar { grid-area: bar; }
+
+  .doc-chrome-bar .chrome-l, .doc-chrome-bar .chrome-r {
+    display: flex; gap: 1.8em; align-items: center;
+  }
+  .doc-chrome-bar .chrome-sep { width: 32px; height: 1px; background: currentColor; opacity: 0.3; }
+  .doc-chrome-bar .chrome-accent { color: var(--accent-ink, var(--accent)); font-weight: 600; }
+
+  .doc-chrome-rule { display: none; }
+
+  .doc-chrome-meta {
+    display: flex; gap: 2.4em; flex-wrap: wrap;
+    font-family: var(--font-mono);
+    font-size: var(--fs-meta); letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--fg-tertiary);
+  }
+  .doc-chrome > .doc-chrome-meta { grid-area: meta; justify-self: end; text-align: right; }
+  .doc-chrome-meta .cm-item { display: flex; gap: 0.5em; align-items: baseline; }
+  .doc-chrome-meta .cm-key { opacity: 0.5; }
+  .doc-chrome-meta .cm-val { color: var(--fg-secondary); font-weight: 500; }
+  .doc-chrome-meta .cm-dot { width: 2px; height: 2px; background: var(--fg-tertiary); border-radius: 50%; opacity: 0.4; align-self: center; }
+
+  .doc-chrome-tags {
+    display: flex; gap: var(--sp-3); flex-wrap: wrap;
+  }
+  .doc-chrome > .doc-chrome-tags { grid-area: tags; justify-self: start; }
+  .doc-chrome-tags .chrome-tag {
+    font-family: var(--font-mono);
+    font-size: var(--fs-meta); font-weight: 600;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    padding: 4px 14px;
+    background: var(--fg); color: var(--bg);
+  }
+
+  /* ══════════════════════════════════════
+     HERO — full-bleed image card with text overlay
+     ══════════════════════════════════════ */
+  .hero-cover {
+    position: relative;
+    margin: 8px 0 var(--sp-10);
+    overflow: hidden;
+    background: var(--fg);
+  }
+
+  /* Grid dot pattern over the image */
+  .hero-cover::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+      radial-gradient(circle, rgba(255,255,255,0.08) 1px, transparent 1px);
+    background-size: 24px 24px;
+    z-index: 1;
+  }
+
+  .hero-cover .hero-bg {
+    width: 100%; height: 480px;
+    object-fit: cover; object-position: center 40%;
+    display: block;
+    opacity: 0.25;
+    mix-blend-mode: luminosity;
+  }
+
+  .hero-cover .hero-overlay {
+    position: absolute;
+    inset: 0; z-index: 2;
+    display: flex; flex-direction: column;
+    justify-content: flex-end;
+    padding: var(--sp-9);
+    color: var(--bg);
+  }
+
+  .hero-cover .hero-kicker {
+    font-family: var(--font-mono);
+    font-size: var(--fs-meta); font-weight: 600;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--accent-ink-inverse);
+    margin-bottom: var(--sp-6);
+  }
+
+  .hero-cover h1 {
+    font-family: var(--font-sans);
+    font-size: var(--fs-display); font-weight: 200;
+    line-height: 1.08; letter-spacing: -0.03em;
+    color: var(--bg);
+    margin-bottom: var(--sp-6);
+    max-width: 960px;
+  }
+  :lang(zh) .hero-cover h1 { line-height: 1.2; letter-spacing: 0; }
+
+  .hero-cover .hero-subtitle {
+    font-size: var(--fs-lead); font-weight: 400;
+    color: rgba(var(--paper-rgb), .55);
+    line-height: 1.6;
+    max-width: 820px;
+    opacity: 0.86;
+  }
+
+  /* ══════════════════════════════════════
+     SECTION HEADER — number hangs in the rail left of the column
+     ══════════════════════════════════════ */
+  .section-header {
+    position: relative;
+    margin-bottom: 36px;
+  }
+
+  /* bare number (section without a title) */
+  .section-number {
+    font-family: var(--font-mono);
+    font-size: 56px; font-weight: 800;
+    letter-spacing: -0.04em;
+    color: var(--bg-card);
+    line-height: 0.85;
+    flex-shrink: 0;
+  }
+  /* The number sits in the rail, vertically centred on the title's first line
+     (box = one title line; the small lift puts the digits' ink centre on the CJK glyph centre) */
+  .section-header .section-number {
+    position: absolute; right: calc(100% + var(--rail-gap)); top: 0;
+    height: calc(var(--fs-heading) * 1.2);
+    display: flex; align-items: center;
+    width: var(--rail);
+    font-size: 44px; font-weight: 300; line-height: 1;
+    color: var(--num-grey);
+    transform: translateY(-0.035em);   /* measured: digits sit ~1.5px low at 44px */
+  }
+
+  h2 {
+    font-family: var(--font-sans);
+    font-size: var(--fs-heading); font-weight: 200;
+    line-height: 1.18; letter-spacing: -0.015em;
+    margin: 0;
+  }
+  .section-header h2 { line-height: 1.2; }   /* after :lang(zh) h2 — wins in zh too */
+
+  h3 {
+    font-family: var(--font-sans);
+    font-size: var(--fs-subhead); font-weight: 500;
+    line-height: 1.3; margin-top: var(--sp-9); margin-bottom: var(--sp-5);
+    border-top: 1px solid var(--fg); padding-top: 10px;
+  }
+
+  /* ══════════════════════════════════════
+     PROSE
+     ══════════════════════════════════════ */
+  p { margin-bottom: var(--sp-5); font-size: 1rem; line-height: 1.65; }
+  .section > p, .section li { line-height: 1.8; text-align: justify; }
+  .section p, .section li, .section td, blockquote p { font-weight: 400; }
+  .section p, .section li { overflow-wrap: break-word; }
+  /* 英文段落仍两端对齐，但开启连字符断词，减少长单词造成的大空隙 */
+  .section > p:lang(en) { hyphens: auto; -webkit-hyphens: auto; }
+  /* 链接/长串不两端对齐：含链接的段落、中文列表项、来源/参考节起始对齐；
+     长 URL / 代码可任意断行，避免 justify 把冒号前的字拉开。After the CJK rules. */
+  :lang(zh) .section li,
+  .section > p:has(a.url, a[href^="http"], code),
+  .section.refs p, .section.refs li { text-align: start; text-justify: auto; }
+  .section a.url { overflow-wrap: anywhere; word-break: break-word; }
+  .section code { overflow-wrap: anywhere; word-break: break-all; }
+
+  strong { font-weight: 600; }
+  code { font-family: var(--font-mono); font-size: 0.85em; background: var(--bg-card); padding: 2px 5px; }
+  a { color: var(--accent-ink, var(--accent)); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  .dash { white-space: nowrap; letter-spacing: 0; }
+  .dash-em { color: var(--fg); font-weight: 500; }
+
+  /* Thematic break (---): spacing, not a line */
+  .divider { border: none; height: 0; margin: var(--sp-8, 32px) 0; }
+
+  /* ══════════════════════════════════════
+     LISTS
+     ══════════════════════════════════════ */
+  ul, ol { margin: var(--sp-5) 0 var(--sp-7); padding-left: var(--sp-6); }
+  li { font-size: 1rem; line-height: 1.65; margin-bottom: var(--sp-3); }
+  li::marker { color: var(--accent-ink, var(--accent)); }
+
+  .checklist { list-style: none; padding-left: 0; }
+  .checklist li { padding-left: 28px; position: relative; }
+  .checklist li::before {
+    content: ''; position: absolute; left: 0; top: 7px;
+    width: 14px; height: 14px; background: var(--accent); opacity: 0.15;
+  }
+  .checklist li::after {
+    content: ''; position: absolute; left: 3px; top: 10px;
+    width: 8px; height: 4px;
+    border-left: 2px solid var(--accent-ink); border-bottom: 2px solid var(--accent-ink);
+    transform: rotate(-45deg);
+  }
+
+  /* Footnote section: .section.section-footnote matches :lang(zh) .section li and comes later */
+  .section.section-footnote li {
+    font-size: 0.8rem;
+    margin-bottom: var(--sp-5);
+    color: var(--fg-secondary);
+  }
+  .section-footnote li strong { color: var(--fg); }
+  .section-footnote h2 { font-size: 1rem; }
+
+  /* ══════════════════════════════════════
+     BLOCKQUOTE — column width, hairlines top/bottom, no fill
+     ══════════════════════════════════════ */
+  blockquote {
+    margin: var(--sp-6) 0;
+    padding: 16px 0;
+    border-top: 1px solid var(--fg);
+    border-bottom: 1px solid rgba(var(--ink-rgb), .15);
+    color: var(--fg);
+    font-size: var(--fs-body); line-height: 1.8;
+  }
+  blockquote p { font-size: 1rem; line-height: 1.75; color: var(--fg); margin-bottom: 0; }
+  blockquote > p + p { margin-top: 0.6em; }
+  /* nested quote: left rule; padding-left 1em = 17px from the container size */
+  blockquote .bq-nested {
+    margin: var(--sp-4) 0 var(--sp-3);
+    padding: var(--sp-4) var(--sp-5) var(--sp-4) 1em;
+    border: 0;
+    border-left: 2px solid var(--fg);
+  }
+  .bq-cite {
+    margin-top: 0.7em;
+    font-family: var(--font-mono); font-size: var(--fs-meta); letter-spacing: 0.06em;
+    color: var(--fg-secondary); text-align: right;
+  }
+  .bq-cite cite { font-style: normal; }
+
+  /* ══════════════════════════════════════
+     PULLQUOTE — 2px top rule, "QUOTE" label in the rail, big text
+     ══════════════════════════════════════ */
+  .pullquote-swiss {
+    margin: var(--sp-9) 0; padding: 24px 0 0;
+    display: grid; grid-template-columns: var(--rail) 1fr; gap: var(--sp-6) var(--rail-gap);
+    border-top: 2px solid var(--fg);
+  }
+  .pullquote-swiss .pq-bar::before { content: "QUOTE"; font-family: var(--font-mono); font-size: var(--fs-meta); letter-spacing: 0.12em; color: var(--fg-tertiary); }
+  .pullquote-swiss .pq-content p {
+    font-family: var(--font-sans);
+    font-size: var(--fs-quote); font-weight: 300;
+    line-height: 1.45; letter-spacing: -0.02em; margin-bottom: 0;
+    color: var(--fg);
+  }
+  .pullquote-swiss .accent-mark { color: var(--accent-ink); font-weight: 500; }
+  .pq-cite { margin-top: var(--sp-4); font-family: var(--font-mono); font-size: var(--fs-meta); letter-spacing: 0.08em; text-transform: uppercase; color: var(--fg-tertiary); }
+  .pq-cite::before { content: "— "; }
+
+  /* ══════════════════════════════════════
+     HIGHLIGHT — palette block, label in the rail
+     ══════════════════════════════════════ */
+  .highlight-swiss {
+    margin: var(--sp-5) 0;
+    padding: var(--sp-6) var(--sp-7);
+    background: var(--hl-bg);
+    display: grid; grid-template-columns: var(--rail) 1fr; column-gap: var(--rail-gap);
+  }
+  /* each palette sets its own fg/label colour (yellow/green use dark text) */
+  .highlight-swiss .hl-label {
+    font-family: var(--font-mono);
+    font-size: var(--fs-meta); font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--hl-label);
+  }
+  .highlight-swiss .hl-body p {
+    font-size: 1.15rem; font-weight: 400;
+    line-height: 1.55; margin-bottom: 0;
+    color: var(--hl-fg);
+  }
+  .highlight-swiss .hl-body strong,
+  .highlight-swiss .hl-body b,
+  .highlight-swiss .hl-body a {
+    color: var(--hl-fg);
+  }
+
+  /* ══════════════════════════════════════
+     DEF CARD — card with left/right split
+     ══════════════════════════════════════ */
+  .def-card-swiss {
+    margin: var(--sp-6) 0;
+    display: grid; grid-template-columns: 3fr 9fr; gap: var(--sp-7);
+    align-items: baseline;
+    background: var(--bg-card);
+    padding: var(--sp-5) var(--sp-6);
+  }
+  .def-card-swiss .dc-label {
+    display: block; font-family: var(--font-mono);
+    font-size: var(--fs-meta); font-weight: 600;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--accent-ink, var(--accent)); margin-bottom: 2px;
+  }
+  .def-card-swiss .dc-term { font-size: 1.05rem; font-weight: 600; }
+  .def-card-swiss .dc-body { font-size: var(--fs-small); line-height: 1.6; color: var(--fg-secondary); }
+
+  /* ══════════════════════════════════════
+     PROCESS — numbered cards
+     ══════════════════════════════════════ */
+  .process { margin: var(--sp-9) 0; display: flex; flex-direction: column; gap: var(--sp-3); }
+  .process-step {
+    display: flex; gap: var(--sp-6);
+    padding: var(--sp-5) var(--sp-6);
+    background: var(--bg-card);
+  }
+  .process-num {
+    font-family: var(--font-mono);
+    font-size: var(--fs-label); font-weight: 700;
+    color: var(--accent-ink, var(--accent)); flex: 0 0 32px;
+  }
+  .process-content { flex: 1; }
+  .process-title { font-weight: 600; font-size: 1rem; margin-bottom: 2px; }
+  .process-desc { font-size: 0.88rem; color: var(--fg-secondary); line-height: 1.55; }
+
+  /* ══════════════════════════════════════
+     ASIDE — contextual note card
+     ══════════════════════════════════════ */
+  .aside-card {
+    margin: var(--sp-6) 0;
+    padding: var(--sp-5) var(--sp-6);
+    background: var(--bg-card);
+    display: flex; gap: var(--sp-5);
+    align-items: flex-start;
+  }
+  .aside-icon {
+    flex-shrink: 0;
+    color: var(--accent-ink, var(--accent));
+    padding-top: 2px;
+  }
+  .aside-icon svg { display: block; }
+  .aside-title {
+    font-family: var(--font-mono);
+    font-size: var(--fs-meta); font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--accent-ink, var(--accent));
+    margin-bottom: var(--sp-3);
+  }
+  .aside-content p {
+    font-size: 0.88rem; line-height: 1.6;
+    color: var(--fg-secondary); margin-bottom: 0;
+  }
+
+  /* ══════════════════════════════════════
+     SUMMARY CARD — key takeaway grid
+     ══════════════════════════════════════ */
+  .summary-card { margin: var(--sp-9) 0; }
+  .summary-label {
+    font-family: var(--font-mono);
+    font-size: var(--fs-meta); font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--bg);
+    background: var(--fg);
+    display: inline-block;
+    padding: var(--sp-3) var(--sp-5);
+    margin-bottom: var(--sp-5);
+  }
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: var(--sp-4);
+  }
+  .summary-item {
+    background: var(--bg-card);
+    padding: var(--sp-5) var(--sp-6);
+  }
+  .summary-item-title {
+    font-weight: 600; font-size: 0.95rem;
+    margin-bottom: var(--sp-3);
+  }
+  .summary-item-desc {
+    font-size: 0.85rem; line-height: 1.55;
+    color: var(--fg-secondary);
+  }
+
+  /* ══════════════════════════════════════
+     EMBED CARD — AI-generated SVG/UI preview
+     ══════════════════════════════════════ */
+  .embed-card {
+    margin: var(--sp-9) 0;
+    background: var(--bg-card);
+    overflow: hidden;
+  }
+  .embed-label {
+    font-family: var(--font-mono);
+    font-size: var(--fs-meta); font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    padding: var(--sp-4) var(--sp-6);
+    background: var(--fg);
+    color: var(--bg);
+    display: inline-block;
+  }
+  .embed-body {
+    padding: var(--sp-7);
+    display: flex; align-items: center; justify-content: center;
+    min-height: 200px;
+  }
+  .embed-body svg { max-width: 100%; height: auto; }
+  .embed-caption {
+    font-family: var(--font-mono);
+    font-size: var(--fs-meta); font-weight: 500;
+    letter-spacing: 0.06em;
+    color: var(--fg-tertiary);
+    padding: 0 var(--sp-6) var(--sp-5);
+    text-transform: uppercase;
+  }
+
+  /* ══════════════════════════════════════
+     TABLE — top rule, ruled rows, light zebra
+     ══════════════════════════════════════ */
+  /* bare tables (only reachable through raw HTML inside an embed) */
+  table { width: 100%; border-collapse: collapse; font-size: var(--fs-small); }
+  th {
+    font-family: var(--font-mono);
+    font-size: var(--fs-meta); font-weight: 600;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    text-align: left; padding: var(--sp-3) var(--sp-5);
+    background: var(--fg); color: var(--bg);
+  }
+  td { padding: var(--sp-3) var(--sp-5); vertical-align: top; line-height: 1.55; }
+  tr:nth-child(even) td { background: var(--bg-card); }
+
+  .table-wrap { margin: 2em 0; overflow-x: auto; }
+  /* !important on min-width / margin: beats inline styles on tables pasted as raw HTML */
+  .table-wrap table { width: 100%; min-width: 0 !important; border-collapse: collapse; font-variant-numeric: tabular-nums; font-size: 0.9rem; table-layout: auto; }
+  .table-wrap > table { margin: 0 !important; }
+  .table-wrap th {
+    font-family: var(--font-sans); font-size: 0.78rem; font-weight: 600;
+    letter-spacing: 0; text-transform: none; text-align: left;
+    color: var(--fg); background: none;
+    padding: 10px 12px;
+    border-top: 2px solid var(--fg); border-bottom: 1.5px solid var(--fg);
+    vertical-align: bottom; line-height: 1.35;
+  }
+  .table-wrap td { padding: 9px 12px; color: var(--fg); border-bottom: 1px solid rgba(var(--ink-rgb), .09); vertical-align: top; line-height: 1.45; background: none; }
+  .table-wrap td:first-child { white-space: nowrap; }
+  .table-wrap tbody tr:nth-child(even) td { background: rgba(var(--ink-rgb), .025); }
+  .table-wrap .al-num, .table-wrap .al-right { text-align: right; }
+  .table-wrap td.al-num, .table-wrap td.al-right { white-space: nowrap; }
+  .table-wrap .al-center { text-align: center; }
+  .table-wrap td strong { color: var(--accent-ink, var(--accent)); font-weight: 700; }
+  .table-wrap td small, .table-wrap td .sub { color: var(--fg-tertiary); font-size: 0.78em; }
+  .table-caption { caption-side: top; margin-bottom: 10px; }
+
+  /* ══════════════════════════════════════
+     CHART — native bar chart (```chart → .hchart)
+     ══════════════════════════════════════ */
+  .hchart { margin-top: 2.2em; margin-bottom: 2.2em; padding: 30px 0; border-top: 2px solid var(--fg); }
+  .hc-title { font-family: var(--font-mono); font-weight: 600; font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--fg); margin-bottom: 22px; }
+  .hc-legend { display: flex; flex-wrap: wrap; gap: 8px 20px; margin-bottom: 22px; font-size: 0.78rem; color: var(--fg-secondary); }
+  .hc-key i { display: inline-block; width: 10px; height: 10px; margin-right: 6px; vertical-align: -1px; background: var(--hc-mute); }
+  .hc-row { display: grid; grid-template-columns: minmax(120px, 30%) 1fr; gap: 18px; align-items: center; padding: 7px 0; }
+  .hc-group { padding: 16px 0; border-top: 1px solid rgba(var(--ink-rgb), .08); }
+  .hc-label { font-size: 0.82rem; color: var(--fg); line-height: 1.35; }
+  .hc-bars { display: grid; gap: 6px; }
+  .hc-bar { position: relative; display: flex; align-items: center; gap: 8px; height: 20px; padding-right: 5em; }  /* room for the value after a 100% bar */
+  .hc-group .hc-bar { height: 14px; }
+  .hc-fill { display: block; height: 100%; background: var(--hc-mute); flex: none; }
+  .hc-val { font-size: var(--fs-meta); font-variant-numeric: tabular-nums; color: var(--fg-secondary); white-space: nowrap; }
+  .hc-group .hc-val { font-size: var(--fs-meta); }
+  .hc-hi .hc-fill, .hc-key.hc-hi i { background: var(--accent); }
+  .hc-hi .hc-val, .hc-row.hc-hi .hc-label { color: var(--fg); font-weight: 600; }
+  /* both series highlighted: the second one is lighter so the pair stays distinguishable */
+  .hc-s0.hc-hi ~ .hc-s1.hc-hi .hc-fill, .hc-key.hc-s0.hc-hi ~ .hc-key.hc-s1.hc-hi i { opacity: 0.6; }
+  .hc-na .hc-val { color: var(--fg-tertiary); font-style: italic; }
+  .hc-cap { margin-top: 20px; }
+
+  /* ══════════════════════════════════════
+     CODE BLOCK
+     ══════════════════════════════════════ */
+  pre {
+    margin: var(--sp-5) 0;
+    padding: var(--sp-5) var(--sp-6);
+    background: var(--fg);
+    color: var(--bg);
+    overflow-x: auto;
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    line-height: 1.7;
+  }
+  pre code {
+    background: none;
+    padding: 0;
+    font-size: inherit;
+    color: inherit;
+  }
+
+  /* ══════════════════════════════════════
+     FIGURES, IMAGE ROWS / STRIPS, MEDIA
+     ══════════════════════════════════════ */
+  figure img { width: 100%; height: auto; display: block; }
+  /* captions: first sentence bold as a label (.cap-lead) */
+  figcaption {
+    margin-top: var(--sp-3);
+    font-family: var(--font-sans); font-size: var(--fs-caption); font-weight: 500;
+    line-height: 1.55; letter-spacing: 0;
+    color: var(--fg-secondary, var(--fg));
+    text-align: left;
+  }
+  figcaption .cap-lead { display: block; font-weight: 600; color: var(--fg); margin-bottom: 2px; }
+  .img-row figcaption .cap-lead, .img-strip figcaption .cap-lead { display: inline; margin-right: .4em; }
+
+  .figure-card { grid-column: 1 / -1; margin: var(--sp-8) 0; }
+  .figure-card img { object-fit: cover; }
+  .figure-card figcaption { padding: 0 var(--sp-3); }
+  /* single figure: caption hangs in the left margin, bottom-aligned with the image */
+  .section > .figure-card { position: relative; }
+  .section > .figure-card > figcaption {
+    position: absolute; right: calc(100% + 24px); bottom: 0; width: 160px;
+    margin: 0 !important;           /* beats ui.css print .figure-card > figcaption margin-top */
+    padding: 8px 0 2px;
+    border-top: 1px solid var(--fg);
+  }
+
+  .img-row { display: grid; gap: 12px; margin-top: 2.2em; margin-bottom: 2.2em; }
+  .img-row-2 { grid-template-columns: 1fr 1fr; }
+  .img-row-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .img-row .figure-card { margin: 0; }
+  .img-row > .figure-card { min-width: 0; grid-column: auto; }  /* side by side, not one full-width card per row */
+  .img-row .figure-card img { aspect-ratio: 4 / 3; object-fit: cover; }
+
+  .img-strip-wrap { margin-top: 2.2em; margin-bottom: 2.2em; }
+  .img-strip { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 8px; }
+  .img-strip .figure-card { flex: 0 0 62%; margin: 0; scroll-snap-align: start; }
+  .img-strip-hint { font-family: var(--font-mono); font-size: var(--fs-meta); color: var(--fg-tertiary); text-align: right; margin-top: 6px; }
+
+  .media-embed video, .media-embed iframe { width: 100%; aspect-ratio: 16 / 9; height: auto; display: block; border: 0; background: #000; }
+
+  /* ══════════════════════════════════════
+     GALLERY — placeholder grid
+     ══════════════════════════════════════ */
+  .gallery-grid {
+    margin: var(--sp-9) 0;
+    display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-5);
+  }
+  .gallery-grid-item .img-placeholder { aspect-ratio: 16/10; }
+  .gallery-grid-item .gallery-cap {
+    font-family: var(--font-mono); font-size: var(--fs-meta); font-weight: 500;
+    letter-spacing: 0.06em; color: var(--fg-tertiary);
+    margin-top: var(--sp-3); text-transform: uppercase;
+  }
+
+  .img-placeholder {
+    width: 100%; aspect-ratio: 16/9;
+    background: var(--bg-card);
+    display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+  }
+  .img-placeholder::before {
+    content: ''; position: absolute; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg width='8' height='8' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='4' cy='4' r='.8' fill='%23d4d4d2'/%3E%3C/svg%3E");
+    opacity: 0.6;
+  }
+  .img-placeholder span {
+    font-family: var(--font-mono); font-size: var(--fs-meta); font-weight: 600;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--fg-tertiary); position: relative; z-index: 1;
+    background: var(--bg-card); padding: 2px 10px;
+  }
+
+  /* ══════════════════════════════════════
+     TOC SIDEBAR (open/push behaviour lives in ui.css)
+     ══════════════════════════════════════ */
+  .toc {
+    position: fixed;
+    left: 0; top: 0;
+    z-index: 100;
+  }
+
+  .toc-toggle {
+    position: fixed;
+    left: var(--sp-6); top: var(--sp-6);
+    width: 40px; height: 40px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--bg-card);
+    border: none; cursor: pointer;
+    color: var(--fg-tertiary);
+    transition: background 0.15s, color 0.15s;
+    z-index: 102;
+  }
+  .toc-toggle:hover { background: var(--fg); color: var(--bg); }
+
+  .toc-panel {
+    position: fixed;
+    left: 0; top: 0; bottom: 0;
+    width: 320px !important;          /* beats ui.css narrow-screen drawer width min(300px, 86vw) */
+    background: var(--bg-card);
+    border-right: 1px solid rgba(var(--ink-rgb), .07);
+    padding: var(--sp-12) var(--sp-6) var(--sp-7);
+    overflow-y: auto;
+    transform: translateX(-100%);
+    scrollbar-width: thin;
+    scrollbar-color: var(--fg-placeholder) transparent;
+    z-index: 101;
+  }
+
+  .toc-open .toc-panel { transform: translateX(0); }
+  .toc-open .toc-toggle { background: var(--fg); color: var(--bg); }
+
+  .toc-header {
+    font-family: var(--font-mono);
+    font-size: 13px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--fg-tertiary);
+    margin-bottom: 18px;
+  }
+
+  /* TOC text ≥ body size; narrow tabular number column */
+  .toc-item {
+    display: grid; grid-template-columns: 2.4em 1fr; align-items: baseline; gap: 0 10px;
+    padding: 9px 0;
+    font-size: var(--fs-body); font-weight: 400;
+    color: var(--fg-secondary);
+    text-decoration: none;
+    line-height: 1.55;
+    transition: color 0.15s;
+  }
+  .toc-item:hover { color: var(--fg); }
+  .toc-item.toc-active { color: var(--accent-ink, var(--accent)); font-weight: 600; }
+
+  .toc-num {
+    font-family: var(--font-mono);
+    font-size: 0.8rem; font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--fg-placeholder);
+    flex-shrink: 0; width: 24px;
+  }
+  .toc-active .toc-num { color: var(--accent-ink, var(--accent)); }
+
+  /* ══════════════════════════════════════
+     FOOTER
+     ══════════════════════════════════════ */
+  /* scoped to the page footer so it doesn't leak into blockquote footer.bq-cite */
+  .container > footer, .divider-dot {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    column-gap: var(--gutter);
+  }
+  .divider-dot { display: block; margin: var(--sp-10) auto; text-align: center; color: var(--fg-placeholder); font-size: 14px; letter-spacing: 10px; }
+  .container > footer { padding: var(--sp-10) 0 var(--sp-12); text-align: center; }
+  .container > footer > * { grid-column: 1 / -1; }
+  .container > footer p { font-family: var(--font-mono); font-size: var(--fs-meta); font-weight: 500; letter-spacing: 0.14em; color: var(--fg-tertiary); text-transform: uppercase; }
+
+  /* ══════════════════════════════════════
+     RESPONSIVE
+     ══════════════════════════════════════ */
+  @media (max-width: 1100px) {
+    /* single flowing column; the rail content moves back above the text */
+    .section { display: block; }
+    .section > p, .section > ul, .section > ol, .section > blockquote,
+    .section > h3, .section > .section-header { max-width: var(--col); margin-left: auto; margin-right: auto; }
+    .section-header .section-number { position: static; width: auto; margin-bottom: 8px; font-size: 28px; }
+    .section > .figure-card > figcaption { position: static; width: auto; margin-top: 8px !important; /* beats ui.css print */ }
+  }
+
+  @media (max-width: 1024px) {
+    .container { padding: 0 var(--sp-9); }
+    .doc-chrome { padding-top: 76px; }  /* the fixed TOC button (24 + 40px) sits over the left margin */
+    .section-number { font-size: 14px; font-weight: 500; color: var(--accent-ink, var(--accent)); letter-spacing: 0.14em; }
+    .hero-cover .hero-bg { height: 360px; }
+    .hero-cover h1 { font-size: 2.4rem; }
+    .def-card-swiss { grid-template-columns: 1fr; gap: var(--sp-3); }
+    .gallery-grid { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 1000px) {
+    .doc-chrome { grid-template-columns: 1fr; grid-template-areas: "bar" "tags" "meta"; }
+    .doc-chrome > .doc-chrome-meta { justify-self: start; }
+    .pullquote-swiss, .highlight-swiss { grid-template-columns: minmax(0,1fr); }
+  }
+
+  @media (max-width: 760px) {
+    .img-row-3 { grid-template-columns: 1fr 1fr; }
+    .img-strip .figure-card { flex-basis: 85%; }
+  }
+
+  @media (max-width: 640px) {
+    html, body { overflow-x: hidden; }
+    .container { padding: 0 var(--sp-6); }
+    /* chrome: wraps instead of overflowing; top padding clears the fixed TOC button */
+    .doc-chrome { padding-top: 72px; row-gap: 14px; }
+    .doc-chrome > .doc-chrome-bar { flex-wrap: wrap; gap: 6px 12px; padding: 12px 14px; font-size: var(--fs-meta); letter-spacing: .1em; margin-bottom: 0; }
+    .doc-chrome-bar .chrome-l, .doc-chrome-bar .chrome-r { gap: .8em; flex-wrap: wrap; min-width: 0; }
+    .doc-chrome-bar .chrome-sep { width: 14px; }
+    .doc-chrome-meta { gap: 6px 1.2em; font-size: var(--fs-meta); letter-spacing: .08em; }
+    .doc-chrome-meta .cm-dot { display: none; }
+    .doc-chrome-meta .cm-item { min-width: 0; flex-wrap: wrap; }
+    .doc-chrome-tags { gap: 6px; }
+    .doc-chrome-tags .chrome-tag { padding: 3px 10px; font-size: var(--fs-meta); }
+    /* hero: image on top, text below on the dark block (no overlay clipping) */
+    .hero-cover { display: flex; flex-direction: column; overflow: visible; }
+    .hero-cover::before { bottom: auto; height: 220px; }
+    .hero-cover .hero-bg { height: 220px; opacity: .55; }
+    .hero-cover .hero-overlay { position: relative; inset: auto; padding: 22px 20px 26px; }
+    .hero-cover h1, :lang(zh) .hero-cover h1 { font-size: 1.75rem; line-height: 1.28; letter-spacing: -0.01em; margin-bottom: 14px; overflow-wrap: anywhere; }
+    .hero-cover .hero-subtitle { font-size: .95rem; line-height: 1.7; color: rgba(var(--paper-rgb), .78); }
+    .hero-cover .hero-kicker { margin-bottom: 12px; }
+    .section-header .section-number { font-size: 24px; }
+    .pullquote-swiss .pq-content p { font-size: 1.2rem; }
+    .hc-row { grid-template-columns: 1fr; }
+  }
+
+  /* ══════════════════════════════════════
+     PRINT (shared pagination rules live in ui.css)
+     ══════════════════════════════════════ */
+  @media print {
+    .hero-cover .hero-bg { filter: brightness(0.4); }
+    .def-card-swiss, .aside-card, .process-step { background: var(--grey-1); }
+    .gallery-grid { grid-template-columns: 1fr 1fr; }
+    a { color: inherit; }
+    /* ui.css print forces img width:auto; stretch keeps the cover image full-bleed */
+    .hero-cover .hero-bg { justify-self: stretch; }
+    /* the rail grid doesn't fit the page: single flow, rail content inline */
+    .pullquote-swiss, .highlight-swiss { display: block; }
+    .pullquote-swiss .pq-bar { display: none; }
+    .section > .figure-card > figcaption { border-top: 0; padding-top: 6px; }
+    .img-strip { overflow: visible; }
+    .img-strip-hint { display: none; }
+  }
+
+  /* ========================================
+     FOOTNOTES — [^n] references and the list at the end
+     ======================================== */
+  sup.fn-ref { font-size: .72em; line-height: 0; margin-left: 1px; }
+  sup.fn-ref a, .fn-back { color: var(--accent-ink); text-decoration: none; }
+  .footnotes li { scroll-margin-top: 80px; }
+
+  /* Phones: diagrams keep a readable size and scroll sideways; table headers don't break inside a word */
+  .table-wrap th { word-break: keep-all; }
+  @media (max-width: 640px) {
+    .embed-body { overflow-x: auto; }
+    .embed-body > svg { min-width: 520px; }
+  }
+</style>
+<style>  /* ══════════════════════════════════════
+     UI OVERLAY — Settings, Share, Edit
+     Shared across all themes
+     ══════════════════════════════════════ */
+
+  /* ── Editable text ── */
+  [contenteditable] {
+    outline: none;
+    cursor: text;
+    transition: background 0.15s;
+    border-radius: 2px;
+  }
+  [contenteditable]:hover {
+    background: rgba(0,0,0,0.03);
+  }
+  [contenteditable]:focus {
+    background: rgba(0,0,0,0.05);
+    box-shadow: 0 0 0 2px var(--accent, #002FA7);
+  }
+
+  /* ── FAB container (bottom-right) ── */
+  .hf-fab {
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-end;
+  }
+
+  .hf-fab-btn {
+    width: 44px; height: 44px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--fg, #0a0a0a);
+    color: var(--bg, #fafaf8);
+    border: none; border-radius: 0; cursor: pointer;
+    transition: opacity 0.15s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+  .hf-fab-btn:hover { opacity: 0.85; }
+  .hf-fab-btn svg { width: 20px; height: 20px; }
+
+  /* ── Dropdown menu (share + settings) ── */
+  .hf-dropdown {
+    position: absolute;
+    background: var(--fg, #0a0a0a);
+    color: var(--bg, #fafaf8);
+    min-width: 220px;
+    padding: 8px 0;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.2);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(4px);
+    transition: opacity 0.15s, transform 0.15s;
+    z-index: 210;
+  }
+  .hf-dropdown.open {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+  .hf-fab .hf-dropdown { right: 0; bottom: calc(100% + 6px); }
+
+  .hf-dropdown-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 16px;
+    font-family: var(--font-sans, sans-serif);
+    font-size: 13px; font-weight: 400;
+    cursor: pointer;
+    transition: background 0.1s;
+    border: none; background: none; color: inherit;
+    width: 100%; text-align: left;
+  }
+  .hf-dropdown-item:hover { background: rgba(255,255,255,0.08); }
+  .hf-dropdown-item svg { width: 16px; height: 16px; opacity: 0.5; }
+
+  .hf-dropdown-divider {
+    height: 1px;
+    background: rgba(255,255,255,0.1);
+    margin: 6px 0;
+  }
+
+  .hf-dropdown-label {
+    padding: 8px 16px 4px;
+    font-family: var(--font-mono, monospace);
+    font-size: 9px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    opacity: 0.35;
+  }
+
+  /* ── Color swatches ── */
+  .hf-swatches {
+    display: flex; gap: 6px;
+    padding: 6px 16px 10px;
+  }
+  .hf-swatch {
+    -webkit-appearance: none; appearance: none; padding: 0;
+    width: 28px; height: 28px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: border-color 0.15s;
+    position: relative;
+  }
+  .hf-swatch:hover { border-color: rgba(255,255,255,0.3); }
+  .hf-swatch.active { border-color: var(--bg, #fff); }
+  .hf-swatch.active::after {
+    content: '✓';
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; color: #fff;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+  }
+
+  /* ── Font options ── */
+  .hf-font-options {
+    display: flex; flex-direction: column; gap: 2px;
+    padding: 4px 16px 8px;
+  }
+  .hf-font-option {
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 8px;
+    font-size: 13px;
+    cursor: pointer;
+    border: none; background: none; color: inherit;
+    width: 100%; text-align: left;
+    transition: background 0.1s;
+  }
+  .hf-font-option:hover { background: rgba(255,255,255,0.08); }
+  .hf-font-option.active { background: rgba(255,255,255,0.12); }
+  .hf-font-option .font-preview {
+    font-size: 15px; font-weight: 300;
+    opacity: 0.7;
+  }
+  .hf-font-option .font-name {
+    font-family: var(--font-mono, monospace);
+    font-size: 10px; letter-spacing: 0.08em;
+    text-transform: uppercase; opacity: 0.4;
+  }
+
+  /* ── Print hide UI ── */
+  @media print {
+    .hf-fab,.toc,.toc-scrim { display: none !important; }
+    [contenteditable] { box-shadow: none !important; background: none !important; }
+  }
+
+  /* ── TOC layout behaviour (shared) ──
+     Root cause of the old "TOC covers half the article" bug: the panel is a
+     280px fixed overlay, while the article container starts ~120px from the
+     left edge on a 1440px screen, so opening it always covered the text.
+     Fix: on wide screens opening the TOC pushes the page (body padding-left),
+     so nothing is covered; on narrow screens it is a drawer with a scrim and
+     closes on outside click / Esc. */
+  .toc { width: 0; height: 0; overflow: visible; pointer-events: none; }
+  .toc-toggle, .toc-panel { pointer-events: auto; }
+  .toc-panel { visibility: hidden; transition: transform 0.25s cubic-bezier(.2,0,.38,.9), visibility 0s linear 0.25s; }
+  .toc-open .toc-panel { visibility: visible; transition: transform 0.25s cubic-bezier(.2,0,.38,.9); }
+  body { transition: padding-left 0.25s cubic-bezier(.2,0,.38,.9); }
+  .toc-scrim { display: none; }
+  @media (min-width: 1025px) {
+    html.toc-is-open body { padding-left: 300px; }
+  }
+  @media (max-width: 1024px) {
+    .toc-scrim {
+      position: fixed; inset: 0; z-index: 99;
+      background: rgba(0,0,0,0.28);
+    }
+    html.toc-is-open .toc-scrim { display: block; }
+    .toc-panel { width: min(300px, 86vw); }
+  }
+
+  /* ══════════════════════════════════════
+     PRINT / PDF — pagination (shared by both styles)
+     Root cause of the "half-empty page" bug: style-magazine.css had
+     `.hero, .section { break-inside: avoid }`, and both themes lay sections
+     out as CSS grids; any chapter taller than the remaining space jumped to
+     the next page whole. Rules now: only small atomic blocks avoid breaking,
+     long containers flow across pages, headings stick to what follows.
+     ══════════════════════════════════════ */
+  /* Page margins live inside the page (container padding repeated on every page via
+     box-decoration-break), so the theme's paper colour fills the whole sheet — Chrome
+     doesn't paint @page margins, which left a white frame around dark themes. */
+  @page { size: A4; margin: 0; }
+  @media print {
+    html, body, body * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    html { background: var(--bg); }
+    html.toc-is-open body, body { padding-left: 0 !important; }
+    .container { max-width: none !important; padding: 14mm 12mm 16mm !important; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+    .embed-label, .summary-label, .aside-title { break-after: avoid; }
+    /* grid fragmentation is fragile — flow sections as blocks on paper */
+    .section, .hero, footer, .container > .pullquote { display: block !important; }
+    .section-header { display: block !important; }
+    .section, .hero, .process, .gallery, .gallery-grid, .summary-card,
+    .summary-grid, .table-wrap, table, ul, ol, pre, .chart-row,
+    .embed-card, .data-figure { break-inside: auto !important; }
+
+    /* headings never end a page */
+    h1, h2, h3, h4, h5, .section-number, .section-header, .hero-kicker,
+    .def-card-label, .hl-label, .toc-header { break-after: avoid; break-inside: avoid; }
+    p { orphans: 3; widows: 3; }
+
+    /* small atomic blocks: keep whole */
+    blockquote, .def-card, .def-card-swiss, .highlight-card, .highlight-swiss,
+    .pullquote, .pullquote-swiss, .aside-card, .process-step, .big-number,
+    .summary-item, .gallery-item, li, tr, .callout { break-inside: avoid; }
+
+    /* image + caption travel together; cap height (120mm ≈ 45% of an A4 text area). Residual gap: a heading kept with a big figure can still leave up to ~half a page — intended (no orphan heading). so a figure never strands more than ~half a page */
+    figure, .figure-card { break-inside: avoid; }
+    figure img, .figure-card img, img { max-height: 120mm; width: auto; max-width: 100%; object-fit: contain; }
+    figcaption, .figure-caption, .caption { break-before: avoid; }
+    pre { white-space: pre-wrap; word-break: break-all; }
+    .section { padding-top: 12mm !important; padding-bottom: 4mm !important; }
+    a { text-decoration: none; }
+  }
+
+  /* ══════════════════════════════════════
+     PRINT v0.14 — blank-space budget (≤25% per page)
+     A block that can't split leaves at most its own height as a gap, so every
+     unsplittable block is capped well under a quarter page; everything tall
+     (tables, charts, quotes) is allowed to split. Screen layout untouched.
+     ══════════════════════════════════════ */
+  @media print {
+    .section { padding-top: 5mm !important; padding-bottom: 2mm !important; margin-top: 0 !important; border: 0 !important; }
+    .section::before { content: none !important; }
+    .section > .section-number { margin-bottom: 2mm !important; }
+    .section h2, .section-header { margin-bottom: 4mm !important; }
+    .hero { padding-top: 0 !important; padding-bottom: 4mm !important; }
+    .hero::after { margin-top: 3mm !important; }
+    .doc-chrome { padding-top: 0 !important; padding-bottom: 4mm !important; }
+    .hero-cover, .hero-cover .hero-bg { min-height: 0 !important; height: 60mm !important; }
+
+    /* media: shrink to fit instead of jumping */
+    figure img, .figure-card img, .img-row img, .img-strip img, img { max-height: 58mm !important; width: auto !important; max-width: 100% !important; object-fit: contain !important; margin-left: auto; margin-right: auto; }
+    .img-row img { max-height: 42mm !important; }
+    .media-embed video, .media-embed iframe { max-height: 58mm !important; }
+    figure, .figure-card { margin-top: 3mm !important; margin-bottom: 3mm !important; }
+    .figure-card > figcaption { margin-top: 1.5mm !important; text-align: center; }  /* images shrink and centre on paper */
+
+    /* headings stay with the next *line*, not with a whole big block */
+    h2, h3, .section-header, .section-number { break-after: avoid; }
+    .section-header + .figure-card, h2 + .figure-card, .section-number + h2 + .figure-card,
+    h2 + .table-wrap, h2 + .hchart, .section-header + .hchart, .section-header + .table-wrap { break-before: auto !important; }
+
+    /* tables: split across pages, header row repeats */
+    .table-wrap, .table-wrap table { break-inside: auto !important; overflow: visible !important; }
+    .table-wrap thead { display: table-header-group; }
+    .table-wrap tr { break-inside: avoid; }
+    .table-caption { break-after: avoid; }
+
+    /* charts: allowed to split between rows/groups */
+    .hchart { break-inside: auto !important; padding-top: 4mm !important; padding-bottom: 4mm !important; margin-top: 4mm !important; margin-bottom: 4mm !important; }
+    .hc-row, .hc-group, .hc-legend { break-inside: avoid; }
+    .hc-title, .hc-legend { break-after: avoid; }
+
+    /* quotes / cards may split when long; small ones still stay whole via orphans/widows */
+    blockquote, .pullquote, .pullquote-swiss, .highlight-card, .highlight-swiss { break-inside: auto !important; }
+    .pullquote, .pullquote-swiss { padding-top: 5mm !important; padding-bottom: 5mm !important; margin-top: 4mm !important; margin-bottom: 4mm !important; }
+    .img-row, .img-strip-wrap { margin-top: 3mm !important; margin-bottom: 3mm !important; }
+    p { orphans: 2; widows: 2; }
+  }
+  @media print {
+    figure img, .figure-card img, img { max-height: 54mm !important; }
+    .img-strip { display: grid !important; grid-template-columns: repeat(3, 1fr); gap: 3mm; }
+    .img-strip .figure-card { flex: none !important; }
+    .img-strip img, .img-row img { max-height: 34mm !important; }
+  }
+  @media print {
+    /* heading followed directly by an unsplittable media block: don't drag the heading along */
+    .section-header:has(+ .figure-card), .section-header:has(+ .img-row), .section-header:has(+ .media-embed),
+    h2:has(+ .figure-card), h2:has(+ .img-row), h2:has(+ .media-embed),
+    .section-number:has(+ h2 + .figure-card) { break-after: auto !important; }
+  }
+  @media print { figure img, .figure-card img, img { max-height: 50mm !important; } .section-header .section-number { font-size: 20px !important; } }
+  @media print { .section-header + .figure-card img, h2 + .figure-card img { max-height: 38mm !important; } }
+  @media print { .section-header .section-number { display: inline-block !important; margin: 0 4mm 0 0 !important; } .section-header h2 { display: inline !important; } .section-header { margin-bottom: 3mm !important; } .figure-card { margin-top: 2mm !important; } }
+  @media print { h3 + .figure-card img { max-height: 38mm !important; } .hc-group { padding: 2mm 0 !important; } .hc-group .hc-bar { height: 10px !important; } .hc-bars { gap: 3px !important; } .hc-legend { margin-bottom: 3mm !important; } .hc-title { margin-bottom: 3mm !important; } .hc-row { padding: 1mm 0 !important; } .hc-bar { height: 13px !important; } }
+</style>
+<style id="fx-grouping-polish">
+:root{--font-display:"Segoe UI","Microsoft YaHei",system-ui,sans-serif;--font-sans:"Segoe UI","Microsoft YaHei",system-ui,sans-serif;--font-mono:Consolas,monospace}
+.hero-cover{min-height:0;height:auto;background:var(--paper-2,var(--bg-card));margin:24px 0 16px}
+.hero-cover::before{display:none}.hero-cover .hero-overlay{position:relative;padding:22px 26px;color:var(--fg);text-shadow:none}
+.hero-cover h1{font-size:clamp(24px,3vw,34px);font-weight:500;max-width:none;color:var(--fg);line-height:1.4;margin:8px 0}
+.hero-cover .hero-subtitle,.hero-cover .hero-kicker{color:var(--fg-2,var(--fg));opacity:1}
+.hero-cover .hero-subtitle{font-size:15px;margin:6px 0 0}.hero-cover .hero-kicker{font-size:11px}
+.section{margin-top:16px;margin-bottom:16px;padding:8px 0;border-top:0}.section-header{margin-bottom:12px}
+#s-0{display:block}#s-0 p{max-width:none!important;font-size:14px;margin:8px 0}
+#s-0 .highlight-card{display:block;background:transparent;color:var(--fg);padding:0;margin:8px 0;min-height:0}
+#s-0 .hl-label{display:none}#s-0 .highlight-card p{font-size:16px;font-weight:600;color:var(--fg)!important}
+#s-01 .section-header{margin-bottom:4px}#s-01 > p{grid-column:1 / -1;max-width:none!important;font-size:14px;margin:4px 0 10px}
+#s-01 .table-wrap{margin:8px 0}#s-01 h2{font-size:24px}#s-01 .section-number{font-size:30px}
+.section > .fx-group{grid-column:1 / -1;min-width:0}
+.fx-group{background:var(--paper-2,var(--bg-card));padding:0 24px}
+.fx-group summary{list-style:none;display:flex;gap:18px;align-items:center;justify-content:space-between;cursor:pointer;padding:18px 0}
+.fx-group summary::-webkit-details-marker{display:none}.fx-group summary::before{content:"＋";color:var(--accent);font:22px var(--font-sans);flex:none}
+.fx-group[open] summary::before{content:"－"}.fx-group summary .section-header{display:block;flex:1;margin:0;padding:0;min-width:0}
+.fx-group summary .section-number{display:none}.fx-group summary h2{font-size:20px!important;font-weight:500;line-height:1.5!important;margin:0}
+.group-count{color:var(--accent);font-size:12px;font-family:var(--font-sans);white-space:nowrap}
+.fx-group-body{padding:0 0 22px}.fx-group-body > p{max-width:100%;margin-top:0}
+.fx-group-body h3{font-size:17px;margin:24px 0 10px}.fx-group-body li{font-size:14px;line-height:1.9}
+.fx-group-body .table-wrap{margin:14px 0 24px}.fx-group-body table{font-size:14px;line-height:1.8}
+.fx-group-body td:first-child{min-width:105px;width:140px}.fx-group-body td:last-child{min-width:110px;width:150px}
+.fx-jump{color:var(--accent);text-decoration:none;font-weight:500}.fx-jump:hover{text-decoration:underline}
+.grouping-note{padding:12px 20px;font-size:13px!important;line-height:1.8;background:var(--paper-2,var(--bg-card))}
+.section > .grouping-note{grid-column:1 / -1;max-width:none!important}
+.section .table-wrap th,.section .table-wrap td{padding:8px 11px}.section .table-wrap table{line-height:1.7}
+@media(max-width:700px){.hero-cover .hero-overlay{padding:24px 20px}.fx-group{padding:0 14px}.fx-group summary{flex-wrap:wrap;gap:5px 10px;padding:14px 0}.fx-group summary h2{font-size:17px!important}.group-count{padding-left:32px;flex-basis:100%}.fx-group-body td:first-child{min-width:80px;width:auto}.fx-group-body td:last-child{min-width:80px;width:auto}.fx-group-body table{font-size:13px}.section .table-wrap th,.section .table-wrap td{padding:9px 10px}}
+@media print{.fx-group{background:transparent;padding:0}.fx-group summary::before{display:none}.fx-group-body{display:block}.group-count{display:none}}
+</style>
+</head>
+<body>
+
+<div class="toc-scrim" id="toc-scrim"></div>
+<nav class="toc" id="toc">
+  <button class="toc-toggle" id="toc-toggle" aria-label="Toggle table of contents">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M2 4h14M2 9h10M2 14h14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+  </button>
+  <div class="toc-panel" id="toc-panel">
+    <div class="toc-header">目录</div>
+    <a class="toc-item" href="#s-01"><span class="toc-num">01</span>主目录</a>
+<a class="toc-item" href="#s-02"><span class="toc-num">02</span>使用与合并规则</a>
+<a class="toc-item" href="#s-03"><span class="toc-num">03</span>FX01 · 画面模糊</a>
+<a class="toc-item" href="#s-04"><span class="toc-num">04</span>FX02 · 画质修整</a>
+<a class="toc-item" href="#s-05"><span class="toc-num">05</span>FX03 · 颜色与调色</a>
+<a class="toc-item" href="#s-06"><span class="toc-num">06</span>FX04 · 光晕与镜头光效</a>
+<a class="toc-item" href="#s-07"><span class="toc-num">07</span>FX05 · 受光与阴影</a>
+<a class="toc-item" href="#s-08"><span class="toc-num">08</span>FX06 · 轮廓描边</a>
+<a class="toc-item" href="#s-09"><span class="toc-num">09</span>FX07 · 天气设置</a>
+<a class="toc-item" href="#s-10"><span class="toc-num">10</span>FX08 · 故障与复古屏幕</a>
+<a class="toc-item" href="#s-11"><span class="toc-num">11</span>FX09 · 绘画与像素风格</a>
+<a class="toc-item" href="#s-12"><span class="toc-num">12</span>FX10 · 形变与纹理</a>
+<a class="toc-item" href="#s-13"><span class="toc-num">13</span>FX11 · 立体与自动运动</a>
+<a class="toc-item" href="#s-14"><span class="toc-num">14</span>FX12 · 裁切、遮罩与合成</a>
+<a class="toc-item" href="#s-15"><span class="toc-num">15</span>FX13 · 舞台与风格预设</a>
+<a class="toc-item" href="#s-16"><span class="toc-num">16</span>3 个待定子项</a>
+<a class="toc-item" href="#s-17"><span class="toc-num">17</span>已排除项</a>
+<a class="toc-item" href="#s-18"><span class="toc-num">18</span>进入开发前只需澄清的文字</a>
+<a class="toc-item" href="#s-19"><span class="toc-num">19</span>对照与检查</a>
+  </div>
+</nav>
+<div class="container">
+
+<header class="hero hero-cover">
+  
+  <div class="hero-overlay">
+    <div class="hero-kicker">目录草案 · 2026.11.10</div>
+    <h1>OBS Spatial FX v3.4 · FX 分组目录</h1>
+    <p class="hero-subtitle">依据你的选择归并：13 个大功能，同类效果作为子选项。</p>
+  </div>
+</header>
+<section class="section" id="s-0"><p class="grouping-note">新版仅整理分组，不记录新勾选。点击下方大功能名称可跳转并展开；需要调整时，按 FX 编号或原编号反馈即可。</p><p>根据你导出的 160 项选择重新整理：110 项需要、3 项待定、47 项不需要。</p>
+<div class="highlight-card highlight-swiss"><div class="hl-label">本次整理</div><div class="hl-body"><p>主目录只保留 13 个大功能；同类效果放在大功能内选模式，不再逐项铺开筛选。</p></div></div>
+<p>本文件用于确认目录结构，尚未进入 v3.4 功能开发。大功能分组不等于算法合成一遍处理，也不代表同组子项都必须同时启用。</p></section><section class="section" id="s-01"><div class="section-header"><div class="section-number">01</div><h2>主目录</h2></div><p>先选一项大功能，再看里面的子选项。旧编号只用于对照原选择，不作为最终界面的主要名称。</p>
+<figure class="table-wrap"><table><thead><tr><th>编号</th><th>大功能</th><th>里面放什么</th><th>对应原选择</th></tr></thead><tbody><tr><td><a class="fx-jump" href="#s-03">FX01</a></td><td><a class="fx-jump" href="#s-03">画面模糊</a></td><td>基础模糊、磨砂、径向、方向、散景、移轴、运动模糊、残影、像素化</td><td>10 项需要，1 项待定</td></tr><tr><td><a class="fx-jump" href="#s-04">FX02</a></td><td><a class="fx-jump" href="#s-04">画质修整</a></td><td>自适应锐化、保边降噪、中值去噪</td><td>3 项需要</td></tr><tr><td><a class="fx-jump" href="#s-05">FX03</a></td><td><a class="fx-jump" href="#s-05">颜色与调色</a></td><td>基础颜色、白平衡、分区调色、曲线、LUT、留色与反相</td><td>12 项需要</td></tr><tr><td><a class="fx-jump" href="#s-06">FX04</a></td><td><a class="fx-jump" href="#s-06">光晕与镜头光效</a></td><td>辉光、星芒、色散、扫光、暗角、光束、鬼影、漏光</td><td>9 项需要</td></tr><tr><td><a class="fx-jump" href="#s-07">FX05</a></td><td><a class="fx-jump" href="#s-07">受光与阴影</a></td><td>环境受光、背光、烛光、聚光、高光材质、投影</td><td>8 项需要</td></tr><tr><td><a class="fx-jump" href="#s-08">FX06</a></td><td><a class="fx-jump" href="#s-08">轮廓描边</a></td><td>外描边、内描边、内发光、边缘线稿</td><td>4 项需要</td></tr><tr><td><a class="fx-jump" href="#s-09">FX07</a></td><td><a class="fx-jump" href="#s-09">天气设置</a></td><td>雨窗、流云、水面、水波、热浪、火焰、火星、烟花</td><td>8 项需要</td></tr><tr><td><a class="fx-jump" href="#s-10">FX08</a></td><td><a class="fx-jump" href="#s-10">故障与复古屏幕</a></td><td>数字故障、模拟信号、VHS、CRT、扫描、胶片磨损、全息与字符雨</td><td>14 项需要</td></tr><tr><td><a class="fx-jump" href="#s-11">FX09</a></td><td><a class="fx-jump" href="#s-11">绘画与像素风格</a></td><td>漫画、卡通、素描、油画、掌机、字符画、浮雕、伪热像</td><td>8 项需要，1 项待定</td></tr><tr><td><a class="fx-jump" href="#s-12">FX10</a></td><td><a class="fx-jump" href="#s-12">形变与纹理</a></td><td>透视、曲面、鼓缩、鱼眼、折射、置换、波动、分片、翻页、平铺</td><td>15 项需要</td></tr><tr><td><a class="fx-jump" href="#s-13">FX11</a></td><td><a class="fx-jump" href="#s-13">立体与自动运动</a></td><td>立体厚度、分层视差、随机抖动、呼吸缩放、闪烁</td><td>5 项需要，1 项待定</td></tr><tr><td><a class="fx-jump" href="#s-14">FX12</a></td><td><a class="fx-jump" href="#s-14">裁切、遮罩与合成</a></td><td>形状裁切、科幻开窗、源遮罩、透明处理、混合、纹理覆盖、溶解</td><td>10 项需要</td></tr><tr><td><a class="fx-jump" href="#s-15">FX13</a></td><td><a class="fx-jump" href="#s-15">舞台与风格预设</a></td><td>LED 舞台、宽银幕、动画氛围、醉酒眩晕</td><td>4 项需要</td></tr></tbody></table></figure></section><section class="section" id="s-02"><details class="fx-group fx-extra"><summary><div class="section-header"><div class="section-number">02</div><h2>使用与合并规则</h2></div><span class="group-count">点击查看说明</span></summary><div class="fx-group-body"><ol><li>第一层只显示 13 个大功能。进入后再看类型、模式与参数。</li><li>互相替代的算法用模式选择，例如高斯／方框、内描边／外描边。可以叠加的效果保留独立开关，例如锐化与降噪。</li><li>同类参数共用位置、范围、强度等基础控件，只有选中具体模式后才显示其专用参数。这是后续界面建议，本轮只确认目录。</li><li>组合预设调用前面的大功能，不再重复建设一套模糊、辉光或抖动。</li><li>待定项仍标待定；排除项不返回主目录。</li></ol></div></details></section><section class="section" id="s-03"><details class="fx-group fx-module"><summary><div class="section-header"><div class="section-number">03</div><h2>FX01 · 画面模糊</h2></div><span class="group-count">9 类子选项 · 1 项待定</span></summary><div class="fx-group-body"><p>让画面变柔、虚化、拖尾，或用像素块遮挡细节。</p>
+<figure class="table-wrap"><table><thead><tr><th>子选项</th><th>作用与模式</th><th>原选择</th></tr></thead><tbody><tr><td>基础模糊</td><td>同一个选项里选择高斯或方框：高斯更柔顺，方框更均匀。</td><td>L074 需要；L039 需要</td></tr><tr><td>磨砂玻璃</td><td>像隔着毛玻璃看画面，适合局部遮挡或文字底板。</td><td>L011 需要</td></tr><tr><td>径向模糊</td><td>保留中心附近清晰，让周边逐渐模糊。</td><td>L024 需要</td></tr><tr><td>方向拖线</td><td>沿指定方向把画面细节拉成模糊线。</td><td>N001 需要</td></tr><tr><td>镜头散景</td><td>让失焦高光变成圆形或多边形光斑。</td><td>N002 需要</td></tr><tr><td>条带移轴</td><td>保留一条清晰带，两侧逐渐模糊，形成微缩模型感。</td><td>N003 需要</td></tr><tr><td>运动模糊</td><td>依据可获得的运动信息，模拟物体运动产生的拖线。</td><td>N004 需要</td></tr><tr><td>残影拖尾</td><td>把之前的画面少量留下，让运动出现一层层拖尾。</td><td>L084 需要</td></tr><tr><td>像素化</td><td>同一入口选择规则方块或不规则晶格。 规则马赛克/像素化待定；不规则晶格已选。</td><td>L018 待定；L113 需要</td></tr></tbody></table></figure>
+<h3>本组整理要求</h3>
+<ul><li>按你的要求，将磨砂玻璃与其他模糊、像素化效果合并为“画面模糊”。</li><li>“中心清晰周边虚化”改名为“径向模糊”。该模式是中心清楚、周围逐渐虚化；不含你已排除的缩放放射拖线模糊或旋转模糊。</li><li>“马赛克与像素化”仍标待定；已选中的不规则晶格像素化保留，不因同组而一起改成待定。</li><li>散景模式可作为 FX13 舞台装饰光斑的共用处理能力；不要求用户筛选两次相同的虚化算法。</li><li>按运动方向计算的模糊保留为候选，但普通视频本身没有完整运动矢量；后续先评估使用插件已知图层运动估计，不能据本目录宣称已实现。</li></ul>
+<h3>你的原始备注</h3>
+<ul><li><strong>L011 · 磨砂玻璃：</strong> 和其他模糊/像素化类的效果合并，作为其中子效果之一，功能改为”画面模糊“</li><li><strong>L024 · 中心清晰周边虚化：</strong> 改名为径向模糊</li></ul></div></details></section><section class="section" id="s-04"><details class="fx-group fx-module"><summary><div class="section-header"><div class="section-number">04</div><h2>FX02 · 画质修整</h2></div><span class="group-count">2 类子选项</span></summary><div class="fx-group-body"><p>让画面更清楚，或减轻噪点。</p>
+<figure class="table-wrap"><table><thead><tr><th>子选项</th><th>作用与模式</th><th>原选择</th></tr></thead><tbody><tr><td>锐化</td><td>提高细节清晰度，并尽量避免已经很锐的边缘被过度加粗。</td><td>N013 需要</td></tr><tr><td>降噪</td><td>同一选项下选择保边降噪或中值去噪：前者平滑颗粒，后者针对孤立亮暗噪点。</td><td>L104 需要；N032 需要</td></tr></tbody></table></figure>
+<h3>本组整理要求</h3>
+<ul><li>锐化与降噪共用一个大功能入口，但保留独立开关，避免把两种相反处理误做成一个只能二选一的按钮。</li></ul></div></details></section><section class="section" id="s-05"><details class="fx-group fx-module"><summary><div class="section-header"><div class="section-number">05</div><h2>FX03 · 颜色与调色</h2></div><span class="group-count">10 类子选项</span></summary><div class="fx-group-body"><p>统一画面颜色，或改变明暗与色彩风格。</p>
+<figure class="table-wrap"><table><thead><tr><th>子选项</th><th>作用与模式</th><th>原选择</th></tr></thead><tbody><tr><td>基础颜色</td><td>在一个参数区调节 Gamma 明暗和 RGB 通道。</td><td>L073 需要；L097 需要</td></tr><tr><td>分色调色</td><td>按红黄绿青蓝紫分别调整浓淡、饱和度、色相或目标颜色。</td><td>L056 需要；L108 需要</td></tr><tr><td>白平衡</td><td>调整冷暖与偏绿偏紫，让颜色更自然或形成冷暖氛围。</td><td>N016 需要</td></tr><tr><td>阴影／中间调／高光</td><td>分别调整暗处、中间亮度与高光的颜色和明暗。</td><td>N017 需要</td></tr><tr><td>调色曲线</td><td>通过可编辑曲线改变亮度或 RGB 的映射。</td><td>N015 需要</td></tr><tr><td>LUT<span class="hf-sp"> </span>表调色</td><td>加载一张调色表，快速套用颜色风格。</td><td>L049 需要</td></tr><tr><td>局部留色</td><td>只留下指定颜色，其他部分变成灰度或指定底色。</td><td>L008 需要</td></tr><tr><td>色阶压缩</td><td>减少颜色层级，让画面变成更明显的色块。</td><td>L048 需要</td></tr><tr><td>负片／明暗反转</td><td>选择全部颜色取反，或只反转明暗。</td><td>L081 需要</td></tr><tr><td>自动变色</td><td>让原画面的色相随时间循环变化。</td><td>L079 需要</td></tr></tbody></table></figure>
+<h3>本组整理要求</h3>
+<ul><li>“查找表调色”按你的备注命名为“LUT<span class="hf-sp"> </span>表调色”。</li><li>已有曝光、饱和度等基础能力应复用；Gamma、RGB、分色、曲线等整理成同一大功能的参数区或子页，避免每个数值都成为一张独立效果卡。</li></ul>
+<h3>你的原始备注</h3>
+<ul><li><strong>L049 · 查找表调色：</strong> 功能名字就叫”LUT<span class="hf-sp"> </span>表调色“</li></ul></div></details></section><section class="section" id="s-06"><details class="fx-group fx-module"><summary><div class="section-header"><div class="section-number">06</div><h2>FX04 · 光晕与镜头光效</h2></div><span class="group-count">8 类子选项</span></summary><div class="fx-group-body"><p>制作亮光扩散、星芒、彩边、光束及镜头反光。</p>
+<figure class="table-wrap"><table><thead><tr><th>子选项</th><th>作用与模式</th><th>原选择</th></tr></thead><tbody><tr><td>辉光</td><td>同一入口选择高光溢出或柔光辉光，让亮处向周围柔和扩散。</td><td>L036 需要；L037 需要</td></tr><tr><td>星芒</td><td>让亮点拉出星状光线。</td><td>L023 需要</td></tr><tr><td>色散／RGB 分离</td><td>同一入口选择镜头边缘彩边或红绿蓝独立错位。</td><td>L045 需要</td></tr><tr><td>流光扫过</td><td>让一道亮带扫过文字、标志或其他素材。</td><td>L103 需要</td></tr><tr><td>暗角</td><td>让边缘变暗、中心突出，并扩展现有暗角参数。</td><td>L112 需要</td></tr><tr><td>放射光束</td><td>从指定亮点拉出向外散射的光柱。</td><td>N018 需要</td></tr><tr><td>镜头鬼影</td><td>在强光附近形成一串半透明镜片反光。</td><td>N025 需要</td></tr><tr><td>胶片漏光</td><td>从画面边缘渗入柔和彩色光斑。</td><td>N031 需要</td></tr></tbody></table></figure>
+<h3>本组整理要求</h3>
+<ul><li>高光溢出与柔光辉光归在同一子入口，用模式区分，不再要求先筛选两张相似卡片。</li><li>高光星芒按你的要求优化表现，并以节约系统资源为优先；此项是后续验收要求，尚无性能实测结论。</li><li>暗角并入现有图层暗角入口，扩展圆度、中心点、中心缩放比例；不再增加一个重复暗角入口。</li><li>暗角圆度端点有一处文字待澄清：你的原备注将圆度 0 和 1 都描述为“矩形”。先保留该要求，进入实现前确认圆度 1 的最终形状，不擅自改成椭圆。</li></ul>
+<h3>你的原始备注</h3>
+<ul><li><strong>L023 · 高光星芒：</strong> 现有效果能力较差，可以参考其他类似项目优化表现效果，并依然以节约系统资源消耗优先</li><li><strong>L112 · 暗角：</strong> 合并入现有功能，并扩展现有图层暗角功能参数，可以额外调整暗角效果的圆度，当圆度为<span class="hf-sp"> </span>0<span class="hf-sp"> </span>的时候会变成和画布比例相同的矩形，圆度为<span class="hf-sp"> </span>1<span class="hf-sp"> </span>的时候是长短边正好为画布长短边的矩形；并可以设置暗角的中心点以及中心缩放比例</li></ul></div></details></section><section class="section" id="s-07"><details class="fx-group fx-module"><summary><div class="section-header"><div class="section-number">07</div><h2>FX05 · 受光与阴影</h2></div><span class="group-count">6 类子选项</span></summary><div class="fx-group-body"><p>让素材受环境光影响，或增加表面高光与阴影。</p>
+<figure class="table-wrap"><table><thead><tr><th>子选项</th><th>作用与模式</th><th>原选择</th></tr></thead><tbody><tr><td>环境色受光</td><td>参考另一幅画面的颜色和亮度，让人物染上环境色。</td><td>L003 需要</td></tr><tr><td>背后柔光</td><td>在素材后方铺柔光，让人物与背景分离。</td><td>L006 需要</td></tr><tr><td>烛光</td><td>模拟带暖色与轻微闪动的蜡烛照明。</td><td>L007 需要</td></tr><tr><td>聚光灯</td><td>以局部亮区照向素材，周围保持较暗。</td><td>L106 需要</td></tr><tr><td>表面高光</td><td>用可调表面方向产生镜面亮斑；亮度转法线放在高级设置。</td><td>L105 需要；L087 需要</td></tr><tr><td>投影／内阴影</td><td>在同一阴影入口选择外投影或内阴影，并保留扩展第二光源投影的要求。</td><td>L062 需要；N012 需要</td></tr></tbody></table></figure>
+<h3>本组整理要求</h3>
+<ul><li>与现有光源页面共用灯光、图层绑定和空间坐标；这里是 FX 能力目录，不代表复制一套不相通的光源管理页面。</li><li>投影按你的备注扩展：允许用额外一套光源计算第二投影，并在现有光源页面增加阴影颜色、模糊和强度。</li><li>外投影、内阴影和真正投向其他图层的空间阴影仍需区分计算方式；合并的是管理入口，不能用一个二维偏移影子冒充新增灯源的空间投影。</li><li>“亮度生成法线图”收为表面高光的高级辅助项，不让普通用户先生成一张法线图才能尝试材质高光。</li></ul>
+<h3>你的原始备注</h3>
+<ul><li><strong>L062 · 二维投影：</strong> 作为现有空间投影逻辑的补充，可以额外调整参与计算一套新光源照射下的第二投影，并在现有光源功能页面也增加阴影颜色、模糊、强度等设置</li></ul></div></details></section><section class="section" id="s-08"><details class="fx-group fx-module"><summary><div class="section-header"><div class="section-number">08</div><h2>FX06 · 轮廓描边</h2></div><span class="group-count">3 类子选项</span></summary><div class="fx-group-body"><p>给素材边缘加线、加光，或提取画面中的线条。</p>
+<figure class="table-wrap"><table><thead><tr><th>子选项</th><th>作用与模式</th><th>原选择</th></tr></thead><tbody><tr><td>描边</td><td>在透明轮廓内侧或外侧画一圈线。</td><td>L029 需要；N010 需要</td></tr><tr><td>内发光</td><td>沿素材轮廓内侧铺一圈柔光。</td><td>N011 需要</td></tr><tr><td>边缘线稿</td><td>把画面中颜色或亮度变化明显的地方提取为线条。</td><td>L065 需要</td></tr></tbody></table></figure>
+<h3>本组整理要求</h3>
+<ul><li>按你的要求，将内描边并入轮廓描边：用“描边位置：外侧／内侧”切换，不保留两个平级入口。</li><li>内发光与外/内描边放在同一大功能下，但保留独立控制；“边缘检测”是提取图像内部明暗线条，与只沿 Alpha 外轮廓描线分开说明。</li></ul>
+<h3>你的原始备注</h3>
+<ul><li><strong>N010 · 轮廓内描边：</strong> 合并入现有的轮廓描边功能</li></ul></div></details></section><section class="section" id="s-09"><details class="fx-group fx-module"><summary><div class="section-header"><div class="section-number">09</div><h2>FX07 · 天气设置</h2></div><span class="group-count">7 类子选项</span></summary><div class="fx-group-body"><p>集中放置天气、自然环境和氛围粒子。</p>
+<figure class="table-wrap"><table><thead><tr><th>子选项</th><th>作用与模式</th><th>原选择</th></tr></thead><tbody><tr><td>雨窗水滴</td><td>像透过淋雨的玻璃看背景，可调整雨滴和水痕。</td><td>L017 需要</td></tr><tr><td>流云</td><td>生成不断流动的抽象云状纹理，作为氛围层。</td><td>L083 需要</td></tr><tr><td>水面／水波</td><td>选择生成海面背景，或给现有画面加涟漪。</td><td>L101 需要；L099 需要</td></tr><tr><td>热浪</td><td>让现有画面像被热空气折射一样轻微扭动。</td><td>L077 需要</td></tr><tr><td>火焰</td><td>生成动态火焰和火舌。</td><td>L069 需要</td></tr><tr><td>余烬火星</td><td>生成缓慢飘动的发亮火星。</td><td>L066 需要</td></tr><tr><td>烟花</td><td>生成四散爆开的彩色亮点。</td><td>L070 需要</td></tr></tbody></table></figure>
+<h3>本组整理要求</h3>
+<ul><li>按你的备注，将雨窗、余烬、火焰、烟花与流云归入“天气设置”；该名称作为主入口，不再单列多张效果卡。</li><li>内部按“雨与云／水与空气／火与粒子”分小组。雨窗是覆盖在画面上的水滴；海面是生成背景；水波和热浪是扭曲现有画面，不能误当同一类输入。</li><li>抽象流云可呈现云雾纹理，但不恢复你已排除的“按空间深度的雾”。本轮也不自动添加未选择的雪、闪电或星空。</li></ul>
+<h3>你的原始备注</h3>
+<ul><li><strong>L017 · 雨窗水滴：</strong> 与其他天气相关的效果合并，效果改为”天气设置“</li><li><strong>L083 · 绿色抽象流云：</strong> 合并入”天气效果“</li><li><strong>L069 · 火焰：</strong> 合并入”天气效果“</li><li><strong>L066 · 余烬火星：</strong> 合并入”天气效果“</li><li><strong>L070 · 烟花：</strong> 合并入”天气效果“</li></ul></div></details></section><section class="section" id="s-10"><details class="fx-group fx-module"><summary><div class="section-header"><div class="section-number">10</div><h2>FX08 · 故障与复古屏幕</h2></div><span class="group-count">10 类子选项</span></summary><div class="fx-group-body"><p>集中管理信号故障、旧电视、录像带与科幻屏幕风格。</p>
+<figure class="table-wrap"><table><thead><tr><th>子选项</th><th>作用与模式</th><th>原选择</th></tr></thead><tbody><tr><td>数字故障</td><td>画面跳块、断裂、错位，像数字信号出错。</td><td>L009 需要</td></tr><tr><td>旧电视／模拟故障</td><td>画面滚动、横线抖动、颜色漂移，像模拟信号不稳。</td><td>L019 需要</td></tr><tr><td>VHS／VCR 磁带</td><td>模拟旧录像带的条带噪声、波纹和色偏。</td><td>L111 需要</td></tr><tr><td>CRT 屏幕</td><td>在一个入口组合屏幕弯曲和红绿蓝子像素结构。</td><td>L051 需要；L110 需要</td></tr><tr><td>扫描效果</td><td>选择普通扫描线，或奇偶行分时更新的隔行扫描。</td><td>L100 需要；N023 需要</td></tr><tr><td>NTSC 模拟</td><td>模拟模拟电视制式的串色与彩边。</td><td>N022 需要</td></tr><tr><td>CRT 开关机</td><td>把画面收成亮线或亮点，再展开或消失。</td><td>N024 需要</td></tr><tr><td>老式编码色块</td><td>模拟旧电脑低质量视频的压缩色块，不改变实际直播编码器。</td><td>N029 需要</td></tr><tr><td>胶片颗粒与磨损</td><td>在同一入口调节颗粒/噪声，以及划痕、尘点。</td><td>L086 需要；N030 需要</td></tr><tr><td>科幻屏幕</td><td>选择透明感的全息投影，或下落的数字字符雨。</td><td>L013 需要；L057 需要</td></tr></tbody></table></figure>
+<h3>本组整理要求</h3>
+<ul><li>故障、磁带、CRT 等同类风格统一从这里选择，再按子组“信号故障／复古屏幕／胶片磨损／科幻屏幕”查找。</li><li>CRT 曲率与子像素、扫描线与隔行扫描分别整理在同一子入口，但保留各自参数；画暗线不等于跨帧隔行采样。</li><li>噪声与颗粒包含原来选择的随机、Perlin、Simplex 模式；其他扭曲和天气效果可复用其噪声驱动，不再额外占一个顶层工具入口。</li><li>CRT 开机关机保留为单素材显隐风格，不恢复已排除的 A/B 双画面转场。</li></ul></div></details></section><section class="section" id="s-11"><details class="fx-group fx-module"><summary><div class="section-header"><div class="section-number">11</div><h2>FX09 · 绘画与像素风格</h2></div><span class="group-count">9 类子选项 · 1 项待定</span></summary><div class="fx-group-body"><p>把素材变成漫画、手绘、掌机或其他风格化画面。</p>
+<figure class="table-wrap"><table><thead><tr><th>子选项</th><th>作用与模式</th><th>原选择</th></tr></thead><tbody><tr><td>漫画网线</td><td>把画面处理成墨线、排线和漫画阴影。</td><td>L016 需要</td></tr><tr><td>卡通平涂</td><td>简化明暗层级，让画面接近平涂动画。</td><td>L043 需要</td></tr><tr><td>铅笔素描</td><td>用线条和灰度笔触重画画面。</td><td>L061 需要</td></tr><tr><td>保边油画</td><td>将相近颜色铺成画笔色块，并尽量保留轮廓。</td><td>N019 需要</td></tr><tr><td>掌机像素风</td><td>用固定色板、像素和较低帧更新速度模拟复古掌机。</td><td>L021 需要</td></tr><tr><td>字符画</td><td>用一格格文字字符代替图像像素。</td><td>L031 需要</td></tr><tr><td>浮雕</td><td>让明暗边缘像刻上去或凸起来的纹理。</td><td>L067 需要</td></tr><tr><td>伪热成像</td><td>把明暗映射成热像仪般的伪彩色，不测真实温度。</td><td>L109 需要</td></tr><tr><td>手绘抖线感</td><td>让轮廓按离散节奏轻微变化，像逐帧重新画过。 待定。</td><td>L060 待定</td></tr></tbody></table></figure>
+<h3>本组整理要求</h3>
+<ul><li>掌机入口保留 Game Boy、GBC、都市怪谈像素调色等原有变体，不拆成多个主功能。</li><li>手绘抖线感保留为待定子选项，不因为同组其他风格已选就自动纳入。</li><li>规则马赛克与不规则晶格归在 FX01“画面模糊”；这里保留的是带配色、笔触或字符重绘目的的风格。</li></ul></div></details></section><section class="section" id="s-12"><details class="fx-group fx-module"><summary><div class="section-header"><div class="section-number">12</div><h2>FX10 · 形变与纹理</h2></div><span class="group-count">10 类子选项</span></summary><div class="fx-group-body"><p>改变画面形状、折射方式和重复排列关系。</p>
+<figure class="table-wrap"><table><thead><tr><th>子选项</th><th>作用与模式</th><th>原选择</th></tr></thead><tbody><tr><td>四角透视</td><td>分别调整四角，把画面贴到倾斜表面上。</td><td>L050 需要</td></tr><tr><td>曲面弯折</td><td>把平面素材弯成曲面。</td><td>L053 需要</td></tr><tr><td>鼓起／收缩</td><td>把局部向外鼓起或向中心捏瘪。</td><td>L041 需要</td></tr><tr><td>鱼眼</td><td>夸张中心与边缘的比例，模拟超广角。</td><td>L071 需要</td></tr><tr><td>玻璃折射</td><td>让玻璃覆盖处的背景发生错位或变形。</td><td>L020 需要</td></tr><tr><td>置换贴图</td><td>用另一张图的颜色或亮度驱动画面位移。</td><td>L058 需要</td></tr><tr><td>动态扭曲</td><td>同一入口选择湍流、色散波浪、波浪晕动或锯齿波。</td><td>L025 需要；L044 需要；L102 需要；L114 需要</td></tr><tr><td>分片错位</td><td>把画面切成条块，再调整块之间的缝隙、偏移和摆动。</td><td>L010 需要</td></tr><tr><td>翻页／卷角</td><td>把单张素材像纸张一样卷起。</td><td>L089 需要</td></tr><tr><td>纹理排列</td><td>选择重复平铺、递归分割旋转或镜面万花筒。</td><td>L096 需要；L059 需要；N027 需要</td></tr></tbody></table></figure>
+<h3>本组整理要求</h3>
+<ul><li>把多种扭曲收为“动态扭曲”的模式，把平铺、递归旋转、万花筒收为“纹理排列”的模式。</li><li>四角透视仍保留，因为你明确选择了它；不恢复已排除的另一套普通 XYZ 透视旋转入口。</li><li>翻页是单素材卷角/显隐效果，不恢复已排除的双画面翻页转场。</li></ul></div></details></section><section class="section" id="s-13"><details class="fx-group fx-module"><summary><div class="section-header"><div class="section-number">13</div><h2>FX11 · 立体与自动运动</h2></div><span class="group-count">5 类子选项 · 1 项待定</span></summary><div class="fx-group-body"><p>给平面素材加厚度，或快速套用常见自动运动。</p>
+<figure class="table-wrap"><table><thead><tr><th>子选项</th><th>作用与模式</th><th>原选择</th></tr></thead><tbody><tr><td>立体厚度</td><td>同一入口选择圆角厚面板，或按透明轮廓挤出的实体块。 厚面板已选；轮廓挤出模式待定。</td><td>L001 需要；L002 待定</td></tr><tr><td>分层镜头视差</td><td>不同深度图层随镜头移动产生不同位移。</td><td>L014 需要</td></tr><tr><td>随机抖动</td><td>快速加入轻微随机晃动。</td><td>L026 需要</td></tr><tr><td>呼吸缩放</td><td>让素材按节奏周期性放大缩小。</td><td>L092 需要</td></tr><tr><td>闪烁</td><td>按设置节奏明暗变化或显示隐藏。</td><td>L035 需要</td></tr></tbody></table></figure>
+<h3>本组整理要求</h3>
+<ul><li>按你的明确备注，将 L001 与 L002 放进同一个“立体厚度”入口：矩形面板／按透明轮廓挤出两种模式。</li><li>L002 原选择仍为待定；本次确定的是合并位置，不擅自把其开发状态改成“需要”。</li><li>分层视差、抖动、呼吸等应复用现有图层坐标与动画结果；不能另建一套覆盖基础布局的独立坐标系统。</li></ul>
+<h3>你的原始备注</h3>
+<ul><li><strong>L001 · 立体厚面板：</strong> 和<span class="hf-sp"> </span>L002<span class="hf-sp"> </span>合并为一个效果，L002<span class="hf-sp"> </span>的效果单独在这个功能下设一个选项来显示</li></ul></div></details></section><section class="section" id="s-14"><details class="fx-group fx-module"><summary><div class="section-header"><div class="section-number">14</div><h2>FX12 · 裁切、遮罩与合成</h2></div><span class="group-count">9 类子选项</span></summary><div class="fx-group-body"><p>决定画面显示哪些区域，以及如何与另一幅画面混合。</p>
+<figure class="table-wrap"><table><thead><tr><th>子选项</th><th>作用与模式</th><th>原选择</th></tr></thead><tbody><tr><td>形状裁切</td><td>选形状后裁掉外部区域，并按该形状显示圆角、边数、尺寸等设置。</td><td>L093 需要</td></tr><tr><td>科幻开窗</td><td>把摄像头裁成带动态形变和边光的科幻窗口。</td><td>L022 需要</td></tr><tr><td>动态源遮罩</td><td>用另一幅正在变化的画面控制当前素材的显示范围。</td><td>L064 需要</td></tr><tr><td>亮度转透明</td><td>按亮暗去掉黑底或白底。</td><td>L082 需要</td></tr><tr><td>透明杂边清理</td><td>清除低透明度残留像素。</td><td>L095 需要</td></tr><tr><td>透明度／渐变淡出</td><td>调节整体透明度，或从一边到另一边逐渐消失。</td><td>L034 需要</td></tr><tr><td>混合模式</td><td>在同一入口选择相加、相乘、变暗及扩充的柔光、差值等模式。</td><td>L028 需要；N028 需要</td></tr><tr><td>动态纹理覆盖</td><td>在素材上叠加持续变化的辅助纹理。</td><td>L030 需要</td></tr><tr><td>燃烧溶解</td><td>让单张素材按烧蚀边缘逐渐出现或消失。</td><td>L042 需要</td></tr></tbody></table></figure>
+<h3>本组整理要求</h3>
+<ul><li>按 L093 的备注，把四边形裁切扩成“形状裁切”：四边形、其他多边形、圆角矩形、圆形、椭圆形；选中形状后只显示它的形状参数。</li><li>圆形/圆角矩形属于你新增要求里的裁切形状，不代表重新加入已排除的独立圆形遮罩或矩形边框卡片；星形、心形、通用遮罩扩缩仍不加入。</li><li>基础混合与扩充混合合为一个模式选择，避免用户分别安装/选择两次混合功能。</li><li>燃烧溶解仍是单素材显隐；全部六项 A/B 双画面转场按你的选择排除。</li></ul>
+<h3>你的原始备注</h3>
+<ul><li><strong>L093 · 四边形裁切：</strong> 增加其他裁切形状，可以设置为其他多边形甚至是圆角矩形、圆形、椭圆形，并在设置为其他图形时有设置对应图形形状的选项</li></ul></div></details></section><section class="section" id="s-15"><details class="fx-group fx-module"><summary><div class="section-header"><div class="section-number">15</div><h2>FX13 · 舞台与风格预设</h2></div><span class="group-count">4 类子选项</span></summary><div class="fx-group-body"><p>用一组已组合好的处理快速得到完整风格。</p>
+<figure class="table-wrap"><table><thead><tr><th>子选项</th><th>作用与模式</th><th>原选择</th></tr></thead><tbody><tr><td>LED 演出舞台</td><td>把人物、LED 点阵、背光、前景光斑与轻微镜头晃动组合起来。</td><td>L005 需要</td></tr><tr><td>宽银幕镜头</td><td>组合横向光带、色散、颗粒和电影色调。</td><td>L004 需要</td></tr><tr><td>动画氛围柔光</td><td>用模糊副本和多种混合方式改变动画般的明暗氛围。</td><td>L015 需要</td></tr><tr><td>醉酒眩晕</td><td>组合模糊、辉光与脉动，形成晕眩视角。</td><td>L063 需要</td></tr></tbody></table></figure>
+<h3>本组整理要求</h3>
+<ul><li>这些是多个基础效果组成的预设，不另造一套重复的模糊、辉光、色散或抖动算法。</li><li>LED 舞台按你的备注保留两种光斑来源：直接生成装饰光斑／把选中的画面渲染成装饰光斑。后一种可调用 FX01 的散景能力。</li><li>宽银幕与动画氛围可展开组合里的具体子项；这属于目录关系设计，不代表现有插件已经支持拆分参数。</li></ul>
+<h3>你的原始备注</h3>
+<ul><li><strong>L005 · LED 演出舞台组合：</strong> 可以选择直接生成装饰光斑，或者是将某个画面渲染成装饰光斑</li></ul></div></details></section><section class="section" id="s-16"><div class="section-header"><div class="section-number">16</div><h2>3 个待定子项</h2></div><figure class="table-wrap"><table><thead><tr><th>原编号</th><th>子项</th><th>现在的位置</th><th>本次处理</th></tr></thead><tbody><tr><td>L002</td><td>轮廓挤出</td><td>FX11 → 立体厚度 → 轮廓挤出模式</td><td>合并位置已按备注确定；是否开发仍待定。</td></tr><tr><td>L018</td><td>规则马赛克／像素化</td><td>FX01 → 像素化 → 规则方块模式</td><td>仍待定；同组不规则晶格保留为需要。</td></tr><tr><td>L060</td><td>手绘抖线感</td><td>FX09 → 手绘抖线感</td><td>仍待定，不与漫画、素描等已选项一起自动通过。</td></tr></tbody></table></figure></section><section class="section" id="s-17"><details class="fx-group fx-extra"><summary><div class="section-header"><div class="section-number">17</div><h2>已排除项</h2></div><span class="group-count">点击查看说明</span></summary><div class="fx-group-body"><p>以下 47 项不再要求重新筛选；只留对照记录。L093 中你明确新增的圆形、椭圆、圆角矩形裁切仍保留；这不恢复独立圆形遮罩、矩形边框及星心形遮罩。</p>
+<figure class="table-wrap"><table><thead><tr><th>原编号</th><th>已排除项目</th></tr></thead><tbody><tr><td>L012</td><td>玻璃时钟</td></tr><tr><td>L027</td><td>折边摄像头框</td></tr><tr><td>L032</td><td>音量颜色演示</td></tr><tr><td>L033</td><td>背景差分抠像</td></tr><tr><td>L038</td><td>矩形及圆角边框</td></tr><tr><td>L040</td><td>色彩标准矩阵转换</td></tr><tr><td>L046</td><td>圆形遮罩</td></tr><tr><td>L047</td><td>模拟钟与数码钟</td></tr><tr><td>L052</td><td>旋转立方体</td></tr><tr><td>L054</td><td>圆柱包裹</td></tr><tr><td>L055</td><td>坏点修补</td></tr><tr><td>L068</td><td>线性或环形进度填充</td></tr><tr><td>L072</td><td>翻转与旋转</td></tr><tr><td>L075</td><td>渐变着色</td></tr><tr><td>L076</td><td>网点印刷</td></tr><tr><td>L078</td><td>六边形网格</td></tr><tr><td>L080</td><td>亮度分布示波</td></tr><tr><td>L085</td><td>星空与月亮</td></tr><tr><td>L088</td><td>OBS 标志图案</td></tr><tr><td>L090</td><td>环形统计图</td></tr><tr><td>L091</td><td>极坐标变换</td></tr><tr><td>L094</td><td>彩虹色叠层</td></tr><tr><td>L098</td><td>旋转网格抗锯齿</td></tr><tr><td>L107</td><td>旋涡扭曲</td></tr><tr><td>L115</td><td>定点缩放</td></tr><tr><td>L116</td><td>缩放放射模糊</td></tr><tr><td>L117</td><td>透视旋转</td></tr><tr><td>T001</td><td>立体交换转场</td></tr><tr><td>T002</td><td>扩散转场</td></tr><tr><td>T003</td><td>淡入淡出转场</td></tr><tr><td>T004</td><td>像素化转场</td></tr><tr><td>T005</td><td>翻页转场</td></tr><tr><td>T006</td><td>冲刺模糊转场</td></tr><tr><td>D001</td><td>滤镜代码模板</td></tr><tr><td>D002</td><td>输出转换内部文件</td></tr><tr><td>D003</td><td>未完成比例工具</td></tr><tr><td>D004</td><td>路径动画实验</td></tr><tr><td>N005</td><td>AI 人像抠像</td></tr><tr><td>N006</td><td>色度抠像与去溢色</td></tr><tr><td>N007</td><td>遮罩羽化及扩缩</td></tr><tr><td>N008</td><td>星形心形与多边形遮罩</td></tr><tr><td>N009</td><td>局部调色遮罩</td></tr><tr><td>N014</td><td>去色带</td></tr><tr><td>N020</td><td>手动定格画面</td></tr><tr><td>N021</td><td>频谱波形与电平表</td></tr><tr><td>N026</td><td>按空间深度的雾</td></tr><tr><td>N033</td><td>旋转拖线模糊</td></tr></tbody></table></figure></div></details></section><section class="section" id="s-18"><div class="section-header"><div class="section-number">18</div><h2>进入开发前只需澄清的文字</h2></div><p><strong>暗角圆度：</strong> 原备注将圆度 0 和 1 都写成“矩形”。目录先保留圆度、中心点、中心缩放要求；圆度 1 的端点形状进入实现前再确认，不擅自修改你的原文。</p></section><section class="section" id="s-19"><details class="fx-group fx-extra"><summary><div class="section-header"><div class="section-number">19</div><h2>对照与检查</h2></div><span class="group-count">点击查看说明</span></summary><div class="fx-group-body"><ul><li>160 条原选择全部归档：110 条需要 + 3 条待定归入 13 个大功能，47 条不需要列入排除对照。合并后共 92 行子选项。</li><li>15 条非空原始备注逐条保留，另附每组落实说明。</li><li>原选择 JSON 与原交互目录不改写。此文件是新目录，不是更新使用说明书。</li><li>原始选择状态、编号与备注可查同目录的 FX<span class="hf-sp"> </span>分组目录_数据.json。</li><li>本轮未运行特效，也未编译插件；特效画质、性能和功能可用性测试均为 NOT RUN。</li></ul></div></details></section>
+<div class="divider-dot">· · ·</div>
+<footer><p>归藏 Page · Built with constrained HTML</p></footer>
+
+</div>
+
+<script>
+(function(){
+  const toggle = document.getElementById('toc-toggle');
+  const panel = document.getElementById('toc-panel');
+  const toc = document.getElementById('toc');
+  const scrim = document.getElementById('toc-scrim');
+  const narrow = window.matchMedia('(max-width: 1024px)');
+  let open = false;
+  function setOpen(v) {
+    open = v;
+    toc.classList.toggle('toc-open', v);
+    document.documentElement.classList.toggle('toc-is-open', v);
+    toggle.setAttribute('aria-expanded', String(v));
+  }
+  toggle.addEventListener('click', (e) => { e.stopPropagation(); setOpen(!open); });
+  if (scrim) scrim.addEventListener('click', () => setOpen(false));
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && open) setOpen(false); });
+  panel.addEventListener('click', (e) => {
+    // On narrow screens the drawer covers the text, so close it after jumping;
+    // on wide screens it sits beside the text and can stay open.
+    if (e.target.closest('.toc-item') && narrow.matches) setOpen(false);
+  });
+  // Scroll spy
+  const sections = document.querySelectorAll('.section[id]');
+  const links = document.querySelectorAll('.toc-item');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        links.forEach(l => l.classList.remove('toc-active'));
+        const active = panel.querySelector('a[href="#'+entry.target.id+'"]');
+        if (active) active.classList.add('toc-active');
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  sections.forEach(s => observer.observe(s));
+})();
+</script>
+
+<div class="hf-fab">
+  <button class="hf-fab-btn" id="hf-settings-toggle" type="button" title="设置" aria-haspopup="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg></button>
+  <div class="hf-dropdown" id="hf-settings-dropdown">
+    <div class="hf-dropdown-label">配色</div>
+    <div class="hf-swatches"><button type="button" class="hf-swatch active" data-theme-id="ikb" data-scheme="light" style="background:linear-gradient(135deg,#fafaf8 0 50%,#002FA7 50% 100%)" title="克莱因蓝 IKB" aria-label="克莱因蓝"></button><button type="button" class="hf-swatch" data-theme-id="lemon" data-scheme="light" style="background:linear-gradient(135deg,#fafaf8 0 50%,#FFD500 50% 100%)" title="柠檬黄 Lemon" aria-label="柠檬黄"></button><button type="button" class="hf-swatch" data-theme-id="lemon-green" data-scheme="light" style="background:linear-gradient(135deg,#fafaf8 0 50%,#C5E803 50% 100%)" title="柠檬绿 Lemon Green" aria-label="柠檬绿"></button><button type="button" class="hf-swatch" data-theme-id="safety-orange" data-scheme="light" style="background:linear-gradient(135deg,#fafaf8 0 50%,#FF6B35 50% 100%)" title="安全橙 Safety Orange" aria-label="安全橙"></button></div>
+    <div class="hf-dropdown-divider"></div>
+    <div class="hf-dropdown-label">字体</div>
+    <div class="hf-font-options"><button type="button" class="hf-font-option active" data-vars="--font-sans --font-display" data-family="'Inter','Noto Sans SC','PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,sans-serif"><span class="font-preview" style="font-family:'Inter','Noto Sans SC','PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,sans-serif">黑体 Aa</span><span class="font-name">Inter</span></button><button type="button" class="hf-font-option" data-vars="--font-sans --font-display" data-family="'DM Sans','Noto Sans SC','PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,sans-serif"><span class="font-preview" style="font-family:'DM Sans','Noto Sans SC','PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,sans-serif">黑体 Aa</span><span class="font-name">DM Sans</span></button><button type="button" class="hf-font-option" data-vars="--font-sans --font-display" data-family="'Space Grotesk','Noto Sans SC','PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,sans-serif"><span class="font-preview" style="font-family:'Space Grotesk','Noto Sans SC','PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,sans-serif">黑体 Aa</span><span class="font-name">Space Grotesk</span></button></div>
+  </div>
+</div>
+<script>(function () {
+  'use strict';
+
+  // Theme options live in assets/themes.json; render.mjs writes the controls
+  // into the HTML statically, so this file only wires up behaviour.
+  const style = document.documentElement.dataset.hfStyle || 'swiss';
+  const $ = (id) => document.getElementById(id);
+  // Per page: a reader's choice on one page (or a brand page's palette) doesn't leak into other pages
+  const STORE = 'hf-page-prefs:' + style + ':' + location.pathname;
+
+  // ── Helpers ──
+  function closeAllDropdowns() {
+    document.querySelectorAll('.hf-dropdown.open').forEach(d => d.classList.remove('open'));
+  }
+
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.hf-dropdown') && !e.target.closest('.hf-fab-btn')) {
+      closeAllDropdowns();
+    }
+  });
+
+  // PDF / long-image export is no longer in the page: the model runs scripts/export.mjs.
+
+  document.getElementById('hf-settings-toggle').addEventListener('click', (e) => {
+    e.stopPropagation();
+    const dd = document.getElementById('hf-settings-dropdown');
+    const wasOpen = dd.classList.contains('open');
+    closeAllDropdowns();
+    if (!wasOpen) dd.classList.add('open');
+  });
+
+  // ── Theme switching ──
+  // Every palette is a [data-theme] block in the inlined design-system CSS; a swatch only
+  // switches <html data-theme>. Text, rule and accent-text colours come with the theme,
+  // contrast-checked, so nothing is set inline.
+  function applyTheme(sw) {
+    document.querySelectorAll('.hf-swatch').forEach(s => s.classList.toggle('active', s === sw));
+    const root = document.documentElement;
+    root.dataset.theme = sw.dataset.themeId;
+    root.dataset.scheme = sw.dataset.scheme || 'light';
+    root.style.colorScheme = root.dataset.scheme;
+  }
+  // ── Font switching ──
+  // An option swaps the Latin face of the body stack (the CJK face stays); its stylesheet
+  // is loaded on first use.
+  function applyFont(opt) {
+    document.querySelectorAll('.hf-font-option').forEach(o => o.classList.toggle('active', o === opt));
+    (opt.dataset.vars || '--font-sans').split(' ').forEach(v => document.documentElement.style.setProperty(v, opt.dataset.family));
+    const href = opt.dataset.href;
+    if (href && !document.querySelector(`link[data-hf-font="${href}"]`)) {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.dataset.hfFont = href;
+      link.href = href;
+      document.head.appendChild(link);
+    }
+  }
+  function save() {
+    try {
+      const sw = document.querySelector('.hf-swatch.active');
+      const fo = document.querySelector('.hf-font-option.active');
+      localStorage.setItem(STORE, JSON.stringify({ theme: sw && sw.dataset.themeId, font: fo && fo.dataset.family }));
+    } catch (e) {}
+  }
+  document.querySelectorAll('.hf-swatch').forEach(sw => sw.addEventListener('click', (e) => { e.stopPropagation(); applyTheme(sw); save(); }));
+  document.querySelectorAll('.hf-font-option').forEach(opt => opt.addEventListener('click', (e) => { e.stopPropagation(); applyFont(opt); save(); }));
+  try {
+    const prefs = JSON.parse(localStorage.getItem(STORE) || 'null');
+    if (prefs) {
+      const sw = [...document.querySelectorAll('.hf-swatch')].find(s => s.dataset.themeId === prefs.theme);
+      if (sw && !sw.classList.contains('active')) applyTheme(sw);
+      const fo = [...document.querySelectorAll('.hf-font-option')].find(o => o.dataset.family === prefs.font);
+      if (fo && !fo.classList.contains('active')) applyFont(fo);
+    }
+  } catch (e) {}
+
+  // ── Make lazy images print/export-safe ──
+  // loading="lazy" images below the fold are blank in PDF/long-image exports.
+  function eagerImages() { document.querySelectorAll('img[loading="lazy"]').forEach(i => { i.loading = 'eager'; }); }
+  window.addEventListener('beforeprint', eagerImages);
+  if (document.readyState === 'complete') setTimeout(eagerImages, 800);
+  else window.addEventListener('load', () => setTimeout(eagerImages, 800));
+
+  // ── Editable text ──
+  const editableSelectors = [
+    '.hero h1',
+    '.hero-subtitle',
+    '.hero-cover h1',
+    '.hero-cover .hero-subtitle',
+    '.section h2',
+    '.section h3',
+    '.section p',
+    '.section li',
+    '.pullquote p',
+    '.pullquote-swiss .pq-content p',
+    '.highlight-card p',
+    '.highlight-swiss .hl-body p',
+    '.def-card-body',
+    '.def-card-swiss .dc-body',
+    '.process-title',
+    '.process-desc',
+    '.aside-content p',
+    '.summary-item-title',
+    '.summary-item-desc',
+    'blockquote p',
+    'td',
+  ];
+  editableSelectors.forEach(sel => {
+    document.querySelectorAll(sel).forEach(el => {
+      el.setAttribute('contenteditable', 'true');
+      el.setAttribute('spellcheck', 'false');
+    });
+  });
+})();
+</script>
+<script id="fx-grouping-behavior">
+document.querySelectorAll('[contenteditable]').forEach(e=>e.removeAttribute('contenteditable'));
+function openGroup(hash){const section=document.getElementById(hash.replace(/^#/,''));if(!section)return;const d=section.querySelector('details.fx-group');if(d)d.open=true;}
+document.addEventListener('click',e=>{const a=e.target.closest('a[href^="#"]');if(a)openGroup(a.getAttribute('href'));});
+window.addEventListener('hashchange',()=>openGroup(location.hash));if(location.hash)openGroup(location.hash);
+window.addEventListener('beforeprint',()=>document.querySelectorAll('details.fx-group').forEach(d=>{d.dataset.wasOpen=String(d.open);d.open=true;}));
+window.addEventListener('afterprint',()=>document.querySelectorAll('details.fx-group').forEach(d=>{d.open=d.dataset.wasOpen==='true';}));
+</script>
+</body>
+</html>

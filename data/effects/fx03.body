@@ -1,0 +1,157 @@
+float fx03_curve(float value)
+{
+    float x = saturate(value) * 4.0;
+    float segment = min(floor(x), 3.0);
+    float t = x - segment;
+    float first = p0.y;
+    float second = p0.z;
+    float slope_first = p0.z - p0.y;
+    float slope_second = (p0.w - p0.y) * 0.5;
+    if (segment > 0.5) {
+        first = p0.z; second = p0.w;
+        slope_first = (p0.w - p0.y) * 0.5;
+        slope_second = (p1.x - p0.z) * 0.5;
+    }
+    if (segment > 1.5) {
+        first = p0.w; second = p1.x;
+        slope_first = (p1.x - p0.z) * 0.5;
+        slope_second = (p1.y - p0.w) * 0.5;
+    }
+    if (segment > 2.5) {
+        first = p1.x; second = p1.y;
+        slope_first = (p1.y - p0.w) * 0.5;
+        slope_second = p1.y - p1.x;
+    }
+    float t2 = t * t;
+    float t3 = t2 * t;
+    float mapped = (2.0 * t3 - 3.0 * t2 + 1.0) * first + (t3 - 2.0 * t2 + t) * slope_first;
+    mapped += (-2.0 * t3 + 3.0 * t2) * second + (t3 - t2) * slope_second;
+    return clamp(mapped, min(first, second), max(first, second));
+}
+
+float fx03_zone_weight(float hue, float center, float half_width)
+{
+    float hue_distance = abs(frac(hue - center + 0.5) - 0.5);
+    return 1.0 - smoothstep(half_width * 0.5, half_width, hue_distance);
+}
+
+float4 fxApply(float2 uv)
+{
+    float4 c = src(uv);
+    if (effect_id == 0) {
+        float3 rgb = max(c.rgb * float3(p0.y, p0.z, p0.w) * exp2(p1.x), 0.0);
+        rgb = pow(rgb, 1.0 / max(p0.x, 0.1));
+        rgb = (rgb - 0.5) * p1.z + 0.5;
+        rgb = lerp(float3(luminance(rgb), luminance(rgb), luminance(rgb)), rgb, p1.y);
+        return float4(max(rgb, 0.0), c.a);
+    }
+    if (effect_id == 1) {
+        float3 hsv = rgb2hsv(max(c.rgb, 0.0));
+        float half_width = p4.z / 360.0;
+        // All masks use the unmodified source hue, preventing cascading range changes.
+        float red_weight = fx03_zone_weight(hsv.x, 0.0, half_width);
+        float yellow_weight = fx03_zone_weight(hsv.x, 0.166666667, half_width);
+        float green_weight = fx03_zone_weight(hsv.x, 0.333333333, half_width);
+        float cyan_weight = fx03_zone_weight(hsv.x, 0.5, half_width);
+        float blue_weight = fx03_zone_weight(hsv.x, 0.666666667, half_width);
+        float magenta_weight = fx03_zone_weight(hsv.x, 0.833333333, half_width);
+        float weight_sum = red_weight + yellow_weight + green_weight + cyan_weight + blue_weight + magenta_weight;
+        float normalization = smoothstep(0.03, 0.2, hsv.y) / max(weight_sum, 1.0);
+        red_weight *= normalization; yellow_weight *= normalization; green_weight *= normalization;
+        cyan_weight *= normalization; blue_weight *= normalization; magenta_weight *= normalization;
+        float3 adjustment = red_weight * float3(p0.x, p0.y - 1.0, p0.z);
+        adjustment += yellow_weight * float3(p0.w, p1.x - 1.0, p1.y);
+        adjustment += green_weight * float3(p1.z, p1.w - 1.0, p2.x);
+        adjustment += cyan_weight * float3(p2.y, p2.z - 1.0, p2.w);
+        adjustment += blue_weight * float3(p3.x, p3.y - 1.0, p3.z);
+        adjustment += magenta_weight * float3(p3.w, p4.x - 1.0, p4.y);
+        float3 changed = hsv;
+        changed.x = frac(changed.x + adjustment.x / 360.0);
+        changed.y = saturate(changed.y * max(1.0 + adjustment.y, 0.0));
+        changed.z = max(changed.z * exp2(-adjustment.z), 0.0);
+        if (p5.y > 0.5) {
+            float remap_weight = red_weight;
+            if (p5.x > 0.5) remap_weight = yellow_weight;
+            if (p5.x > 1.5) remap_weight = green_weight;
+            if (p5.x > 2.5) remap_weight = cyan_weight;
+            if (p5.x > 3.5) remap_weight = blue_weight;
+            if (p5.x > 4.5) remap_weight = magenta_weight;
+            float amount = remap_weight * p4.w;
+            float3 target = rgb2hsv(max(tint.rgb, 0.0));
+            float turn = frac(target.x - changed.x + 0.5) - 0.5;
+            changed.x = frac(changed.x + turn * amount);
+            changed.y = lerp(changed.y, target.y, amount);
+        }
+        return float4(hsv2rgb(changed), c.a);
+    }
+    if (effect_id == 2) {
+        float3 gains = float3(exp2(p0.x * 0.7 + p0.y * 0.25), exp2(-p0.y * 0.5), exp2(-p0.x * 0.7 + p0.y * 0.25));
+        gains /= max(luminance(gains), 0.00001);
+        return float4(max(c.rgb * gains, 0.0), c.a);
+    }
+    if (effect_id == 3) {
+        float y = saturate(luminance(c.rgb));
+        float shadow = 1.0 - smoothstep(0.0, 0.55, y);
+        float highlight = smoothstep(0.45, 1.0, y);
+        float middle = max(1.0 - shadow - highlight, 0.0);
+        float exposure = shadow * p0.x + middle * p1.x + highlight * p2.x;
+        float3 grading = shadow * p0.yzw + middle * p1.yzw + highlight * p2.yzw;
+        return float4(max(c.rgb * exp2(exposure) + grading, 0.0), c.a);
+    }
+    if (effect_id == 4) {
+        float3 rgb = c.rgb;
+        if (p0.x < 0.5) {
+            float y = luminance(rgb);
+            float mapped = fx03_curve(y);
+            rgb = max(rgb + (mapped - y), 0.0);
+        } else if (p0.x < 1.5) {
+            rgb.r = fx03_curve(rgb.r);
+        } else if (p0.x < 2.5) {
+            rgb.g = fx03_curve(rgb.g);
+        } else {
+            rgb.b = fx03_curve(rgb.b);
+        }
+        return float4(rgb, c.a);
+    }
+    if (effect_id == 5) {
+        if (auxiliary_valid < 0.5) return c;
+        float side = max(lut_size, 2.0);
+        float3 lookup = saturate((c.rgb - lut_min) / max(lut_max - lut_min, 0.00001)) * (side - 1.0);
+        float blue0 = floor(lookup.b);
+        float blue1 = min(blue0 + 1.0, side - 1.0);
+        float2 lower_uv = float2((blue0 * side + lookup.r + 0.5) / (side * side), (lookup.g + 0.5) / side);
+        float2 upper_uv = float2((blue1 * side + lookup.r + 0.5) / (side * side), (lookup.g + 0.5) / side);
+        float3 lower_rgb = auxiliary.Sample(fx_sampler, lower_uv).rgb;
+        float3 upper_rgb = auxiliary.Sample(fx_sampler, upper_uv).rgb;
+        float3 mapped = lerp(lower_rgb, upper_rgb, lookup.b - blue0);
+        return float4(lerp(c.rgb, mapped, p0.x), c.a);
+    }
+    if (effect_id == 6) {
+        float3 hsv = rgb2hsv(max(c.rgb, 0.0));
+        float target_hue = rgb2hsv(max(tint.rgb, 0.0)).x;
+        float distance_hue = abs(frac(hsv.x - target_hue + 0.5) - 0.5) * 360.0;
+        float keep = (1.0 - smoothstep(p0.x, p0.x + p0.y, distance_hue)) * smoothstep(p0.w, min(p0.w + 0.15, 1.001), hsv.y);
+        float y = luminance(c.rgb);
+        float3 background = float3(y, y, y);
+        if (p0.z > 0.5) background *= tint2.rgb;
+        return float4(lerp(background, c.rgb, keep), c.a);
+    }
+    if (effect_id == 7) {
+        float levels = max(floor(p0.x + 0.5), 2.0) - 1.0;
+        float dither = (hash21(floor(uv * canvas_size)) - 0.5) * p0.y;
+        float3 rgb = floor(saturate(c.rgb) * levels + 0.5 + dither) / levels;
+        return float4(saturate(rgb), c.a);
+    }
+    if (effect_id == 8) {
+        if (p0.x < 0.5) return float4(1.0 - saturate(c.rgb), c.a);
+        float y = luminance(c.rgb);
+        return float4(saturate(c.rgb + 1.0 - 2.0 * y), c.a);
+    }
+    if (effect_id == 9) {
+        float3 hsv = rgb2hsv(max(c.rgb, 0.0));
+        hsv.x = frac(hsv.x + elapsed * p0.x + p0.y / 360.0);
+        hsv.y = saturate(hsv.y * p0.z);
+        return float4(hsv2rgb(hsv), c.a);
+    }
+    return c;
+}

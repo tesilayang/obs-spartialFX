@@ -1,0 +1,1127 @@
+{
+  "catalog": "OBS Spatial FX v3.4 FX catalog",
+  "catalogDate": "2026-11-10",
+  "exportedAt": "2026-11-10T13:22:02.622Z",
+  "choices": [
+    {
+      "id": "L001",
+      "name": "立体厚面板",
+      "english": "3D Panel",
+      "choice": "yes",
+      "note": "和L002合并为一个效果，L002的效果单独在这个功能下设一个选项来显示"
+    },
+    {
+      "id": "L002",
+      "name": "轮廓挤出块",
+      "english": "3D Block",
+      "choice": "maybe",
+      "note": ""
+    },
+    {
+      "id": "L003",
+      "name": "环境色自适应受光",
+      "english": "Adaptive Lighting",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L004",
+      "name": "宽银幕镜头组合",
+      "english": "Anamorphic Lens",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L005",
+      "name": "LED 演出舞台组合",
+      "english": "Billboard Live",
+      "choice": "yes",
+      "note": "可以选择直接生成装饰光斑，或者是将某个画面渲染成装饰光斑"
+    },
+    {
+      "id": "L006",
+      "name": "背后柔光",
+      "english": "Backlight",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L007",
+      "name": "烛光照明组合",
+      "english": "Candlelight",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L008",
+      "name": "局部留色",
+      "english": "Color Splash / Selective Color",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L009",
+      "name": "数字故障",
+      "english": "Digital Glitch",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L010",
+      "name": "分片错位画框",
+      "english": "Fractured Frame",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L011",
+      "name": "磨砂玻璃",
+      "english": "Frosted Glass",
+      "choice": "yes",
+      "note": "和其他模糊/像素化类的效果合并，作为其中子效果之一，功能改为”画面模糊“"
+    },
+    {
+      "id": "L012",
+      "name": "玻璃时钟",
+      "english": "Glass Clock",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "L013",
+      "name": "全息投影",
+      "english": "Holographic Display",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L014",
+      "name": "分层镜头晃动视差",
+      "english": "Horizon Camera",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L015",
+      "name": "动画氛围柔光组合",
+      "english": "Horizon Lens",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L016",
+      "name": "漫画网线",
+      "english": "Manga",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L017",
+      "name": "雨窗水滴",
+      "english": "Rain on Glass",
+      "choice": "yes",
+      "note": "与其他天气相关的效果合并，效果改为”天气设置“"
+    },
+    {
+      "id": "L018",
+      "name": "马赛克与像素化",
+      "english": "Pixelation / Mosaic",
+      "choice": "maybe",
+      "note": ""
+    },
+    {
+      "id": "L019",
+      "name": "旧电视与模拟信号故障",
+      "english": "Old TV / Analog Glitch",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L020",
+      "name": "玻璃折射",
+      "english": "Refraction / Glass",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L021",
+      "name": "掌机复古调色",
+      "english": "Game Boy / GBC / Urban Myth",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L022",
+      "name": "科幻摄像头开窗",
+      "english": "Sci-Fi Corner Wipe",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L023",
+      "name": "高光星芒",
+      "english": "Star Glow Streaks",
+      "choice": "yes",
+      "note": "现有效果能力较差，可以参考其他类似项目优化表现效果，并依然以节约系统资源消耗优先"
+    },
+    {
+      "id": "L024",
+      "name": "中心清晰周边虚化",
+      "english": "Radial Focus / Horaiken Tilt Shift",
+      "choice": "yes",
+      "note": "改名为径向模糊"
+    },
+    {
+      "id": "L025",
+      "name": "湍流扭曲",
+      "english": "Turbulent Displace",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L026",
+      "name": "随机抖动",
+      "english": "Wiggler / Shake",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L027",
+      "name": "折边摄像头框",
+      "english": "Bent Camera",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "L028",
+      "name": "双源混合模式",
+      "english": "Blend Modes",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L029",
+      "name": "透明轮廓外描边",
+      "english": "Alpha Outline",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L030",
+      "name": "动态纹理覆盖",
+      "english": "Animated Texture",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L031",
+      "name": "字符画",
+      "english": "ASCII Art",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L032",
+      "name": "音量颜色演示",
+      "english": "Audio Level Demo",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "L033",
+      "name": "背景差分抠像",
+      "english": "Clean-Plate Difference Key",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "L034",
+      "name": "渐变透明与透明度",
+      "english": "Opacity / Gradient Fade",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L035",
+      "name": "闪烁",
+      "english": "Blink",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L036",
+      "name": "高光溢出",
+      "english": "Bloom",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L037",
+      "name": "柔光辉光",
+      "english": "Glow",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L038",
+      "name": "矩形及圆角边框",
+      "english": "Rectangle / Rounded Frame",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "L039",
+      "name": "方框模糊",
+      "english": "Box Blur",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L040",
+      "name": "色彩标准矩阵转换",
+      "english": "BT.601 ↔ BT.709",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "L041",
+      "name": "鼓起与收缩",
+      "english": "Bulge / Pinch",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L042",
+      "name": "燃烧溶解",
+      "english": "Burn / Dissolve",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L043",
+      "name": "卡通平涂",
+      "english": "Cartoon / Cel Shading",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L044",
+      "name": "色散波浪扭曲",
+      "english": "Chroma + UV Distortion",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L045",
+      "name": "镜头色散与 RGB 分离",
+      "english": "Chromatic Aberration / RGB Split",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L046",
+      "name": "圆形遮罩",
+      "english": "Circle Mask",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "L047",
+      "name": "模拟钟与数码钟",
+      "english": "Analog / LED / Nixie Clock",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "L048",
+      "name": "色阶压缩",
+      "english": "Posterize / Color Depth",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L049",
+      "name": "查找表调色",
+      "english": "LUT Color Grading",
+      "choice": "yes",
+      "note": "功能名字就叫”LUT表调色“"
+    },
+    {
+      "id": "L050",
+      "name": "四角透视变形",
+      "english": "Corner Pin",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L051",
+      "name": "CRT 屏幕弯曲",
+      "english": "CRT Curvature",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L052",
+      "name": "旋转立方体",
+      "english": "Rotating Cube",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "L053",
+      "name": "曲面弯折",
+      "english": "Spatial Curve",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L054",
+      "name": "圆柱包裹",
+      "english": "Cylinder",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "L055",
+      "name": "坏点修补",
+      "english": "Dead Pixel Fix",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "L056",
+      "name": "分色密度与饱和度",
+      "english": "Density / Saturation / Hue",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L057",
+      "name": "数字字符雨",
+      "english": "Digital Rain",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L058",
+      "name": "置换贴图",
+      "english": "Displacement Map",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L059",
+      "name": "递归分割旋转纹理",
+      "english": "Divide and Rotate",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L060",
+      "name": "手绘抖线感",
+      "english": "Doodle / Line Boil",
+      "choice": "maybe",
+      "note": ""
+    },
+    {
+      "id": "L061",
+      "name": "铅笔素描",
+      "english": "Drawings",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L062",
+      "name": "二维投影",
+      "english": "Drop Shadow",
+      "choice": "yes",
+      "note": "作为现有空间投影逻辑的补充，可以额外调整参与计算一套新光源照射下的第二投影，并在现有光源功能页面也增加阴影颜色、模糊、强度等设置"
+    },
+    {
+      "id": "L063",
+      "name": "醉酒眩晕组合",
+      "english": "Drunk",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L064",
+      "name": "动态源遮罩",
+      "english": "Dynamic Source Mask",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L065",
+      "name": "边缘检测",
+      "english": "Edge Detection",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L066",
+      "name": "余烬火星",
+      "english": "Embers",
+      "choice": "yes",
+      "note": "合并入”天气效果“"
+    },
+    {
+      "id": "L067",
+      "name": "浮雕",
+      "english": "Emboss",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L068",
+      "name": "线性或环形进度填充",
+      "english": "Linear / Radial Fill",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "L069",
+      "name": "火焰",
+      "english": "Fire",
+      "choice": "yes",
+      "note": "合并入”天气效果“"
+    },
+    {
+      "id": "L070",
+      "name": "烟花",
+      "english": "Fireworks",
+      "choice": "yes",
+      "note": "合并入”天气效果“"
+    },
+    {
+      "id": "L071",
+      "name": "鱼眼镜头",
+      "english": "Fisheye",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L072",
+      "name": "翻转与旋转",
+      "english": "Flip / Rotate",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "L073",
+      "name": "Gamma 明暗校正",
+      "english": "Gamma Correction",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L074",
+      "name": "高斯模糊",
+      "english": "Gaussian Blur",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L075",
+      "name": "渐变着色",
+      "english": "Gradient Tint",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "L076",
+      "name": "网点印刷",
+      "english": "Halftone",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "L077",
+      "name": "热浪",
+      "english": "Heat Wave",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L078",
+      "name": "六边形网格",
+      "english": "Hexagon",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "L079",
+      "name": "自动色相轮转",
+      "english": "Hue Rotation",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L080",
+      "name": "亮度分布示波",
+      "english": "Intensity Scope",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "L081",
+      "name": "负片与亮度反转",
+      "english": "Invert / Invert Luma",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L082",
+      "name": "亮度转透明",
+      "english": "Luma Key / Luma to Alpha",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L083",
+      "name": "绿色抽象流云",
+      "english": "Matrix Clouds",
+      "choice": "yes",
+      "note": "合并入”天气效果“"
+    },
+    {
+      "id": "L084",
+      "name": "历史帧拖影",
+      "english": "Temporal Feedback / Motion Blur",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L085",
+      "name": "星空与月亮",
+      "english": "Night Sky",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "L086",
+      "name": "噪声与颗粒",
+      "english": "Noise / Perlin / Simplex",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L087",
+      "name": "亮度生成法线图",
+      "english": "Normal Map from Luminance",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L088",
+      "name": "OBS 标志图案",
+      "english": "OBS Logo Shader",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "L089",
+      "name": "翻页与卷角",
+      "english": "Page Peel",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L090",
+      "name": "环形统计图",
+      "english": "Pie Chart",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "L091",
+      "name": "极坐标变换",
+      "english": "Polar Coordinates",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "L092",
+      "name": "呼吸缩放",
+      "english": "Pulse",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L093",
+      "name": "四边形裁切",
+      "english": "Quadrilateral Crop",
+      "choice": "yes",
+      "note": "增加其他裁切形状，可以设置为其他多边形甚至是圆角矩形、圆形、椭圆形，并在设置为其他图形时有设置对应图形形状的选项"
+    },
+    {
+      "id": "L094",
+      "name": "彩虹色叠层",
+      "english": "Rainbow / RGB Color Wheel",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "L095",
+      "name": "清除半透明杂边",
+      "english": "Remove Partial Alpha",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L096",
+      "name": "图像重复平铺",
+      "english": "Repeat / Tiling",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L097",
+      "name": "RGB 通道调节",
+      "english": "RGB Visibility",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L098",
+      "name": "旋转网格抗锯齿",
+      "english": "RGSSAA",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "L099",
+      "name": "水波涟漪",
+      "english": "Ripple",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L100",
+      "name": "扫描线",
+      "english": "Scan Lines",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L101",
+      "name": "海面",
+      "english": "Seascape",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L102",
+      "name": "波浪晕船",
+      "english": "Seasick",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L103",
+      "name": "流光扫过",
+      "english": "Shine Sweep",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L104",
+      "name": "保边降噪",
+      "english": "Smart Denoise",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L105",
+      "name": "假表面镜面高光",
+      "english": "Specular Shine",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L106",
+      "name": "二维聚光灯",
+      "english": "Spotlight",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L107",
+      "name": "旋涡扭曲",
+      "english": "Swirl / Twist",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "L108",
+      "name": "六色重映射",
+      "english": "Tetra Color Remap",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L109",
+      "name": "伪热成像",
+      "english": "Thermal",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L110",
+      "name": "CRT 子像素",
+      "english": "CRT Subpixel",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L111",
+      "name": "VHS / VCR 磁带",
+      "english": "VHS / VCR",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L112",
+      "name": "暗角",
+      "english": "Vignette",
+      "choice": "yes",
+      "note": "合并入现有功能，并扩展现有图层暗角功能参数，可以额外调整暗角效果的圆度，当圆度为0的时候会变成和画布比例相同的矩形，圆度为1的时候是长短边正好为画布长短边的矩形；并可以设置暗角的中心点以及中心缩放比例"
+    },
+    {
+      "id": "L113",
+      "name": "不规则晶格像素化",
+      "english": "Voronoi Pixelation",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L114",
+      "name": "锯齿波扭曲",
+      "english": "ZigZag",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "L115",
+      "name": "定点缩放",
+      "english": "Zoom",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "L116",
+      "name": "缩放放射模糊",
+      "english": "Zoom Blur",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "L117",
+      "name": "透视旋转",
+      "english": "Perspective Transform",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "T001",
+      "name": "立体交换转场",
+      "english": "3D Swap Transition",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "T002",
+      "name": "扩散转场",
+      "english": "Diffuse Transition",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "T003",
+      "name": "淡入淡出转场",
+      "english": "Crossfade",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "T004",
+      "name": "像素化转场",
+      "english": "Pixelation Transition",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "T005",
+      "name": "翻页转场",
+      "english": "Page Peel Transition",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "T006",
+      "name": "冲刺模糊转场",
+      "english": "Zoom Blur Transition",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "D001",
+      "name": "滤镜代码模板",
+      "english": "Filter Templates",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "D002",
+      "name": "输出转换内部文件",
+      "english": "Render Output Helper",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "D003",
+      "name": "未完成比例工具",
+      "english": "Aspect Ratio Prototype",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "D004",
+      "name": "路径动画实验",
+      "english": "Animated Path Prototype",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "N001",
+      "name": "方向拖线模糊",
+      "english": "Directional Blur",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "N002",
+      "name": "镜头散景虚化",
+      "english": "Bokeh Blur / ADOF",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "N003",
+      "name": "条带移轴",
+      "english": "Linear Tilt Shift",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "N004",
+      "name": "按运动方向计算的模糊",
+      "english": "Vector Motion Blur",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "N005",
+      "name": "AI 人像抠像",
+      "english": "AI Background Removal",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "N006",
+      "name": "色度抠像与去溢色",
+      "english": "Chroma Key / Despill",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "N007",
+      "name": "遮罩羽化及扩缩",
+      "english": "Mask Feather / Grow / Shrink",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "N008",
+      "name": "星形心形与多边形遮罩",
+      "english": "Advanced Shape Masks",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "N009",
+      "name": "局部调色遮罩",
+      "english": "Adjustment Mask",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "N010",
+      "name": "轮廓内描边",
+      "english": "Inner Stroke",
+      "choice": "yes",
+      "note": "合并入现有的轮廓描边功能"
+    },
+    {
+      "id": "N011",
+      "name": "轮廓内发光",
+      "english": "Inner Glow",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "N012",
+      "name": "内阴影",
+      "english": "Inner Shadow",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "N013",
+      "name": "自适应锐化",
+      "english": "Adaptive Sharpen / CAS",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "N014",
+      "name": "去色带",
+      "english": "Deband",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "N015",
+      "name": "调色曲线",
+      "english": "RGB / Luma Curves",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "N016",
+      "name": "色温与白平衡",
+      "english": "Temperature / Tint",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "N017",
+      "name": "分区明暗调色",
+      "english": "Shadows / Midtones / Highlights",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "N018",
+      "name": "放射光束",
+      "english": "Sun Beams / God Rays",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "N019",
+      "name": "保边油画",
+      "english": "Kuwahara / Painterly",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "N020",
+      "name": "手动定格画面",
+      "english": "Freeze Frame",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "N021",
+      "name": "频谱波形与电平表",
+      "english": "Spectrum / Waveform / Meter",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "N022",
+      "name": "NTSC 模拟编码",
+      "english": "Analog NTSC",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "N023",
+      "name": "隔行扫描",
+      "english": "Interlace",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "N024",
+      "name": "CRT 开机关机动画",
+      "english": "CRT Boot / Shutdown",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "N025",
+      "name": "镜头鬼影与光圈反光",
+      "english": "Lens Ghosts",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "N026",
+      "name": "按空间深度的雾",
+      "english": "Depth Fog",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "N027",
+      "name": "镜面万花筒",
+      "english": "Mirror Kaleidoscope",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "N028",
+      "name": "扩充混合模式",
+      "english": "Extended Blend Modes",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "N029",
+      "name": "老式低码率编码",
+      "english": "Retro Codec / RPZA Look",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "N030",
+      "name": "旧胶片划痕与尘点",
+      "english": "Old Film Scratches / Dust",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "N031",
+      "name": "胶片漏光",
+      "english": "Light Leaks",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "N032",
+      "name": "中值去噪",
+      "english": "Median Filter",
+      "choice": "yes",
+      "note": ""
+    },
+    {
+      "id": "N033",
+      "name": "旋转拖线模糊",
+      "english": "Circular / Spin Blur",
+      "choice": "no",
+      "note": ""
+    }
+  ]
+}

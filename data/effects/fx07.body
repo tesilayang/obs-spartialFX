@@ -1,0 +1,163 @@
+float fx7Fbm(float2 q)
+{
+    float n = noise21(q) * 0.55;
+    n += noise21(q * 2.07 + float2(11.0, 4.0)) * 0.27;
+    n += noise21(q * 4.19 + float2(3.0, 17.0)) * 0.13;
+    n += noise21(q * 8.31 + float2(21.0, 6.0)) * 0.05;
+    return n;
+}
+
+float fx7Sea(float2 q, float t)
+{
+    return sin(q.x * 1.3 + t) * 0.4 + sin(q.y * 1.7 - t * 1.3) * 0.3
+        + sin(q.x * 2.1 + q.y * 1.6 + t * 0.7) * 0.15 + (noise21(q * 2.3 + t) - 0.5) * 0.3;
+}
+
+float fx7Segment(float2 q, float2 a, float2 b)
+{
+    float2 ab = b - a;
+    return length(q - a - ab * saturate(dot(q - a, ab) / max(dot(ab, ab), 0.000001)));
+}
+
+float4 fxApply(float2 uv)
+{
+    float4 original = src(uv);
+    float aspect = canvas_size.x / max(canvas_size.y, 1.0);
+    if (effect_id == 0)
+    {
+        float2 grid = uv * float2(p0.x * aspect, p0.x);
+        float2 cell = floor(grid);
+        float2 local = frac(grid);
+        float2 refractVec = float2(0.0, 0.0);
+        float spec = 0.0;
+        for (int dy = -1; dy <= 1; dy++)
+        {
+            for (int dx = -1; dx <= 1; dx++)
+            {
+                float2 tile = cell + float2(dx, dy);
+                float rnd = hash21(tile);
+                float centerY = frac(rnd * 7.13 + elapsed * p0.w * (0.6 + rnd));
+                float2 center = float2(0.2 + hash21(tile + 8.0) * 0.6, centerY);
+                float2 d = local - float2(dx, dy) - center;
+                float2 metric = d * float2(1.0, 0.65);
+                float r = length(metric) / max(p0.y, 0.01);
+                float lens = saturate(1.0 - r * r);
+                refractVec += metric * lens * 4.0;
+                float trail = (1.0 - smoothstep(0.02, 0.07, abs(d.x)))
+                    * step(d.y, 0.0) * (1.0 - smoothstep(0.0, max(p1.x, 0.001), -d.y));
+                refractVec.x += trail * sin(d.x * 30.0) * 0.12;
+                spec += pow(saturate(1.0 - abs(r - 0.78) * 9.0), 2.0)
+                    * saturate(-d.x - d.y) * 3.0 + trail * 0.04;
+            }
+        }
+        float4 rain = src(uv + refractVec * p0.z * pixel_size);
+        rain.rgb += spec * p1.y;
+        return rain;
+    }
+    if (effect_id == 1)
+    {
+        float2 q = uv * float2(aspect, 1.0) * p0.x;
+        float t = elapsed * p0.y;
+        float warp = fx7Fbm(q * 0.63 + float2(t * 0.3, -t * 0.12));
+        float density = fx7Fbm(q + float2(t, t * 0.2) + warp * 2.0);
+        float cloud = smoothstep(1.0 - p0.z - p0.w, 1.0 - p0.z + p0.w, density);
+        float3 color = lerp(tint2.rgb, tint.rgb, saturate(cloud * 1.2));
+        return float4(color, saturate(cloud * p1.x));
+    }
+    if (effect_id == 2)
+    {
+        float t = elapsed * p0.w;
+        if (p0.x > 0.5)
+        {
+            float2 d = (uv - p1.xy) * float2(aspect, 1.0);
+            float r = length(d);
+            float2 radial = d / max(r, 0.00001) / float2(aspect, 1.0);
+            float wave = sin(r * p0.y * 6.283185 - t * 4.0) * exp(-r * 1.8);
+            return src(uv + radial * wave * p0.z * pixel_size);
+        }
+        float h = p1.z;
+        float sky = saturate((h - uv.y) / max(h, 0.01));
+        float3 skyColor = lerp(tint.rgb * 0.9, tint2.rgb * 0.8 + float3(0.12, 0.2, 0.35), sky);
+        if (uv.y <= h) return float4(skyColor, 1.0);
+        float depth = max(uv.y - h, 0.015);
+        float2 q = float2((uv.x - 0.5) * aspect / depth, 0.7 / depth) * p0.y * 0.08;
+        float wave = fx7Sea(q, t);
+        float nx = (fx7Sea(q + float2(0.03, 0.0), t) - wave) / 0.03;
+        float ny = (fx7Sea(q + float2(0.0, 0.03), t) - wave) / 0.03;
+        float3 normal = normalize(float3(-nx * p0.z * 0.035, 1.0, -ny * p0.z * 0.035));
+        float reflection = pow(saturate(dot(normal, normalize(float3(-0.3, 1.0, 0.6)))), 24.0);
+        float fresnel = pow(1.0 - saturate(depth), 3.0);
+        float3 seaColor = lerp(tint2.rgb * (0.55 + wave * 0.15), skyColor, 0.15 + fresnel * 0.65);
+        seaColor += tint.rgb * reflection * p1.w;
+        return float4(max(seaColor, 0.0), 1.0);
+    }
+    if (effect_id == 3)
+    {
+        float2 q = uv * float2(aspect, 1.0) * p0.y + float2(0.0, elapsed * p0.z);
+        float2 heat = float2(noise21(q) - 0.5, noise21(q + 19.37) - 0.5);
+        float heightWeight = lerp(1.0, smoothstep(0.1, 1.0, uv.y), p0.w);
+        return src(uv + heat * p0.x * pixel_size * heightWeight * float2(1.0, 0.45));
+    }
+    if (effect_id == 4)
+    {
+        float rise = (1.0 - uv.y) / max(p0.x, 0.01);
+        float2 q = float2(uv.x * aspect * p0.y, rise * p0.y * 0.6);
+        float t = elapsed * p0.z;
+        float wobble = fx7Fbm(q + float2(0.0, t * 1.4));
+        float fire = saturate((1.0 - rise - wobble * 0.65) * 3.0);
+        fire *= smoothstep(0.0, 0.07, uv.x) * smoothstep(0.0, 0.07, 1.0 - uv.x);
+        float core = saturate(fire * 1.5 - 0.3);
+        float3 fireColor = lerp(tint2.rgb, tint.rgb, core) * p0.w * (0.4 + fire);
+        return float4(max(fireColor, 0.0), saturate(fire * p1.x));
+    }
+    if (effect_id == 5)
+    {
+        float3 glowColor = float3(0.0, 0.0, 0.0);
+        float coverage = 0.0;
+        for (int i = 0; i < 20; i++)
+        {
+            if (float(i) < p0.x)
+            {
+                float rnd = hash21(float2(float(i), p1.x));
+                float life = frac(rnd + elapsed * p0.z * (0.5 + rnd));
+                float px = hash21(float2(float(i) + 31.0, p1.x));
+                px += sin(elapsed * (0.6 + rnd) + rnd * 31.0) * p0.w;
+                float2 d = (uv - float2(px, 1.1 - life * 1.2)) / pixel_size;
+                float r = max(p0.y * (0.5 + rnd), 0.5);
+                float core = exp(-dot(d, d) / (r * r));
+                float halo = exp(-length(d) / (r * 3.0)) * 0.18 * p1.y;
+                float fade = sin(life * 3.141593);
+                glowColor += tint.rgb * (core + halo) * fade * (1.0 + rnd);
+                coverage += (core + halo) * fade;
+            }
+        }
+        return float4(glowColor / max(coverage, 0.00001), saturate(coverage));
+    }
+    if (effect_id == 6)
+    {
+        float3 sparkColor = float3(0.0, 0.0, 0.0);
+        float coverage = 0.0;
+        for (int i = 0; i < 24; i++)
+        {
+            float shell = floor(float(i) / 8.0);
+            float arm = float(i) - shell * 8.0;
+            float cycle = elapsed * p0.y + shell * 0.333333;
+            float age = frac(cycle);
+            float rnd = hash21(float2(shell + floor(cycle) * 7.0, p1.x));
+            float2 origin = float2(0.2 + rnd * 0.6, 0.2 + hash21(float2(shell, rnd)) * 0.3);
+            float angle = arm * 0.785398 + rnd * 6.283185;
+            float2 velocity = float2(cos(angle) / aspect, sin(angle)) * p0.x * (0.7 + rnd * 0.3);
+            float2 position = origin + velocity * age + float2(0.0, p0.w * age * age);
+            float prevAge = max(age - 0.07, 0.0);
+            float2 previous = origin + velocity * prevAge + float2(0.0, p0.w * prevAge * prevAge);
+            float dist = fx7Segment(uv / pixel_size, previous / pixel_size, position / pixel_size);
+            float light = exp(-dist * dist / max(p0.z * p0.z, 0.25)) * pow(1.0 - age, 0.7);
+            light *= smoothstep(0.0, 0.03, age);
+            float3 shellColor = hsv2rgb(float3(frac(rnd + shell * 0.23), 0.8, 1.0));
+            sparkColor += lerp(tint.rgb, shellColor, p1.y) * light * 2.0;
+            coverage += light;
+        }
+        return float4(sparkColor / max(coverage, 0.00001), saturate(coverage));
+    }
+    return original;
+}

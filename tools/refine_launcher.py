@@ -1,0 +1,2 @@
+from pathlib import Path
+p=Path('tools/launch-test-obs.ps1');s=p.read_text(encoding='utf-8').replace('param([switch]$Template)','param([switch]$Template,[switch]$Baseline)').replace("Copy-Item -LiteralPath (Join-Path $root ('build\\'+$name+'.dll')) -Destination $plugins","if(!$Baseline){Copy-Item -LiteralPath (Join-Path $root ('build\\'+$name+'.dll')) -Destination $plugins}\nif($env:SPATIAL_QA_OUTPUT){Copy-Item (Join-Path $root 'build/spatial-qa-driver.dll') $plugins}");p.write_text(s,encoding='utf-8')

@@ -1,0 +1,37 @@
+{
+  "files": [
+    {
+      "name": "cmake",
+      "file": "api-cmake-4.4.5-windows-x86_64.zip",
+      "url": "https://api.github.com/repos/Kitware/CMake/releases/assets/682701242?download=1",
+      "sha256": "326c826486d46a23cf9d5a1c9ee3a567d427bdd02c4a34071937a2a675cff004",
+      "folder": "cmake",
+      "archive": "zip"
+    },
+    {
+      "name": "qt6",
+      "file": "api-windows-deps-qt6-2025-07-11-x64.zip",
+      "url": "https://api.github.com/repos/obsproject/obs-deps/releases/assets/272074232?download=1",
+      "sha256": "0e76bf0555dd5382838850b748d3dcfab44a1e1058441309ab54e1a65b156d0a",
+      "folder": "qt6",
+      "archive": "zip"
+    },
+    {
+      "name": "ninja",
+      "file": "api-ninja-win.zip",
+      "url": "https://api.github.com/repos/ninja-build/ninja/releases/assets/271797607?download=1",
+      "sha256": "26a40fa8595694dec2fad4911e62d29e10525d2133c9a4230b66397774ae25bf",
+      "folder": "ninja",
+      "archive": "zip"
+    },
+    {
+      "name": "obs-32.0.0",
+      "file": "obs-32.0.0.tar.gz",
+      "url": "https://codeload.github.com/obsproject/obs-studio/tar.gz/refs/tags/32.0.0",
+      "sha256": "6c73099d53aee7b57faa624431891901d9c84b2d93e284d27799fdc33868d113",
+      "folder": "",
+      "archive": "tar"
+    }
+  ],
+  "templateCommit": "3e7d7ac3b5342cd7d9b88890b9c70b472d1520fc"
+}

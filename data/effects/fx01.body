@@ -1,0 +1,86 @@
+uniform texture2d blur_image;
+uniform float blur_minimum_radius;
+float4 fx01_weighted(float4 c){return float4(c.rgb*c.a,c.a);}
+float4 fx01_resolve(float4 total,float weight){return float4(total.rgb/max(total.a,.00001),total.a/max(weight,.00001));}
+float4 fx01_blurred(float2 uv){return straight(blur_image.Sample(fx_sampler,clamp(uv,pixel_size*.5,1-pixel_size*.5)));}
+
+float4 fxApply(float2 uv)
+{
+    float4 c = src(uv);
+    if (effect_id == 0) {
+        return fx01_blurred(uv);
+    }
+    if (effect_id == 1) {
+        float2 grain_pos = uv * canvas_size / max(p0.w, 0.5);
+        float2 jitter = float2(noise21(grain_pos), noise21(grain_pos + float2(17.3, 31.8))) - 0.5;
+        float4 frosted = fx01_blurred(uv + jitter * p0.y * pixel_size);
+        frosted.rgb = max(frosted.rgb + (hash21(floor(grain_pos)) - 0.5) * p0.z, 0.0);
+        frosted.a = c.a;
+        return frosted;
+    }
+    if (effect_id == 2) {
+        float2 distance_uv = (uv - float2(p0.y, p0.z)) * canvas_size / max(min(canvas_size.x, canvas_size.y), 1.0);
+        float defocus = smoothstep(p0.w, p0.w + p1.x, length(distance_uv));
+        return straight(lerp(fx01_weighted(c), fx01_weighted(fx01_blurred(uv)), saturate(defocus*p0.x/max(blur_minimum_radius,.0001))));
+    }
+    if (effect_id == 3) {
+        float radians = p0.y * 0.01745329252;
+        float2 direction = float2(cos(radians), sin(radians)) * p0.x * pixel_size;
+        float4 total = float4(0.0, 0.0, 0.0, 0.0);
+        for (int k = 0; k < 17; k++) {
+            float t = float(k) / 16.0 - 0.5;
+            total += fx01_weighted(src(uv + direction * t));
+        }
+        return fx01_resolve(total, 17.0);
+    }
+    if (effect_id == 4) {
+        return fx01_blurred(uv);
+    }
+    if (effect_id == 5) {
+        float radians = p0.y * 0.01745329252;
+        float2 coords = (uv - 0.5) * canvas_size / max(min(canvas_size.x, canvas_size.y), 1.0);
+        float distance_band = abs(dot(coords, float2(-sin(radians), cos(radians))) - (p0.z - 0.5));
+        float defocus = smoothstep(p0.w * 0.5, p0.w * 0.5 + p1.x, distance_band);
+        return straight(lerp(fx01_weighted(c), fx01_weighted(fx01_blurred(uv)), saturate(defocus*p0.x/max(blur_minimum_radius,.0001))));
+    }
+    if (effect_id == 6) {
+        float2 direction = motion_delta * p0.x;
+        float4 total = float4(0.0, 0.0, 0.0, 0.0);
+        for (int k = 0; k < 17; k++) {
+            float t = float(k) / 16.0 - (0.5 + 0.5 * p0.y);
+            total += fx01_weighted(src(uv + direction * t));
+        }
+        return fx01_resolve(total, 17.0);
+    }
+    if (effect_id == 7) {
+        if (history_valid < 0.5) return c;
+        float2 old_uv = (uv - 0.5) / max(p0.w, 0.1) + 0.5 - float2(p0.y, p0.z) * pixel_size;
+        float4 previous = past(old_uv);
+        float4 mixed = lerp(fx01_weighted(c), fx01_weighted(previous), p0.x);
+        return fx01_resolve(mixed, 1.0);
+    }
+    if (effect_id == 8) {
+        float size = max(p0.x, 2.0);
+        float2 cell_uv = uv * canvas_size / size;
+        float2 cell = floor(cell_uv);
+        float2 nearest = cell + 0.5;
+        if (p0.y > 0.5) {
+            float best = 100.0;
+            for (int iy = 0; iy < 3; iy++) {
+                for (int ix = 0; ix < 3; ix++) {
+                    float2 neighbor = cell + float2(float(ix) - 1.0, float(iy) - 1.0);
+                    float2 random_offset = float2(hash21(neighbor), hash21(neighbor + float2(37.7, 19.1)));
+                    float2 seed = neighbor + 0.5 + (random_offset - 0.5) * p0.z;
+                    float dist = dot(seed - cell_uv, seed - cell_uv);
+                    if (dist < best) {
+                        best = dist;
+                        nearest = seed;
+                    }
+                }
+            }
+        }
+        float4 cell_color = src(clamp(nearest * size / canvas_size, pixel_size * 0.5, 1.0 - pixel_size * 0.5));
+        return float4(cell_color.rgb, c.a);
+    }
+    return c;
+}

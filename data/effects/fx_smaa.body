@@ -1,0 +1,103 @@
+// SMAA 1x Low/Medium port of iryoku/SMAA.hlsl (MIT; see AA_NOTICES.txt).
+// Retains official luma detection, local contrast adaptation, 2-pixel searches,
+// SearchTex correction, AreaTex coverage weights, and neighborhood blending.
+// As in the upstream Low/Medium presets: no diagonal/corner/temporal processing.
+// OBS adaptation: globals instead of texture arguments, premultiplied RGBA input,
+// alpha differences also detect silhouettes; weights are applied to all RGBA.
+uniform float4x4 ViewProj;
+uniform texture2d image;
+uniform texture2d edges_image;
+uniform texture2d weights_image;
+uniform texture2d area_image;
+uniform texture2d search_image;
+uniform float2 pixel_size;
+uniform float2 canvas_size;
+uniform float threshold;
+uniform float search_steps;
+uniform float strength;
+sampler_state linear_sampler { Filter=Linear; AddressU=Clamp; AddressV=Clamp; };
+sampler_state point_sampler { Filter=Point; AddressU=Clamp; AddressV=Clamp; };
+struct Vert {float4 pos:POSITION;float2 uv:TEXCOORD0;};
+Vert VS(Vert v){Vert r;r.pos=mul(float4(v.pos.xyz,1),ViewProj);r.uv=v.uv;return r;}
+float2 edgeValue(float2 uv){return edges_image.SampleLevel(linear_sampler,uv,0).rg;}
+float2 lumaAlpha(float2 uv){float4 c=image.SampleLevel(point_sampler,uv,0);return float2(dot(c.rgb,float3(.2126,.7152,.0722)),c.a);}
+float contrast(float2 a,float2 b){float2 d=abs(a-b);return max(d.x,d.y);}
+float4 EdgesPS(Vert v):TARGET {
+ float2 uv=v.uv,dx=float2(pixel_size.x,0),dy=float2(0,pixel_size.y);
+ float2 c=lumaAlpha(uv),left=lumaAlpha(uv-dx),top=lumaAlpha(uv-dy);
+ float4 delta;delta.xy=float2(contrast(c,left),contrast(c,top));
+ float2 edges=step(float2(threshold,threshold),delta.xy);
+ if(dot(edges,float2(1,1))==0)return float4(0,0,0,0);
+ delta.zw=float2(contrast(c,lumaAlpha(uv+dx)),contrast(c,lumaAlpha(uv+dy)));
+ float2 maximum=max(delta.xy,delta.zw);
+ delta.zw=float2(contrast(left,lumaAlpha(uv-2*dx)),contrast(top,lumaAlpha(uv-2*dy)));
+ maximum=max(maximum,delta.zw);edges*=step(max(maximum.x,maximum.y),2*delta.xy);
+ return float4(edges,0,0);
+}
+float searchLength(float2 e,float offset){
+ float2 scale=float2(66,33)*float2(.5,-1)+float2(-1,1);
+ float2 bias=float2(66,33)*float2(offset,1)+float2(.5,-.5);
+ return search_image.SampleLevel(linear_sampler,(scale*e+bias)/float2(64,16),0).r;
+}
+float searchLeft(float2 uv,float end){
+ float2 e=float2(0,1);
+ for(int i=0;i<8;++i){if(i>=search_steps||uv.x<=end||e.g<=.8281||e.r!=0)break;e=edgeValue(uv);uv.x-=2*pixel_size.x;}
+ return uv.x+pixel_size.x*(3.25-(255.0/127.0)*searchLength(e,0));
+}
+float searchRight(float2 uv,float end){
+ float2 e=float2(0,1);
+ for(int i=0;i<8;++i){if(i>=search_steps||uv.x>=end||e.g<=.8281||e.r!=0)break;e=edgeValue(uv);uv.x+=2*pixel_size.x;}
+ return uv.x-pixel_size.x*(3.25-(255.0/127.0)*searchLength(e,.5));
+}
+float searchUp(float2 uv,float end){
+ float2 e=float2(1,0);
+ for(int i=0;i<8;++i){if(i>=search_steps||uv.y<=end||e.r<=.8281||e.g!=0)break;e=edgeValue(uv);uv.y-=2*pixel_size.y;}
+ return uv.y+pixel_size.y*(3.25-(255.0/127.0)*searchLength(e.gr,0));
+}
+float searchDown(float2 uv,float end){
+ float2 e=float2(1,0);
+ for(int i=0;i<8;++i){if(i>=search_steps||uv.y>=end||e.r<=.8281||e.g!=0)break;e=edgeValue(uv);uv.y+=2*pixel_size.y;}
+ return uv.y-pixel_size.y*(3.25-(255.0/127.0)*searchLength(e.gr,.5));
+}
+float2 area(float2 distance,float e1,float e2){
+ float2 uv=(16*round(4*float2(e1,e2))+distance+.5)/float2(160,560);
+ return area_image.SampleLevel(linear_sampler,uv,0).rg;
+}
+float4 WeightsPS(Vert v):TARGET {
+ float2 uv=v.uv,pixcoord=uv*canvas_size;
+ float4 offset0=uv.xyxy+pixel_size.xyxy*float4(-.25,-.125,1.25,-.125);
+ float4 offset1=uv.xyxy+pixel_size.xyxy*float4(-.125,-.25,-.125,1.25);
+ float4 ends=float4(offset0.xz,offset1.yw)+pixel_size.xxyy*float4(-2,2,-2,2)*search_steps;
+ float4 weights=float4(0,0,0,0);float2 e=edgeValue(uv);
+ if(e.g>0){
+  float left=searchLeft(offset0.xy,ends.x),right=searchRight(offset0.zw,ends.y);
+  float2 d=abs(round(canvas_size.xx*float2(left,right)-pixcoord.xx));
+  float e1=edgeValue(float2(left,offset1.y)).r;
+  float e2=edgeValue(float2(right+pixel_size.x,offset1.y)).r;
+  weights.rg=area(sqrt(d),e1,e2);
+ }
+ if(e.r>0){
+  float top=searchUp(offset1.xy,ends.z),bottom=searchDown(offset1.zw,ends.w);
+  float2 d=abs(round(canvas_size.yy*float2(top,bottom)-pixcoord.yy));
+  float e1=edgeValue(float2(offset0.x,top)).g;
+  float e2=edgeValue(float2(offset0.x,bottom+pixel_size.y)).g;
+  weights.ba=area(sqrt(d),e1,e2);
+ }
+ return weights;
+}
+float4 ResolvePS(Vert v):TARGET {
+ float2 uv=v.uv;float4 original=image.SampleLevel(linear_sampler,uv,0);
+ float4 a;a.x=weights_image.SampleLevel(linear_sampler,uv+float2(pixel_size.x,0),0).a;
+ a.y=weights_image.SampleLevel(linear_sampler,uv+float2(0,pixel_size.y),0).g;
+ a.wz=weights_image.SampleLevel(linear_sampler,uv,0).xz;
+ if(dot(a,float4(1,1,1,1))<.00001)return original;
+ bool horizontal=max(a.x,a.z)>max(a.y,a.w);
+ float4 offsets=horizontal?float4(a.x,0,a.z,0):float4(0,a.y,0,a.w);
+ float2 weights=horizontal?a.xz:a.yw;weights/=max(dot(weights,float2(1,1)),.00001);
+ float4 coords=uv.xyxy+offsets*float4(pixel_size,-pixel_size);
+ float4 result=weights.x*image.SampleLevel(linear_sampler,coords.xy,0)+weights.y*image.SampleLevel(linear_sampler,coords.zw,0);
+ return lerp(original,result,strength);
+}
+technique Edges {pass {vertex_shader=VS(v);pixel_shader=EdgesPS(v);}}
+technique Weights {pass {vertex_shader=VS(v);pixel_shader=WeightsPS(v);}}
+technique Resolve {pass {vertex_shader=VS(v);pixel_shader=ResolvePS(v);}}

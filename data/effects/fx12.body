@@ -1,0 +1,177 @@
+float fx12Cross(float2 a,float2 b){return a.x*b.y-a.y*b.x;}
+float fx12Segment(float2 queryPoint,float2 a,float2 b)
+{
+    float2 segment=b-a;
+    float h=saturate(dot(queryPoint-a,segment)/max(dot(segment,segment),0.0000001));
+    return length(queryPoint-a-segment*h);
+}
+float fx12Ray(float2 queryPoint,float2 a,float2 b)
+{
+    if((a.y>queryPoint.y)!=(b.y>queryPoint.y)){
+        float crossing=a.x+(queryPoint.y-a.y)*(b.x-a.x)/(b.y-a.y);
+        return queryPoint.x<crossing?1.0:0.0;
+    }
+    return 0.0;
+}
+float3 fx12Blend(float3 a,float3 b,float mode)
+{
+    if(mode<0.5)return b;
+    if(mode<1.5)return a+b;
+    if(mode<2.5)return a*b;
+    if(mode<3.5)return min(a,b);
+    if(mode<4.5)return max(a,b);
+    if(mode<5.5)return 1.0-(1.0-a)*(1.0-b);
+    if(mode<6.5){
+        float3 low=2.0*a*b;
+        float3 high=1.0-2.0*(1.0-a)*(1.0-b);
+        return lerp(low,high,step(0.5,a));
+    }
+    if(mode<7.5){
+        float3 d=lerp(((16.0*a-12.0)*a+4.0)*a,sqrt(max(a,0.0)),step(0.25,a));
+        return lerp(a-(1.0-2.0*b)*a*(1.0-a),a+(2.0*b-1.0)*(d-a),step(0.5,b));
+    }
+    if(mode<8.5)return abs(a-b);
+    return a+b-2.0*a*b;
+}
+float4 fxApply(float2 uv)
+{
+    float4 col=src(uv);
+    if(effect_id==0){
+        float coverage=1.0;
+        if(p0.x<0.5){
+            float2 a=p2.xy*canvas_size,b=p2.zw*canvas_size;
+            float2 c=p3.xy*canvas_size,d=p3.zw*canvas_size;
+            float2 pt=uv*canvas_size;
+            float crossings=fx12Ray(pt,a,b)+fx12Ray(pt,b,c)+fx12Ray(pt,c,d)+fx12Ray(pt,d,a);
+            float inside=fmod(crossings,2.0);
+            float distanceToEdge=min(min(fx12Segment(pt,a,b),fx12Segment(pt,b,c)),min(fx12Segment(pt,c,d),fx12Segment(pt,d,a)));
+            coverage=smoothstep(-0.75,0.75,distanceToEdge*(inside>0.5?1.0:-1.0));
+        }else{
+            float2 pt=(uv-float2(p0.y,p0.z))*canvas_size;
+            float angle=p1.w*0.01745329252;
+            float2 q=float2(cos(angle)*pt.x+sin(angle)*pt.y,-sin(angle)*pt.x+cos(angle)*pt.y);
+            float2 halfSize=max(float2(p0.w*canvas_size.x,p1.x*canvas_size.y)*0.5,0.5);
+            float distanceToEdge=0.0;
+            if(p0.x<1.5){
+                float2 n=q/halfSize;
+                float sides=floor(p1.z+0.5);
+                float sector=6.28318530718/sides;
+                float theta=atan2(n.y,n.x)+1.57079632679;
+                float polygon=cos(floor(theta/sector+0.5)*sector-theta)*length(n);
+                distanceToEdge=(polygon-cos(3.14159265359/sides))*min(halfSize.x,halfSize.y);
+            }else if(p0.x<2.5){
+                float radius=min(p1.y,min(halfSize.x,halfSize.y));
+                float2 box=abs(q)-(halfSize-radius);
+                distanceToEdge=length(max(box,0.0))+min(max(box.x,box.y),0.0)-radius;
+            }else if(p0.x<3.5){
+                distanceToEdge=length(q)-p0.w*min(canvas_size.x,canvas_size.y)*0.5;
+            }else{
+                distanceToEdge=(length(q/halfSize)-1.0)*min(halfSize.x,halfSize.y);
+            }
+            coverage=1.0-smoothstep(-0.75,0.75,distanceToEdge);
+        }
+        col.a*=coverage;
+        return col;
+    }
+    if(effect_id==1){
+        float shortSide=min(canvas_size.x,canvas_size.y);
+        float motion=sin(elapsed*p1.x*6.28318530718)*p0.w*shortSide;
+        float2 bound=canvas_size*0.5-p0.x*shortSide-motion;
+        float2 pt=abs((uv-0.5)*canvas_size);
+        float edge=max(max(pt.x-bound.x,pt.y-bound.y),(pt.x+pt.y-bound.x-bound.y+p0.y*shortSide)*0.70710678);
+        float mask=1.0-smoothstep(-0.75,0.75,edge);
+        float rim=mask*(1.0-smoothstep(p0.z,p0.z+1.5,-edge));
+        float scan=0.65+0.35*sin(uv.y*40.0-elapsed*p1.x*12.0);
+        col.rgb+=tint.rgb*rim*scan;
+        col.a*=mask;
+        return col;
+    }
+    if(effect_id==2){
+        if(auxiliary_valid<0.5)return col;
+        float4 maskcol=aux(uv);
+        float channel=maskcol.a;
+        if(p0.x>0.5&&p0.x<1.5)channel=luminance(maskcol.rgb)*maskcol.a;
+        if(p0.x>1.5&&p0.x<2.5)channel=maskcol.r*maskcol.a;
+        if(p0.x>2.5&&p0.x<3.5)channel=maskcol.g*maskcol.a;
+        if(p0.x>3.5)channel=maskcol.b*maskcol.a;
+        float mask=smoothstep(p0.y-p0.z*0.5,p0.y+p0.z*0.5,channel);
+        if(p0.w>0.5)mask=1.0-mask;
+        col.a*=mask;
+        return col;
+    }
+    if(effect_id==3){
+        float key=luminance(col.rgb);
+        if(p0.x>0.5)key=1.0-key;
+        float alpha=smoothstep(p0.y,p0.y+p0.z,key);
+        float3 cleared=col.rgb/max(alpha,0.001);
+        if(p0.x>0.5)cleared=(col.rgb-(1.0-alpha))/max(alpha,0.001);
+        col.rgb=lerp(col.rgb,saturate(cleared),p0.w);
+        col.a*=alpha;
+        return col;
+    }
+    if(effect_id==4){
+        float keep=smoothstep(p0.x,p0.x+p0.y,col.a);
+        col.a=lerp(col.a,col.a>0.0?1.0:0.0,p0.z)*keep;
+        return col;
+    }
+    if(effect_id==5){
+        float angle=p0.z*0.01745329252;
+        float2 dir=float2(cos(angle),sin(angle));
+        float projection=dot(uv-0.5,dir)/(abs(dir.x)+abs(dir.y))+0.5;
+        float fade=saturate((projection-p0.w)/max(p1.x-p0.w,0.0001));
+        if(p1.y>0.5)fade=1.0-fade;
+        col.a*=p0.x*lerp(1.0,1.0-fade,p0.y);
+        return col;
+    }
+    if(effect_id==9){
+        // Work in pixel aspect-correct coordinates; the shared footer premultiplies RGB.
+        float gradient=0.0;
+        if(p0.x>0.5){
+            float shortSide=max(min(canvas_size.x,canvas_size.y),1.0);
+            float2 gradientOffset=(uv-p0.yz)*canvas_size/shortSide;
+            float gradientRange=max(p0.w,0.01);
+            float position=0.0;
+            if(p0.x<1.5){
+                float angle=p1.z*0.01745329252;
+                position=dot(gradientOffset,float2(cos(angle),sin(angle)))/gradientRange+0.5;
+            }else{
+                float2 axes=max(float2(p1.w,p2.x),float2(0.01,0.01));
+                position=length(gradientOffset/axes)*2.0/gradientRange;
+            }
+            float softness=max(p1.x,0.01);
+            gradient=smoothstep(0.5-softness*0.5,0.5+softness*0.5,position);
+            if(p1.y>0.5)gradient=1.0-gradient;
+        }
+        col.rgb=lerp(tint.rgb,tint2.rgb,gradient);
+        return col;
+    }
+    if(effect_id==6){
+        if(auxiliary_valid<0.5)return col;
+        float4 layercol=aux(uv);
+        col.rgb=lerp(col.rgb,fx12Blend(col.rgb,layercol.rgb,p0.x),p0.y*layercol.a);
+        return col;
+    }
+    if(effect_id==7){
+        if(auxiliary_valid<0.5)return col;
+        float2 coord=frac(uv*p0.x+elapsed*p0.yz);
+        float4 texcol=aux(coord);
+        float mode=0.0;
+        if(p1.x>0.5&&p1.x<1.5)mode=2.0;
+        if(p1.x>1.5)mode=5.0;
+        col.rgb=lerp(col.rgb,fx12Blend(col.rgb,texcol.rgb,mode),p0.w*texcol.a);
+        return col;
+    }
+    if(effect_id==8){
+        if(p0.x<=0.0)return col;
+        if(p0.x>=1.0)return float4(col.rgb,0.0);
+        float2 coord=uv*p0.y+float2(elapsed*p1.x,elapsed*p1.x*0.37);
+        float noise=noise21(coord)*0.7+noise21(coord*2.13+7.3)*0.3;
+        float remain=smoothstep(p0.x-p0.w,p0.x+p0.w,noise);
+        float rim=(1.0-smoothstep(p0.x,p0.x+p0.z,noise))*remain;
+        float3 fire=lerp(tint.rgb,tint2.rgb,saturate((noise-p0.x)/max(p0.z,0.001)));
+        col.rgb=lerp(col.rgb,fire*2.0,rim);
+        col.a*=remain;
+        return col;
+    }
+    return col;
+}

@@ -1,0 +1,37 @@
+float4 fxApply(float2 uv)
+{
+    float4 c = src(uv);
+    if (effect_id == 0) {
+        float largest = c.a;
+        float smallest = c.a;
+        // Two rings reduce gaps for thin features without exceeding 24 taps.
+        for (int k = 0; k < 24; k++) {
+            float ring = floor(float(k) / 12.0);
+            float angle = (float(k) - ring * 12.0) * 0.5235987756;
+            float radius = p0.y * lerp(0.5, 1.0, ring);
+            float2 offset = float2(cos(angle), sin(angle)) * radius * pixel_size;
+            float alpha = src(uv + offset).a;
+            largest = max(largest, alpha);
+            smallest = min(smallest, alpha);
+        }
+        float edge = saturate(largest - c.a);
+        if (p0.x > 0.5) edge = saturate(c.a - smallest);
+        edge = smoothstep(0.0, p0.w, edge) * p0.z;
+        if (p0.x < 0.5) return over(c, float4(tint.rgb, edge));
+        return float4(lerp(c.rgb, tint.rgb, edge), c.a);
+    }
+    if (effect_id == 1) {
+        float blurred_alpha = blurAt(uv, p0.x).a;
+        float edge = saturate((c.a - blurred_alpha) * 2.0);
+        float glow = pow(edge, p0.z) * p0.y;
+        return float4(c.rgb + tint.rgb * glow, c.a);
+    }
+    if (effect_id == 2) {
+        float magnitude = edgeAt(uv, p0.x);
+        float edge = smoothstep(p0.y, p0.y + p0.z, magnitude);
+        float3 background = c.rgb;
+        if (p0.w > 0.5) background = tint2.rgb;
+        return float4(lerp(background, tint.rgb, edge), c.a);
+    }
+    return c;
+}

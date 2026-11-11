@@ -1,0 +1,2398 @@
+{
+  "title": "OBS Spatial FX v3.4 · FX 分组目录",
+  "date": "2026-11-10",
+  "source_file": "E:\\obs spartialFX develop\\docs\\v3.4\\OBS_Spatial_FX_v3.4_我的选择.json",
+  "source_sha256": "909de115de4fcdfa4ae5280fadfc7e6febd3e8a3bb31f06185df7cc252210e11",
+  "source_exported_at": "2026-11-10T13:22:02.622Z",
+  "stats": {
+    "groups": 13,
+    "source_entries": 160,
+    "yes": 110,
+    "maybe": 3,
+    "no": 47,
+    "included_original_entries": 113,
+    "merged_suboptions": 92,
+    "original_notes": 15
+  },
+  "groups": [
+    {
+      "id": "FX01",
+      "name": "画面模糊",
+      "goal": "让画面变柔、虚化、拖尾，或用像素块遮挡细节。",
+      "preview": "基础模糊、磨砂、径向、方向、散景、移轴、运动模糊、残影、像素化",
+      "notes": [
+        "按你的要求，将磨砂玻璃与其他模糊、像素化效果合并为“画面模糊”。",
+        "“中心清晰周边虚化”改名为“径向模糊”。该模式是中心清楚、周围逐渐虚化；不含你已排除的缩放放射拖线模糊或旋转模糊。",
+        "“马赛克与像素化”仍标待定；已选中的不规则晶格像素化保留，不因同组而一起改成待定。",
+        "散景模式可作为 FX13 舞台装饰光斑的共用处理能力；不要求用户筛选两次相同的虚化算法。",
+        "按运动方向计算的模糊保留为候选，但普通视频本身没有完整运动矢量；后续先评估使用插件已知图层运动估计，不能据本目录宣称已实现。"
+      ],
+      "options": [
+        {
+          "name": "基础模糊",
+          "source_ids": [
+            "L074",
+            "L039"
+          ],
+          "definition": "同一个选项里选择高斯或方框：高斯更柔顺，方框更均匀。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L074",
+              "name": "高斯模糊",
+              "english": "Gaussian Blur",
+              "choice": "yes",
+              "note": ""
+            },
+            {
+              "id": "L039",
+              "name": "方框模糊",
+              "english": "Box Blur",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "磨砂玻璃",
+          "source_ids": [
+            "L011"
+          ],
+          "definition": "像隔着毛玻璃看画面，适合局部遮挡或文字底板。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L011",
+              "name": "磨砂玻璃",
+              "english": "Frosted Glass",
+              "choice": "yes",
+              "note": "和其他模糊/像素化类的效果合并，作为其中子效果之一，功能改为”画面模糊“"
+            }
+          ]
+        },
+        {
+          "name": "径向模糊",
+          "source_ids": [
+            "L024"
+          ],
+          "definition": "保留中心附近清晰，让周边逐渐模糊。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L024",
+              "name": "中心清晰周边虚化",
+              "english": "Radial Focus / Horaiken Tilt Shift",
+              "choice": "yes",
+              "note": "改名为径向模糊"
+            }
+          ]
+        },
+        {
+          "name": "方向拖线",
+          "source_ids": [
+            "N001"
+          ],
+          "definition": "沿指定方向把画面细节拉成模糊线。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "N001",
+              "name": "方向拖线模糊",
+              "english": "Directional Blur",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "镜头散景",
+          "source_ids": [
+            "N002"
+          ],
+          "definition": "让失焦高光变成圆形或多边形光斑。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "N002",
+              "name": "镜头散景虚化",
+              "english": "Bokeh Blur / ADOF",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "条带移轴",
+          "source_ids": [
+            "N003"
+          ],
+          "definition": "保留一条清晰带，两侧逐渐模糊，形成微缩模型感。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "N003",
+              "name": "条带移轴",
+              "english": "Linear Tilt Shift",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "运动模糊",
+          "source_ids": [
+            "N004"
+          ],
+          "definition": "依据可获得的运动信息，模拟物体运动产生的拖线。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "N004",
+              "name": "按运动方向计算的模糊",
+              "english": "Vector Motion Blur",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "残影拖尾",
+          "source_ids": [
+            "L084"
+          ],
+          "definition": "把之前的画面少量留下，让运动出现一层层拖尾。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L084",
+              "name": "历史帧拖影",
+              "english": "Temporal Feedback / Motion Blur",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "像素化",
+          "source_ids": [
+            "L018",
+            "L113"
+          ],
+          "definition": "同一入口选择规则方块或不规则晶格。",
+          "note": "规则马赛克/像素化待定；不规则晶格已选。",
+          "source_choices": [
+            {
+              "id": "L018",
+              "name": "马赛克与像素化",
+              "english": "Pixelation / Mosaic",
+              "choice": "maybe",
+              "note": ""
+            },
+            {
+              "id": "L113",
+              "name": "不规则晶格像素化",
+              "english": "Voronoi Pixelation",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        }
+      ],
+      "source_count": 11,
+      "yes_count": 10,
+      "maybe_count": 1,
+      "original_notes": [
+        {
+          "id": "L011",
+          "name": "磨砂玻璃",
+          "note": "和其他模糊/像素化类的效果合并，作为其中子效果之一，功能改为”画面模糊“"
+        },
+        {
+          "id": "L024",
+          "name": "中心清晰周边虚化",
+          "note": "改名为径向模糊"
+        }
+      ]
+    },
+    {
+      "id": "FX02",
+      "name": "画质修整",
+      "goal": "让画面更清楚，或减轻噪点。",
+      "preview": "自适应锐化、保边降噪、中值去噪",
+      "notes": [
+        "锐化与降噪共用一个大功能入口，但保留独立开关，避免把两种相反处理误做成一个只能二选一的按钮。"
+      ],
+      "options": [
+        {
+          "name": "锐化",
+          "source_ids": [
+            "N013"
+          ],
+          "definition": "提高细节清晰度，并尽量避免已经很锐的边缘被过度加粗。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "N013",
+              "name": "自适应锐化",
+              "english": "Adaptive Sharpen / CAS",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "降噪",
+          "source_ids": [
+            "L104",
+            "N032"
+          ],
+          "definition": "同一选项下选择保边降噪或中值去噪：前者平滑颗粒，后者针对孤立亮暗噪点。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L104",
+              "name": "保边降噪",
+              "english": "Smart Denoise",
+              "choice": "yes",
+              "note": ""
+            },
+            {
+              "id": "N032",
+              "name": "中值去噪",
+              "english": "Median Filter",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        }
+      ],
+      "source_count": 3,
+      "yes_count": 3,
+      "maybe_count": 0,
+      "original_notes": []
+    },
+    {
+      "id": "FX03",
+      "name": "颜色与调色",
+      "goal": "统一画面颜色，或改变明暗与色彩风格。",
+      "preview": "基础颜色、白平衡、分区调色、曲线、LUT、留色与反相",
+      "notes": [
+        "“查找表调色”按你的备注命名为“LUT表调色”。",
+        "已有曝光、饱和度等基础能力应复用；Gamma、RGB、分色、曲线等整理成同一大功能的参数区或子页，避免每个数值都成为一张独立效果卡。"
+      ],
+      "options": [
+        {
+          "name": "基础颜色",
+          "source_ids": [
+            "L073",
+            "L097"
+          ],
+          "definition": "在一个参数区调节 Gamma 明暗和 RGB 通道。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L073",
+              "name": "Gamma 明暗校正",
+              "english": "Gamma Correction",
+              "choice": "yes",
+              "note": ""
+            },
+            {
+              "id": "L097",
+              "name": "RGB 通道调节",
+              "english": "RGB Visibility",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "分色调色",
+          "source_ids": [
+            "L056",
+            "L108"
+          ],
+          "definition": "按红黄绿青蓝紫分别调整浓淡、饱和度、色相或目标颜色。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L056",
+              "name": "分色密度与饱和度",
+              "english": "Density / Saturation / Hue",
+              "choice": "yes",
+              "note": ""
+            },
+            {
+              "id": "L108",
+              "name": "六色重映射",
+              "english": "Tetra Color Remap",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "白平衡",
+          "source_ids": [
+            "N016"
+          ],
+          "definition": "调整冷暖与偏绿偏紫，让颜色更自然或形成冷暖氛围。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "N016",
+              "name": "色温与白平衡",
+              "english": "Temperature / Tint",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "阴影／中间调／高光",
+          "source_ids": [
+            "N017"
+          ],
+          "definition": "分别调整暗处、中间亮度与高光的颜色和明暗。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "N017",
+              "name": "分区明暗调色",
+              "english": "Shadows / Midtones / Highlights",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "调色曲线",
+          "source_ids": [
+            "N015"
+          ],
+          "definition": "通过可编辑曲线改变亮度或 RGB 的映射。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "N015",
+              "name": "调色曲线",
+              "english": "RGB / Luma Curves",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "LUT表调色",
+          "source_ids": [
+            "L049"
+          ],
+          "definition": "加载一张调色表，快速套用颜色风格。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L049",
+              "name": "查找表调色",
+              "english": "LUT Color Grading",
+              "choice": "yes",
+              "note": "功能名字就叫”LUT表调色“"
+            }
+          ]
+        },
+        {
+          "name": "局部留色",
+          "source_ids": [
+            "L008"
+          ],
+          "definition": "只留下指定颜色，其他部分变成灰度或指定底色。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L008",
+              "name": "局部留色",
+              "english": "Color Splash / Selective Color",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "色阶压缩",
+          "source_ids": [
+            "L048"
+          ],
+          "definition": "减少颜色层级，让画面变成更明显的色块。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L048",
+              "name": "色阶压缩",
+              "english": "Posterize / Color Depth",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "负片／明暗反转",
+          "source_ids": [
+            "L081"
+          ],
+          "definition": "选择全部颜色取反，或只反转明暗。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L081",
+              "name": "负片与亮度反转",
+              "english": "Invert / Invert Luma",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "自动变色",
+          "source_ids": [
+            "L079"
+          ],
+          "definition": "让原画面的色相随时间循环变化。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L079",
+              "name": "自动色相轮转",
+              "english": "Hue Rotation",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        }
+      ],
+      "source_count": 12,
+      "yes_count": 12,
+      "maybe_count": 0,
+      "original_notes": [
+        {
+          "id": "L049",
+          "name": "查找表调色",
+          "note": "功能名字就叫”LUT表调色“"
+        }
+      ]
+    },
+    {
+      "id": "FX04",
+      "name": "光晕与镜头光效",
+      "goal": "制作亮光扩散、星芒、彩边、光束及镜头反光。",
+      "preview": "辉光、星芒、色散、扫光、暗角、光束、鬼影、漏光",
+      "notes": [
+        "高光溢出与柔光辉光归在同一子入口，用模式区分，不再要求先筛选两张相似卡片。",
+        "高光星芒按你的要求优化表现，并以节约系统资源为优先；此项是后续验收要求，尚无性能实测结论。",
+        "暗角并入现有图层暗角入口，扩展圆度、中心点、中心缩放比例；不再增加一个重复暗角入口。",
+        "暗角圆度端点有一处文字待澄清：你的原备注将圆度 0 和 1 都描述为“矩形”。先保留该要求，进入实现前确认圆度 1 的最终形状，不擅自改成椭圆。"
+      ],
+      "options": [
+        {
+          "name": "辉光",
+          "source_ids": [
+            "L036",
+            "L037"
+          ],
+          "definition": "同一入口选择高光溢出或柔光辉光，让亮处向周围柔和扩散。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L036",
+              "name": "高光溢出",
+              "english": "Bloom",
+              "choice": "yes",
+              "note": ""
+            },
+            {
+              "id": "L037",
+              "name": "柔光辉光",
+              "english": "Glow",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "星芒",
+          "source_ids": [
+            "L023"
+          ],
+          "definition": "让亮点拉出星状光线。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L023",
+              "name": "高光星芒",
+              "english": "Star Glow Streaks",
+              "choice": "yes",
+              "note": "现有效果能力较差，可以参考其他类似项目优化表现效果，并依然以节约系统资源消耗优先"
+            }
+          ]
+        },
+        {
+          "name": "色散／RGB 分离",
+          "source_ids": [
+            "L045"
+          ],
+          "definition": "同一入口选择镜头边缘彩边或红绿蓝独立错位。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L045",
+              "name": "镜头色散与 RGB 分离",
+              "english": "Chromatic Aberration / RGB Split",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "流光扫过",
+          "source_ids": [
+            "L103"
+          ],
+          "definition": "让一道亮带扫过文字、标志或其他素材。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L103",
+              "name": "流光扫过",
+              "english": "Shine Sweep",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "暗角",
+          "source_ids": [
+            "L112"
+          ],
+          "definition": "让边缘变暗、中心突出，并扩展现有暗角参数。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L112",
+              "name": "暗角",
+              "english": "Vignette",
+              "choice": "yes",
+              "note": "合并入现有功能，并扩展现有图层暗角功能参数，可以额外调整暗角效果的圆度，当圆度为0的时候会变成和画布比例相同的矩形，圆度为1的时候是长短边正好为画布长短边的矩形；并可以设置暗角的中心点以及中心缩放比例"
+            }
+          ]
+        },
+        {
+          "name": "放射光束",
+          "source_ids": [
+            "N018"
+          ],
+          "definition": "从指定亮点拉出向外散射的光柱。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "N018",
+              "name": "放射光束",
+              "english": "Sun Beams / God Rays",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "镜头鬼影",
+          "source_ids": [
+            "N025"
+          ],
+          "definition": "在强光附近形成一串半透明镜片反光。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "N025",
+              "name": "镜头鬼影与光圈反光",
+              "english": "Lens Ghosts",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "胶片漏光",
+          "source_ids": [
+            "N031"
+          ],
+          "definition": "从画面边缘渗入柔和彩色光斑。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "N031",
+              "name": "胶片漏光",
+              "english": "Light Leaks",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        }
+      ],
+      "source_count": 9,
+      "yes_count": 9,
+      "maybe_count": 0,
+      "original_notes": [
+        {
+          "id": "L023",
+          "name": "高光星芒",
+          "note": "现有效果能力较差，可以参考其他类似项目优化表现效果，并依然以节约系统资源消耗优先"
+        },
+        {
+          "id": "L112",
+          "name": "暗角",
+          "note": "合并入现有功能，并扩展现有图层暗角功能参数，可以额外调整暗角效果的圆度，当圆度为0的时候会变成和画布比例相同的矩形，圆度为1的时候是长短边正好为画布长短边的矩形；并可以设置暗角的中心点以及中心缩放比例"
+        }
+      ]
+    },
+    {
+      "id": "FX05",
+      "name": "受光与阴影",
+      "goal": "让素材受环境光影响，或增加表面高光与阴影。",
+      "preview": "环境受光、背光、烛光、聚光、高光材质、投影",
+      "notes": [
+        "与现有光源页面共用灯光、图层绑定和空间坐标；这里是 FX 能力目录，不代表复制一套不相通的光源管理页面。",
+        "投影按你的备注扩展：允许用额外一套光源计算第二投影，并在现有光源页面增加阴影颜色、模糊和强度。",
+        "外投影、内阴影和真正投向其他图层的空间阴影仍需区分计算方式；合并的是管理入口，不能用一个二维偏移影子冒充新增灯源的空间投影。",
+        "“亮度生成法线图”收为表面高光的高级辅助项，不让普通用户先生成一张法线图才能尝试材质高光。"
+      ],
+      "options": [
+        {
+          "name": "环境色受光",
+          "source_ids": [
+            "L003"
+          ],
+          "definition": "参考另一幅画面的颜色和亮度，让人物染上环境色。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L003",
+              "name": "环境色自适应受光",
+              "english": "Adaptive Lighting",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "背后柔光",
+          "source_ids": [
+            "L006"
+          ],
+          "definition": "在素材后方铺柔光，让人物与背景分离。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L006",
+              "name": "背后柔光",
+              "english": "Backlight",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "烛光",
+          "source_ids": [
+            "L007"
+          ],
+          "definition": "模拟带暖色与轻微闪动的蜡烛照明。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L007",
+              "name": "烛光照明组合",
+              "english": "Candlelight",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "聚光灯",
+          "source_ids": [
+            "L106"
+          ],
+          "definition": "以局部亮区照向素材，周围保持较暗。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L106",
+              "name": "二维聚光灯",
+              "english": "Spotlight",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "表面高光",
+          "source_ids": [
+            "L105",
+            "L087"
+          ],
+          "definition": "用可调表面方向产生镜面亮斑；亮度转法线放在高级设置。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L105",
+              "name": "假表面镜面高光",
+              "english": "Specular Shine",
+              "choice": "yes",
+              "note": ""
+            },
+            {
+              "id": "L087",
+              "name": "亮度生成法线图",
+              "english": "Normal Map from Luminance",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "投影／内阴影",
+          "source_ids": [
+            "L062",
+            "N012"
+          ],
+          "definition": "在同一阴影入口选择外投影或内阴影，并保留扩展第二光源投影的要求。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L062",
+              "name": "二维投影",
+              "english": "Drop Shadow",
+              "choice": "yes",
+              "note": "作为现有空间投影逻辑的补充，可以额外调整参与计算一套新光源照射下的第二投影，并在现有光源功能页面也增加阴影颜色、模糊、强度等设置"
+            },
+            {
+              "id": "N012",
+              "name": "内阴影",
+              "english": "Inner Shadow",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        }
+      ],
+      "source_count": 8,
+      "yes_count": 8,
+      "maybe_count": 0,
+      "original_notes": [
+        {
+          "id": "L062",
+          "name": "二维投影",
+          "note": "作为现有空间投影逻辑的补充，可以额外调整参与计算一套新光源照射下的第二投影，并在现有光源功能页面也增加阴影颜色、模糊、强度等设置"
+        }
+      ]
+    },
+    {
+      "id": "FX06",
+      "name": "轮廓描边",
+      "goal": "给素材边缘加线、加光，或提取画面中的线条。",
+      "preview": "外描边、内描边、内发光、边缘线稿",
+      "notes": [
+        "按你的要求，将内描边并入轮廓描边：用“描边位置：外侧／内侧”切换，不保留两个平级入口。",
+        "内发光与外/内描边放在同一大功能下，但保留独立控制；“边缘检测”是提取图像内部明暗线条，与只沿 Alpha 外轮廓描线分开说明。"
+      ],
+      "options": [
+        {
+          "name": "描边",
+          "source_ids": [
+            "L029",
+            "N010"
+          ],
+          "definition": "在透明轮廓内侧或外侧画一圈线。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L029",
+              "name": "透明轮廓外描边",
+              "english": "Alpha Outline",
+              "choice": "yes",
+              "note": ""
+            },
+            {
+              "id": "N010",
+              "name": "轮廓内描边",
+              "english": "Inner Stroke",
+              "choice": "yes",
+              "note": "合并入现有的轮廓描边功能"
+            }
+          ]
+        },
+        {
+          "name": "内发光",
+          "source_ids": [
+            "N011"
+          ],
+          "definition": "沿素材轮廓内侧铺一圈柔光。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "N011",
+              "name": "轮廓内发光",
+              "english": "Inner Glow",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "边缘线稿",
+          "source_ids": [
+            "L065"
+          ],
+          "definition": "把画面中颜色或亮度变化明显的地方提取为线条。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L065",
+              "name": "边缘检测",
+              "english": "Edge Detection",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        }
+      ],
+      "source_count": 4,
+      "yes_count": 4,
+      "maybe_count": 0,
+      "original_notes": [
+        {
+          "id": "N010",
+          "name": "轮廓内描边",
+          "note": "合并入现有的轮廓描边功能"
+        }
+      ]
+    },
+    {
+      "id": "FX07",
+      "name": "天气设置",
+      "goal": "集中放置天气、自然环境和氛围粒子。",
+      "preview": "雨窗、流云、水面、水波、热浪、火焰、火星、烟花",
+      "notes": [
+        "按你的备注，将雨窗、余烬、火焰、烟花与流云归入“天气设置”；该名称作为主入口，不再单列多张效果卡。",
+        "内部按“雨与云／水与空气／火与粒子”分小组。雨窗是覆盖在画面上的水滴；海面是生成背景；水波和热浪是扭曲现有画面，不能误当同一类输入。",
+        "抽象流云可呈现云雾纹理，但不恢复你已排除的“按空间深度的雾”。本轮也不自动添加未选择的雪、闪电或星空。"
+      ],
+      "options": [
+        {
+          "name": "雨窗水滴",
+          "source_ids": [
+            "L017"
+          ],
+          "definition": "像透过淋雨的玻璃看背景，可调整雨滴和水痕。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L017",
+              "name": "雨窗水滴",
+              "english": "Rain on Glass",
+              "choice": "yes",
+              "note": "与其他天气相关的效果合并，效果改为”天气设置“"
+            }
+          ]
+        },
+        {
+          "name": "流云",
+          "source_ids": [
+            "L083"
+          ],
+          "definition": "生成不断流动的抽象云状纹理，作为氛围层。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L083",
+              "name": "绿色抽象流云",
+              "english": "Matrix Clouds",
+              "choice": "yes",
+              "note": "合并入”天气效果“"
+            }
+          ]
+        },
+        {
+          "name": "水面／水波",
+          "source_ids": [
+            "L101",
+            "L099"
+          ],
+          "definition": "选择生成海面背景，或给现有画面加涟漪。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L101",
+              "name": "海面",
+              "english": "Seascape",
+              "choice": "yes",
+              "note": ""
+            },
+            {
+              "id": "L099",
+              "name": "水波涟漪",
+              "english": "Ripple",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "热浪",
+          "source_ids": [
+            "L077"
+          ],
+          "definition": "让现有画面像被热空气折射一样轻微扭动。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L077",
+              "name": "热浪",
+              "english": "Heat Wave",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "火焰",
+          "source_ids": [
+            "L069"
+          ],
+          "definition": "生成动态火焰和火舌。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L069",
+              "name": "火焰",
+              "english": "Fire",
+              "choice": "yes",
+              "note": "合并入”天气效果“"
+            }
+          ]
+        },
+        {
+          "name": "余烬火星",
+          "source_ids": [
+            "L066"
+          ],
+          "definition": "生成缓慢飘动的发亮火星。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L066",
+              "name": "余烬火星",
+              "english": "Embers",
+              "choice": "yes",
+              "note": "合并入”天气效果“"
+            }
+          ]
+        },
+        {
+          "name": "烟花",
+          "source_ids": [
+            "L070"
+          ],
+          "definition": "生成四散爆开的彩色亮点。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L070",
+              "name": "烟花",
+              "english": "Fireworks",
+              "choice": "yes",
+              "note": "合并入”天气效果“"
+            }
+          ]
+        }
+      ],
+      "source_count": 8,
+      "yes_count": 8,
+      "maybe_count": 0,
+      "original_notes": [
+        {
+          "id": "L017",
+          "name": "雨窗水滴",
+          "note": "与其他天气相关的效果合并，效果改为”天气设置“"
+        },
+        {
+          "id": "L083",
+          "name": "绿色抽象流云",
+          "note": "合并入”天气效果“"
+        },
+        {
+          "id": "L069",
+          "name": "火焰",
+          "note": "合并入”天气效果“"
+        },
+        {
+          "id": "L066",
+          "name": "余烬火星",
+          "note": "合并入”天气效果“"
+        },
+        {
+          "id": "L070",
+          "name": "烟花",
+          "note": "合并入”天气效果“"
+        }
+      ]
+    },
+    {
+      "id": "FX08",
+      "name": "故障与复古屏幕",
+      "goal": "集中管理信号故障、旧电视、录像带与科幻屏幕风格。",
+      "preview": "数字故障、模拟信号、VHS、CRT、扫描、胶片磨损、全息与字符雨",
+      "notes": [
+        "故障、磁带、CRT 等同类风格统一从这里选择，再按子组“信号故障／复古屏幕／胶片磨损／科幻屏幕”查找。",
+        "CRT 曲率与子像素、扫描线与隔行扫描分别整理在同一子入口，但保留各自参数；画暗线不等于跨帧隔行采样。",
+        "噪声与颗粒包含原来选择的随机、Perlin、Simplex 模式；其他扭曲和天气效果可复用其噪声驱动，不再额外占一个顶层工具入口。",
+        "CRT 开机关机保留为单素材显隐风格，不恢复已排除的 A/B 双画面转场。"
+      ],
+      "options": [
+        {
+          "name": "数字故障",
+          "source_ids": [
+            "L009"
+          ],
+          "definition": "画面跳块、断裂、错位，像数字信号出错。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L009",
+              "name": "数字故障",
+              "english": "Digital Glitch",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "旧电视／模拟故障",
+          "source_ids": [
+            "L019"
+          ],
+          "definition": "画面滚动、横线抖动、颜色漂移，像模拟信号不稳。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L019",
+              "name": "旧电视与模拟信号故障",
+              "english": "Old TV / Analog Glitch",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "VHS／VCR 磁带",
+          "source_ids": [
+            "L111"
+          ],
+          "definition": "模拟旧录像带的条带噪声、波纹和色偏。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L111",
+              "name": "VHS / VCR 磁带",
+              "english": "VHS / VCR",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "CRT 屏幕",
+          "source_ids": [
+            "L051",
+            "L110"
+          ],
+          "definition": "在一个入口组合屏幕弯曲和红绿蓝子像素结构。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L051",
+              "name": "CRT 屏幕弯曲",
+              "english": "CRT Curvature",
+              "choice": "yes",
+              "note": ""
+            },
+            {
+              "id": "L110",
+              "name": "CRT 子像素",
+              "english": "CRT Subpixel",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "扫描效果",
+          "source_ids": [
+            "L100",
+            "N023"
+          ],
+          "definition": "选择普通扫描线，或奇偶行分时更新的隔行扫描。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L100",
+              "name": "扫描线",
+              "english": "Scan Lines",
+              "choice": "yes",
+              "note": ""
+            },
+            {
+              "id": "N023",
+              "name": "隔行扫描",
+              "english": "Interlace",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "NTSC 模拟",
+          "source_ids": [
+            "N022"
+          ],
+          "definition": "模拟模拟电视制式的串色与彩边。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "N022",
+              "name": "NTSC 模拟编码",
+              "english": "Analog NTSC",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "CRT 开关机",
+          "source_ids": [
+            "N024"
+          ],
+          "definition": "把画面收成亮线或亮点，再展开或消失。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "N024",
+              "name": "CRT 开机关机动画",
+              "english": "CRT Boot / Shutdown",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "老式编码色块",
+          "source_ids": [
+            "N029"
+          ],
+          "definition": "模拟旧电脑低质量视频的压缩色块，不改变实际直播编码器。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "N029",
+              "name": "老式低码率编码",
+              "english": "Retro Codec / RPZA Look",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "胶片颗粒与磨损",
+          "source_ids": [
+            "L086",
+            "N030"
+          ],
+          "definition": "在同一入口调节颗粒/噪声，以及划痕、尘点。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L086",
+              "name": "噪声与颗粒",
+              "english": "Noise / Perlin / Simplex",
+              "choice": "yes",
+              "note": ""
+            },
+            {
+              "id": "N030",
+              "name": "旧胶片划痕与尘点",
+              "english": "Old Film Scratches / Dust",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "科幻屏幕",
+          "source_ids": [
+            "L013",
+            "L057"
+          ],
+          "definition": "选择透明感的全息投影，或下落的数字字符雨。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L013",
+              "name": "全息投影",
+              "english": "Holographic Display",
+              "choice": "yes",
+              "note": ""
+            },
+            {
+              "id": "L057",
+              "name": "数字字符雨",
+              "english": "Digital Rain",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        }
+      ],
+      "source_count": 14,
+      "yes_count": 14,
+      "maybe_count": 0,
+      "original_notes": []
+    },
+    {
+      "id": "FX09",
+      "name": "绘画与像素风格",
+      "goal": "把素材变成漫画、手绘、掌机或其他风格化画面。",
+      "preview": "漫画、卡通、素描、油画、掌机、字符画、浮雕、伪热像",
+      "notes": [
+        "掌机入口保留 Game Boy、GBC、都市怪谈像素调色等原有变体，不拆成多个主功能。",
+        "手绘抖线感保留为待定子选项，不因为同组其他风格已选就自动纳入。",
+        "规则马赛克与不规则晶格归在 FX01“画面模糊”；这里保留的是带配色、笔触或字符重绘目的的风格。"
+      ],
+      "options": [
+        {
+          "name": "漫画网线",
+          "source_ids": [
+            "L016"
+          ],
+          "definition": "把画面处理成墨线、排线和漫画阴影。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L016",
+              "name": "漫画网线",
+              "english": "Manga",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "卡通平涂",
+          "source_ids": [
+            "L043"
+          ],
+          "definition": "简化明暗层级，让画面接近平涂动画。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L043",
+              "name": "卡通平涂",
+              "english": "Cartoon / Cel Shading",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "铅笔素描",
+          "source_ids": [
+            "L061"
+          ],
+          "definition": "用线条和灰度笔触重画画面。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L061",
+              "name": "铅笔素描",
+              "english": "Drawings",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "保边油画",
+          "source_ids": [
+            "N019"
+          ],
+          "definition": "将相近颜色铺成画笔色块，并尽量保留轮廓。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "N019",
+              "name": "保边油画",
+              "english": "Kuwahara / Painterly",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "掌机像素风",
+          "source_ids": [
+            "L021"
+          ],
+          "definition": "用固定色板、像素和较低帧更新速度模拟复古掌机。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L021",
+              "name": "掌机复古调色",
+              "english": "Game Boy / GBC / Urban Myth",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "字符画",
+          "source_ids": [
+            "L031"
+          ],
+          "definition": "用一格格文字字符代替图像像素。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L031",
+              "name": "字符画",
+              "english": "ASCII Art",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "浮雕",
+          "source_ids": [
+            "L067"
+          ],
+          "definition": "让明暗边缘像刻上去或凸起来的纹理。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L067",
+              "name": "浮雕",
+              "english": "Emboss",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "伪热成像",
+          "source_ids": [
+            "L109"
+          ],
+          "definition": "把明暗映射成热像仪般的伪彩色，不测真实温度。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L109",
+              "name": "伪热成像",
+              "english": "Thermal",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "手绘抖线感",
+          "source_ids": [
+            "L060"
+          ],
+          "definition": "让轮廓按离散节奏轻微变化，像逐帧重新画过。",
+          "note": "待定。",
+          "source_choices": [
+            {
+              "id": "L060",
+              "name": "手绘抖线感",
+              "english": "Doodle / Line Boil",
+              "choice": "maybe",
+              "note": ""
+            }
+          ]
+        }
+      ],
+      "source_count": 9,
+      "yes_count": 8,
+      "maybe_count": 1,
+      "original_notes": []
+    },
+    {
+      "id": "FX10",
+      "name": "形变与纹理",
+      "goal": "改变画面形状、折射方式和重复排列关系。",
+      "preview": "透视、曲面、鼓缩、鱼眼、折射、置换、波动、分片、翻页、平铺",
+      "notes": [
+        "把多种扭曲收为“动态扭曲”的模式，把平铺、递归旋转、万花筒收为“纹理排列”的模式。",
+        "四角透视仍保留，因为你明确选择了它；不恢复已排除的另一套普通 XYZ 透视旋转入口。",
+        "翻页是单素材卷角/显隐效果，不恢复已排除的双画面翻页转场。"
+      ],
+      "options": [
+        {
+          "name": "四角透视",
+          "source_ids": [
+            "L050"
+          ],
+          "definition": "分别调整四角，把画面贴到倾斜表面上。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L050",
+              "name": "四角透视变形",
+              "english": "Corner Pin",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "曲面弯折",
+          "source_ids": [
+            "L053"
+          ],
+          "definition": "把平面素材弯成曲面。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L053",
+              "name": "曲面弯折",
+              "english": "Spatial Curve",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "鼓起／收缩",
+          "source_ids": [
+            "L041"
+          ],
+          "definition": "把局部向外鼓起或向中心捏瘪。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L041",
+              "name": "鼓起与收缩",
+              "english": "Bulge / Pinch",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "鱼眼",
+          "source_ids": [
+            "L071"
+          ],
+          "definition": "夸张中心与边缘的比例，模拟超广角。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L071",
+              "name": "鱼眼镜头",
+              "english": "Fisheye",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "玻璃折射",
+          "source_ids": [
+            "L020"
+          ],
+          "definition": "让玻璃覆盖处的背景发生错位或变形。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L020",
+              "name": "玻璃折射",
+              "english": "Refraction / Glass",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "置换贴图",
+          "source_ids": [
+            "L058"
+          ],
+          "definition": "用另一张图的颜色或亮度驱动画面位移。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L058",
+              "name": "置换贴图",
+              "english": "Displacement Map",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "动态扭曲",
+          "source_ids": [
+            "L025",
+            "L044",
+            "L102",
+            "L114"
+          ],
+          "definition": "同一入口选择湍流、色散波浪、波浪晕动或锯齿波。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L025",
+              "name": "湍流扭曲",
+              "english": "Turbulent Displace",
+              "choice": "yes",
+              "note": ""
+            },
+            {
+              "id": "L044",
+              "name": "色散波浪扭曲",
+              "english": "Chroma + UV Distortion",
+              "choice": "yes",
+              "note": ""
+            },
+            {
+              "id": "L102",
+              "name": "波浪晕船",
+              "english": "Seasick",
+              "choice": "yes",
+              "note": ""
+            },
+            {
+              "id": "L114",
+              "name": "锯齿波扭曲",
+              "english": "ZigZag",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "分片错位",
+          "source_ids": [
+            "L010"
+          ],
+          "definition": "把画面切成条块，再调整块之间的缝隙、偏移和摆动。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L010",
+              "name": "分片错位画框",
+              "english": "Fractured Frame",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "翻页／卷角",
+          "source_ids": [
+            "L089"
+          ],
+          "definition": "把单张素材像纸张一样卷起。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L089",
+              "name": "翻页与卷角",
+              "english": "Page Peel",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "纹理排列",
+          "source_ids": [
+            "L096",
+            "L059",
+            "N027"
+          ],
+          "definition": "选择重复平铺、递归分割旋转或镜面万花筒。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L096",
+              "name": "图像重复平铺",
+              "english": "Repeat / Tiling",
+              "choice": "yes",
+              "note": ""
+            },
+            {
+              "id": "L059",
+              "name": "递归分割旋转纹理",
+              "english": "Divide and Rotate",
+              "choice": "yes",
+              "note": ""
+            },
+            {
+              "id": "N027",
+              "name": "镜面万花筒",
+              "english": "Mirror Kaleidoscope",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        }
+      ],
+      "source_count": 15,
+      "yes_count": 15,
+      "maybe_count": 0,
+      "original_notes": []
+    },
+    {
+      "id": "FX11",
+      "name": "立体与自动运动",
+      "goal": "给平面素材加厚度，或快速套用常见自动运动。",
+      "preview": "立体厚度、分层视差、随机抖动、呼吸缩放、闪烁",
+      "notes": [
+        "按你的明确备注，将 L001 与 L002 放进同一个“立体厚度”入口：矩形面板／按透明轮廓挤出两种模式。",
+        "L002 原选择仍为待定；本次确定的是合并位置，不擅自把其开发状态改成“需要”。",
+        "分层视差、抖动、呼吸等应复用现有图层坐标与动画结果；不能另建一套覆盖基础布局的独立坐标系统。"
+      ],
+      "options": [
+        {
+          "name": "立体厚度",
+          "source_ids": [
+            "L001",
+            "L002"
+          ],
+          "definition": "同一入口选择圆角厚面板，或按透明轮廓挤出的实体块。",
+          "note": "厚面板已选；轮廓挤出模式待定。",
+          "source_choices": [
+            {
+              "id": "L001",
+              "name": "立体厚面板",
+              "english": "3D Panel",
+              "choice": "yes",
+              "note": "和L002合并为一个效果，L002的效果单独在这个功能下设一个选项来显示"
+            },
+            {
+              "id": "L002",
+              "name": "轮廓挤出块",
+              "english": "3D Block",
+              "choice": "maybe",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "分层镜头视差",
+          "source_ids": [
+            "L014"
+          ],
+          "definition": "不同深度图层随镜头移动产生不同位移。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L014",
+              "name": "分层镜头晃动视差",
+              "english": "Horizon Camera",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "随机抖动",
+          "source_ids": [
+            "L026"
+          ],
+          "definition": "快速加入轻微随机晃动。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L026",
+              "name": "随机抖动",
+              "english": "Wiggler / Shake",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "呼吸缩放",
+          "source_ids": [
+            "L092"
+          ],
+          "definition": "让素材按节奏周期性放大缩小。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L092",
+              "name": "呼吸缩放",
+              "english": "Pulse",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "闪烁",
+          "source_ids": [
+            "L035"
+          ],
+          "definition": "按设置节奏明暗变化或显示隐藏。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L035",
+              "name": "闪烁",
+              "english": "Blink",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        }
+      ],
+      "source_count": 6,
+      "yes_count": 5,
+      "maybe_count": 1,
+      "original_notes": [
+        {
+          "id": "L001",
+          "name": "立体厚面板",
+          "note": "和L002合并为一个效果，L002的效果单独在这个功能下设一个选项来显示"
+        }
+      ]
+    },
+    {
+      "id": "FX12",
+      "name": "裁切、遮罩与合成",
+      "goal": "决定画面显示哪些区域，以及如何与另一幅画面混合。",
+      "preview": "形状裁切、科幻开窗、源遮罩、透明处理、混合、纹理覆盖、溶解",
+      "notes": [
+        "按 L093 的备注，把四边形裁切扩成“形状裁切”：四边形、其他多边形、圆角矩形、圆形、椭圆形；选中形状后只显示它的形状参数。",
+        "圆形/圆角矩形属于你新增要求里的裁切形状，不代表重新加入已排除的独立圆形遮罩或矩形边框卡片；星形、心形、通用遮罩扩缩仍不加入。",
+        "基础混合与扩充混合合为一个模式选择，避免用户分别安装/选择两次混合功能。",
+        "燃烧溶解仍是单素材显隐；全部六项 A/B 双画面转场按你的选择排除。"
+      ],
+      "options": [
+        {
+          "name": "形状裁切",
+          "source_ids": [
+            "L093"
+          ],
+          "definition": "选形状后裁掉外部区域，并按该形状显示圆角、边数、尺寸等设置。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L093",
+              "name": "四边形裁切",
+              "english": "Quadrilateral Crop",
+              "choice": "yes",
+              "note": "增加其他裁切形状，可以设置为其他多边形甚至是圆角矩形、圆形、椭圆形，并在设置为其他图形时有设置对应图形形状的选项"
+            }
+          ]
+        },
+        {
+          "name": "科幻开窗",
+          "source_ids": [
+            "L022"
+          ],
+          "definition": "把摄像头裁成带动态形变和边光的科幻窗口。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L022",
+              "name": "科幻摄像头开窗",
+              "english": "Sci-Fi Corner Wipe",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "动态源遮罩",
+          "source_ids": [
+            "L064"
+          ],
+          "definition": "用另一幅正在变化的画面控制当前素材的显示范围。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L064",
+              "name": "动态源遮罩",
+              "english": "Dynamic Source Mask",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "亮度转透明",
+          "source_ids": [
+            "L082"
+          ],
+          "definition": "按亮暗去掉黑底或白底。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L082",
+              "name": "亮度转透明",
+              "english": "Luma Key / Luma to Alpha",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "透明杂边清理",
+          "source_ids": [
+            "L095"
+          ],
+          "definition": "清除低透明度残留像素。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L095",
+              "name": "清除半透明杂边",
+              "english": "Remove Partial Alpha",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "透明度／渐变淡出",
+          "source_ids": [
+            "L034"
+          ],
+          "definition": "调节整体透明度，或从一边到另一边逐渐消失。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L034",
+              "name": "渐变透明与透明度",
+              "english": "Opacity / Gradient Fade",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "混合模式",
+          "source_ids": [
+            "L028",
+            "N028"
+          ],
+          "definition": "在同一入口选择相加、相乘、变暗及扩充的柔光、差值等模式。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L028",
+              "name": "双源混合模式",
+              "english": "Blend Modes",
+              "choice": "yes",
+              "note": ""
+            },
+            {
+              "id": "N028",
+              "name": "扩充混合模式",
+              "english": "Extended Blend Modes",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "动态纹理覆盖",
+          "source_ids": [
+            "L030"
+          ],
+          "definition": "在素材上叠加持续变化的辅助纹理。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L030",
+              "name": "动态纹理覆盖",
+              "english": "Animated Texture",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "燃烧溶解",
+          "source_ids": [
+            "L042"
+          ],
+          "definition": "让单张素材按烧蚀边缘逐渐出现或消失。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L042",
+              "name": "燃烧溶解",
+              "english": "Burn / Dissolve",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        }
+      ],
+      "source_count": 10,
+      "yes_count": 10,
+      "maybe_count": 0,
+      "original_notes": [
+        {
+          "id": "L093",
+          "name": "四边形裁切",
+          "note": "增加其他裁切形状，可以设置为其他多边形甚至是圆角矩形、圆形、椭圆形，并在设置为其他图形时有设置对应图形形状的选项"
+        }
+      ]
+    },
+    {
+      "id": "FX13",
+      "name": "舞台与风格预设",
+      "goal": "用一组已组合好的处理快速得到完整风格。",
+      "preview": "LED 舞台、宽银幕、动画氛围、醉酒眩晕",
+      "notes": [
+        "这些是多个基础效果组成的预设，不另造一套重复的模糊、辉光、色散或抖动算法。",
+        "LED 舞台按你的备注保留两种光斑来源：直接生成装饰光斑／把选中的画面渲染成装饰光斑。后一种可调用 FX01 的散景能力。",
+        "宽银幕与动画氛围可展开组合里的具体子项；这属于目录关系设计，不代表现有插件已经支持拆分参数。"
+      ],
+      "options": [
+        {
+          "name": "LED 演出舞台",
+          "source_ids": [
+            "L005"
+          ],
+          "definition": "把人物、LED 点阵、背光、前景光斑与轻微镜头晃动组合起来。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L005",
+              "name": "LED 演出舞台组合",
+              "english": "Billboard Live",
+              "choice": "yes",
+              "note": "可以选择直接生成装饰光斑，或者是将某个画面渲染成装饰光斑"
+            }
+          ]
+        },
+        {
+          "name": "宽银幕镜头",
+          "source_ids": [
+            "L004"
+          ],
+          "definition": "组合横向光带、色散、颗粒和电影色调。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L004",
+              "name": "宽银幕镜头组合",
+              "english": "Anamorphic Lens",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "动画氛围柔光",
+          "source_ids": [
+            "L015"
+          ],
+          "definition": "用模糊副本和多种混合方式改变动画般的明暗氛围。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L015",
+              "name": "动画氛围柔光组合",
+              "english": "Horizon Lens",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "name": "醉酒眩晕",
+          "source_ids": [
+            "L063"
+          ],
+          "definition": "组合模糊、辉光与脉动，形成晕眩视角。",
+          "note": "",
+          "source_choices": [
+            {
+              "id": "L063",
+              "name": "醉酒眩晕组合",
+              "english": "Drunk",
+              "choice": "yes",
+              "note": ""
+            }
+          ]
+        }
+      ],
+      "source_count": 4,
+      "yes_count": 4,
+      "maybe_count": 0,
+      "original_notes": [
+        {
+          "id": "L005",
+          "name": "LED 演出舞台组合",
+          "note": "可以选择直接生成装饰光斑，或者是将某个画面渲染成装饰光斑"
+        }
+      ]
+    }
+  ],
+  "excluded": [
+    {
+      "id": "L012",
+      "name": "玻璃时钟",
+      "english": "Glass Clock",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "L027",
+      "name": "折边摄像头框",
+      "english": "Bent Camera",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "L032",
+      "name": "音量颜色演示",
+      "english": "Audio Level Demo",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "L033",
+      "name": "背景差分抠像",
+      "english": "Clean-Plate Difference Key",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "L038",
+      "name": "矩形及圆角边框",
+      "english": "Rectangle / Rounded Frame",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "L040",
+      "name": "色彩标准矩阵转换",
+      "english": "BT.601 ↔ BT.709",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "L046",
+      "name": "圆形遮罩",
+      "english": "Circle Mask",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "L047",
+      "name": "模拟钟与数码钟",
+      "english": "Analog / LED / Nixie Clock",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "L052",
+      "name": "旋转立方体",
+      "english": "Rotating Cube",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "L054",
+      "name": "圆柱包裹",
+      "english": "Cylinder",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "L055",
+      "name": "坏点修补",
+      "english": "Dead Pixel Fix",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "L068",
+      "name": "线性或环形进度填充",
+      "english": "Linear / Radial Fill",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "L072",
+      "name": "翻转与旋转",
+      "english": "Flip / Rotate",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "L075",
+      "name": "渐变着色",
+      "english": "Gradient Tint",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "L076",
+      "name": "网点印刷",
+      "english": "Halftone",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "L078",
+      "name": "六边形网格",
+      "english": "Hexagon",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "L080",
+      "name": "亮度分布示波",
+      "english": "Intensity Scope",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "L085",
+      "name": "星空与月亮",
+      "english": "Night Sky",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "L088",
+      "name": "OBS 标志图案",
+      "english": "OBS Logo Shader",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "L090",
+      "name": "环形统计图",
+      "english": "Pie Chart",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "L091",
+      "name": "极坐标变换",
+      "english": "Polar Coordinates",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "L094",
+      "name": "彩虹色叠层",
+      "english": "Rainbow / RGB Color Wheel",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "L098",
+      "name": "旋转网格抗锯齿",
+      "english": "RGSSAA",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "L107",
+      "name": "旋涡扭曲",
+      "english": "Swirl / Twist",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "L115",
+      "name": "定点缩放",
+      "english": "Zoom",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "L116",
+      "name": "缩放放射模糊",
+      "english": "Zoom Blur",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "L117",
+      "name": "透视旋转",
+      "english": "Perspective Transform",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "T001",
+      "name": "立体交换转场",
+      "english": "3D Swap Transition",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "T002",
+      "name": "扩散转场",
+      "english": "Diffuse Transition",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "T003",
+      "name": "淡入淡出转场",
+      "english": "Crossfade",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "T004",
+      "name": "像素化转场",
+      "english": "Pixelation Transition",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "T005",
+      "name": "翻页转场",
+      "english": "Page Peel Transition",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "T006",
+      "name": "冲刺模糊转场",
+      "english": "Zoom Blur Transition",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "D001",
+      "name": "滤镜代码模板",
+      "english": "Filter Templates",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "D002",
+      "name": "输出转换内部文件",
+      "english": "Render Output Helper",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "D003",
+      "name": "未完成比例工具",
+      "english": "Aspect Ratio Prototype",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "D004",
+      "name": "路径动画实验",
+      "english": "Animated Path Prototype",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "N005",
+      "name": "AI 人像抠像",
+      "english": "AI Background Removal",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "N006",
+      "name": "色度抠像与去溢色",
+      "english": "Chroma Key / Despill",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "N007",
+      "name": "遮罩羽化及扩缩",
+      "english": "Mask Feather / Grow / Shrink",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "N008",
+      "name": "星形心形与多边形遮罩",
+      "english": "Advanced Shape Masks",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "N009",
+      "name": "局部调色遮罩",
+      "english": "Adjustment Mask",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "N014",
+      "name": "去色带",
+      "english": "Deband",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "N020",
+      "name": "手动定格画面",
+      "english": "Freeze Frame",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "N021",
+      "name": "频谱波形与电平表",
+      "english": "Spectrum / Waveform / Meter",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "N026",
+      "name": "按空间深度的雾",
+      "english": "Depth Fog",
+      "choice": "no",
+      "note": ""
+    },
+    {
+      "id": "N033",
+      "name": "旋转拖线模糊",
+      "english": "Circular / Spin Blur",
+      "choice": "no",
+      "note": ""
+    }
+  ],
+  "clarifications": [
+    {
+      "id": "L112",
+      "subject": "暗角圆度端点",
+      "status": "进入实现前待确认",
+      "text": "原备注把圆度 0 和 1 均写成矩形；不推断圆度 1 应为椭圆。"
+    }
+  ],
+  "scope": "仅重组已选择的 FX 清单，不修改选择状态，不进行插件开发，不更新旧说明书。"
+}

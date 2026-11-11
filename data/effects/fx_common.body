@@ -1,0 +1,59 @@
+uniform float4x4 ViewProj;
+uniform texture2d image;
+uniform texture2d auxiliary;
+uniform texture2d history_image;
+uniform float2 pixel_size;
+uniform float2 canvas_size;
+uniform float elapsed;
+uniform float frame_index;
+uniform float frame_delta;
+uniform float history_time;
+uniform float history_valid;
+uniform float auxiliary_valid;
+uniform float2 motion_delta;
+uniform float4 p0;
+uniform float4 p1;
+uniform float4 p2;
+uniform float4 p3;
+uniform float4 p4;
+uniform float4 p5;
+uniform float4 p6;
+uniform float4 p7;
+uniform float4 tint;
+uniform float4 tint2;
+uniform int effect_id;
+uniform float strength;
+uniform float lut_size;
+uniform float3 lut_min;
+uniform float3 lut_max;
+uniform float3 lamp_position;
+uniform float3 lamp_color;
+uniform float lamp_intensity;
+uniform float lamp_range;
+uniform float3 layer_position;
+uniform float3 layer_right;
+uniform float3 layer_down;
+uniform float3 layer_normal;
+uniform float3 camera_position;
+uniform float2 layer_uv_center;
+sampler_state fx_sampler { Filter=Linear; AddressU=Clamp; AddressV=Clamp; };
+struct FxVert { float4 pos:POSITION; float2 uv:TEXCOORD0; };
+FxVert FxVS(FxVert v){FxVert r;r.pos=mul(float4(v.pos.xyz,1),ViewProj);r.uv=v.uv;return r;}
+float4 straight(float4 c){return float4(c.a>.00001?c.rgb/max(c.a,.00001):float3(0,0,0),c.a);}
+float4 src(float2 uv){if(uv.x<0||uv.x>1||uv.y<0||uv.y>1)return float4(0,0,0,0);return straight(image.Sample(fx_sampler,uv));}
+float4 aux(float2 uv){if(auxiliary_valid<.5)return src(uv);if(uv.x<0||uv.x>1||uv.y<0||uv.y>1)return float4(0,0,0,0);return straight(auxiliary.Sample(fx_sampler,uv));}
+float4 past(float2 uv){if(history_valid<.5)return src(uv);if(uv.x<0||uv.x>1||uv.y<0||uv.y>1)return float4(0,0,0,0);return straight(history_image.Sample(fx_sampler,uv));}
+float luminance(float3 c){return dot(c,float3(.2126,.7152,.0722));}
+float hash21(float2 p){return frac(sin(dot(p,float2(127.1,311.7)))*43758.5453);}
+float noise21(float2 p){float2 i=floor(p),f=frac(p);f=f*f*(3-2*f);return lerp(lerp(hash21(i),hash21(i+float2(1,0)),f.x),lerp(hash21(i+float2(0,1)),hash21(i+float2(1,1)),f.x),f.y);}
+float3 rgb2hsv(float3 c){float4 k=float4(0,-1.0/3.0,2.0/3.0,-1);float4 p=lerp(float4(c.bg,k.wz),float4(c.gb,k.xy),step(c.b,c.g));float4 q=lerp(float4(p.xyw,c.r),float4(c.r,p.yzx),step(p.x,c.r));float d=q.x-min(q.w,q.y);return float3(abs(q.z+(q.w-q.y)/(6*d+.00001)),d/(q.x+.00001),q.x);}
+float3 hsv2rgb(float3 c){float3 p=abs(frac(c.xxx+float3(0,2.0/3.0,1.0/3.0))*6-3);return c.z*lerp(float3(1,1,1),saturate(p-1),c.y);}
+float4 over(float4 a,float4 b){float alpha=a.a+b.a*(1-a.a);return float4((a.rgb*a.a+b.rgb*b.a*(1-a.a))/max(alpha,.00001),alpha);}
+float4 blurAt(float2 uv,float radius){
+ float2 d=pixel_size*radius;float4 v=image.Sample(fx_sampler,uv)*.25;
+ v+=(image.Sample(fx_sampler,uv+float2(d.x,0))+image.Sample(fx_sampler,uv-float2(d.x,0))+image.Sample(fx_sampler,uv+float2(0,d.y))+image.Sample(fx_sampler,uv-float2(0,d.y)))*.125;
+ v+=(image.Sample(fx_sampler,uv+d)+image.Sample(fx_sampler,uv-d)+image.Sample(fx_sampler,uv+float2(d.x,-d.y))+image.Sample(fx_sampler,uv+float2(-d.x,d.y)))*.0625;
+ return straight(v);
+}
+float4 circleBlur(float2 uv,float radius){float4 v=image.Sample(fx_sampler,uv);for(int i=0;i<12;++i){float angle=float(i)*.5235987756;v+=image.Sample(fx_sampler,uv+float2(cos(angle),sin(angle))*pixel_size*radius);}return straight(v/13);}
+float edgeAt(float2 uv,float radius){float2 d=pixel_size*max(radius,.1);float x=luminance(src(uv+float2(d.x,0)).rgb)-luminance(src(uv-float2(d.x,0)).rgb);float y=luminance(src(uv+float2(0,d.y)).rgb)-luminance(src(uv-float2(0,d.y)).rgb);return length(float2(x,y));}

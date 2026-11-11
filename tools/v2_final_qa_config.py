@@ -1,0 +1,3 @@
+from pathlib import Path
+p=Path('tests/obs_qa_driver.cpp');s=p.read_text(encoding='utf-8-sig');s=s.replace('if(n>=2000){','if(n>=std::clamp(qEnvironmentVariableIntValue("SPATIAL_QA_STRESS_ITERATIONS")?qEnvironmentVariableIntValue("SPATIAL_QA_STRESS_ITERATIONS"):2000,2000,200000)){').replace('check(true,"16008 spatial edits finished without process termination")','check(true,QString("%1 spatial edits finished without process termination").arg((n+1)*8))');p.write_text(s,encoding='utf-8')
+p=Path('src/dock.cpp');s=p.read_text(encoding='utf-8-sig').replace('启用点光源','启用所选灯光').replace('单点漫反射 · 平面 Alpha 投影 · 无 CUDA 依赖。\\n简化阴影为清晰轮廓，不含柔化或多物体遮挡求解。','点光 / 面光漫反射 · 素材 Alpha 投影 · 无 CUDA 依赖。\\n选择真实受光层；使用灯光尺寸与软阴影调节半影。');p.write_text(s,encoding='utf-8')

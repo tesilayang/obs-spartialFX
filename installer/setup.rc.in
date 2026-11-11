@@ -1,0 +1,48 @@
+1 VERSIONINFO
+FILEVERSION 3,4,1,0
+PRODUCTVERSION 3,4,1,0
+FILEOS 0x40004L
+FILETYPE 0x1L
+BEGIN
+ BLOCK "StringFileInfo"
+ BEGIN
+  BLOCK "040904b0"
+  BEGIN
+   VALUE "CompanyName", "OBS Spatial FX contributors"
+   VALUE "FileDescription", "OBS Spatial FX Setup"
+   VALUE "FileVersion", "3.4.1"
+   VALUE "ProductName", "OBS Spatial FX"
+   VALUE "ProductVersion", "3.4.1"
+   VALUE "OriginalFilename", "OBS_Spatial_FX_V3.4.1_Setup.exe"
+  END
+ END
+ BLOCK "VarFileInfo"
+ BEGIN
+  VALUE "Translation", 0x409, 1200
+ END
+END
+101 RCDATA "@CMAKE_BINARY_DIR@/obs-spatial-fx.dll"
+102 RCDATA "@CMAKE_SOURCE_DIR@/data/effects/spatial.effect"
+103 RCDATA "@CMAKE_SOURCE_DIR@/README.md"
+104 RCDATA "@CMAKE_SOURCE_DIR@/LICENSE"
+
+201 RCDATA "@CMAKE_SOURCE_DIR@/data/effects/fx_common.body"
+202 RCDATA "@CMAKE_SOURCE_DIR@/data/effects/fx_footer.body"
+203 RCDATA "@CMAKE_SOURCE_DIR@/data/effects/fx01.body"
+204 RCDATA "@CMAKE_SOURCE_DIR@/data/effects/fx02.body"
+205 RCDATA "@CMAKE_SOURCE_DIR@/data/effects/fx03.body"
+206 RCDATA "@CMAKE_SOURCE_DIR@/data/effects/fx04.body"
+207 RCDATA "@CMAKE_SOURCE_DIR@/data/effects/fx05.body"
+208 RCDATA "@CMAKE_SOURCE_DIR@/data/effects/fx06.body"
+209 RCDATA "@CMAKE_SOURCE_DIR@/data/effects/fx07.body"
+210 RCDATA "@CMAKE_SOURCE_DIR@/data/effects/fx08.body"
+211 RCDATA "@CMAKE_SOURCE_DIR@/data/effects/fx09.body"
+212 RCDATA "@CMAKE_SOURCE_DIR@/data/effects/fx10.body"
+213 RCDATA "@CMAKE_SOURCE_DIR@/data/effects/fx11.body"
+214 RCDATA "@CMAKE_SOURCE_DIR@/data/effects/fx12.body"
+215 RCDATA "@CMAKE_SOURCE_DIR@/data/effects/fx13.body"
+
+216 RCDATA "@CMAKE_SOURCE_DIR@/data/effects/fx_blur.body"
+
+217 RCDATA "@CMAKE_SOURCE_DIR@/data/effects/fx_smaa.body"
+218 RCDATA "@CMAKE_SOURCE_DIR@/data/effects/AA_NOTICES.txt"

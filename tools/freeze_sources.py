@@ -1,0 +1,6 @@
+from pathlib import Path
+p=Path('CMakeLists.txt');s=p.read_text(encoding='utf-8-sig').replace('set(SPATIAL_PHASE 0 CACHE','set(SPATIAL_PHASE 4 CACHE');start=s.index('file(WRITE "');end=s.index('foreach(name obs',start);s=s[:start]+'configure_file(src/obsconfig.h.in generated/obsconfig.h @ONLY)\n'+s[end:];s=s.replace('set(OBS_ROOT "F:/Program Files (x86)/obs-studio new" CACHE PATH "Read-only reference OBS32 installation")','set(OBS_ROOT "$ENV{OBS_ROOT}" CACHE PATH "Read-only OBS32+ installation; tools/build.cmd detects it automatically")');p.write_text(s,encoding='utf-8')
+p=Path('installer/setup.cpp');s=p.read_text(encoding='utf-8-sig');s=s.replace('std::vector<Instance>list;std::set<std::wstring>seen;auto explicitRoot=option(L"/OBSROOT=");','std::vector<Instance>list;std::set<std::wstring>seen;for(const auto&a:arguments)if(lower(a).rfind(L"/detectedroot=",0)==0)add(list,seen,a.substr(14));auto explicitRoot=option(L"/OBSROOT=");')
+# Prefix /DETECTEDROOT= has 14 characters.
+s=s.replace('if(!IsUserAnAdmin())return elevate();','if(!IsUserAnAdmin()){for(const auto&i:instances)if(i.major>=32)arguments.push_back(L"/DETECTEDROOT="+i.root.wstring());return elevate();}')
+s=s.replace('重试。\\\\n不会','重试。\\n不会');p.write_text(s,encoding='utf-8')
