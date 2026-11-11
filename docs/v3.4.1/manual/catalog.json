@@ -1,0 +1,5966 @@
+{
+  "version": "3.4.1",
+  "groups": [
+    {
+      "number": 1,
+      "name": "画面模糊",
+      "help": "虚化、磨砂、散景、方向模糊、运动模糊和拖尾。"
+    },
+    {
+      "number": 2,
+      "name": "画质修正",
+      "help": "锐化、降噪、空间抗锯齿和轻量 RCAS 清晰化。"
+    },
+    {
+      "number": 3,
+      "name": "颜色与调色",
+      "help": "调节明暗、白平衡、颜色分区、曲线和 LUT。"
+    },
+    {
+      "number": 4,
+      "name": "光晕与镜头光效",
+      "help": "辉光、星芒、色散、暗角、光束与镜头反光。"
+    },
+    {
+      "number": 5,
+      "name": "受光与阴影",
+      "help": "环境受光、柔光、高光材质和投影。有启用的场景灯时使用灯光页世界坐标与绑定；没有时使用随素材移动的独立局部灯光。"
+    },
+    {
+      "number": 6,
+      "name": "轮廓描边",
+      "help": "透明轮廓的内外描边、内发光与画面边缘线稿。"
+    },
+    {
+      "number": 7,
+      "name": "天气设置",
+      "help": "雨窗、流云、水波、热浪、火焰、余烬与烟花。"
+    },
+    {
+      "number": 8,
+      "name": "故障与复古屏幕",
+      "help": "数字故障、电视磁带、CRT、扫描、颗粒和科幻屏幕。"
+    },
+    {
+      "number": 9,
+      "name": "绘画与像素风格",
+      "help": "漫画、卡通、素描、油画、掌机像素与字符画。"
+    },
+    {
+      "number": 10,
+      "name": "形变与纹理",
+      "help": "透视、弯曲、鱼眼、折射、置换与重复排列。"
+    },
+    {
+      "number": 11,
+      "name": "立体与自动运动",
+      "help": "立体厚度、抖动、呼吸和闪烁。运动使用与时间轴、灯光相同的空间坐标。"
+    },
+    {
+      "number": 12,
+      "name": "裁切、遮罩与合成",
+      "help": "形状裁切、素材遮罩、透明处理、纹理覆盖和混合。"
+    },
+    {
+      "number": 13,
+      "name": "舞台与风格预设",
+      "help": "由基础处理组合的 LED 舞台、宽银幕、柔光与眩晕风格。"
+    }
+  ],
+  "effects": [
+    {
+      "id": "FX01.0",
+      "name": "基础模糊",
+      "help": "高斯采用中心集中的钟形权重，方框采用均匀方形光斑；镜像控制画面边缘延伸。",
+      "group": 1,
+      "shader": 0,
+      "parameters": [
+        {
+          "key": "radius",
+          "label": "模糊半径",
+          "help": "采样半径，数值越大细节越柔。",
+          "initial": 8.0,
+          "minimum": 0.0,
+          "maximum": 100.0,
+          "choices": []
+        },
+        {
+          "key": "algorithm",
+          "label": "算法",
+          "help": "高斯呈柔和渐变；方框呈均匀方形扩散。先滤波缩小，再进行横纵两次密集卷积，保持大半径扩散连续。",
+          "initial": 0.0,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": [
+            "高斯",
+            "方框"
+          ]
+        },
+        {
+          "key": "edge",
+          "label": "边缘处理",
+          "help": "延伸重复边缘像素，镜像反射边缘内的内容，透明允许模糊向画面外衰减。",
+          "initial": 0.0,
+          "minimum": 0.0,
+          "maximum": 2.0,
+          "choices": [
+            "延伸",
+            "镜像",
+            "透明"
+          ]
+        }
+      ],
+      "asset": "None",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX01.1",
+      "name": "磨砂玻璃",
+      "help": "平滑画面并用细小折射和颗粒模拟毛玻璃。",
+      "group": 1,
+      "shader": 1,
+      "parameters": [
+        {
+          "key": "radius",
+          "label": "虚化半径",
+          "help": "玻璃后的画面虚化范围，单位像素。",
+          "initial": 9.0,
+          "minimum": 0.0,
+          "maximum": 80.0,
+          "choices": []
+        },
+        {
+          "key": "refraction",
+          "label": "折射",
+          "help": "颗粒造成的随机采样位移，单位像素。",
+          "initial": 3.0,
+          "minimum": 0.0,
+          "maximum": 30.0,
+          "choices": []
+        },
+        {
+          "key": "grain",
+          "label": "颗粒",
+          "help": "玻璃表面的细微明暗颗粒。",
+          "initial": 0.07,
+          "minimum": 0.0,
+          "maximum": 0.5,
+          "choices": []
+        },
+        {
+          "key": "grain_size",
+          "label": "颗粒尺寸",
+          "help": "静止噪声的空间尺寸，单位像素。",
+          "initial": 2.0,
+          "minimum": 0.5,
+          "maximum": 20.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX01.2",
+      "name": "径向模糊",
+      "help": "中心清晰，周边渐进失焦；不会产生缩放或旋转拖线。",
+      "group": 1,
+      "shader": 2,
+      "parameters": [
+        {
+          "key": "radius",
+          "label": "周边模糊",
+          "help": "最外围的模糊半径，单位像素。",
+          "initial": 16.0,
+          "minimum": 0.0,
+          "maximum": 100.0,
+          "choices": []
+        },
+        {
+          "key": "center_x",
+          "label": "中心 X",
+          "help": "清晰中心的水平位置。",
+          "initial": 0.5,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "center_y",
+          "label": "中心 Y",
+          "help": "清晰中心的垂直位置。",
+          "initial": 0.5,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "clear_radius",
+          "label": "清晰半径",
+          "help": "以画布短边为单位的清晰区域半径。",
+          "initial": 0.18,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "feather",
+          "label": "过渡宽度",
+          "help": "由清晰到虚化的渐变宽度。",
+          "initial": 0.25,
+          "minimum": 0.01,
+          "maximum": 1.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX01.3",
+      "name": "方向拖线",
+      "help": "按指定角度进行对称线性模糊。",
+      "group": 1,
+      "shader": 3,
+      "parameters": [
+        {
+          "key": "length",
+          "label": "拖线长度",
+          "help": "线性采样总长，单位像素。",
+          "initial": 30.0,
+          "minimum": 0.0,
+          "maximum": 300.0,
+          "choices": []
+        },
+        {
+          "key": "angle",
+          "label": "角度",
+          "help": "拖线方向，单位度。",
+          "initial": 0.0,
+          "minimum": -180.0,
+          "maximum": 180.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX01.4",
+      "name": "镜头散景",
+      "help": "密集圆盘或规则多边形光圈采样，形成连续且有边界的散景光斑；高光可单独增强。",
+      "group": 1,
+      "shader": 4,
+      "parameters": [
+        {
+          "key": "radius",
+          "label": "失焦半径",
+          "help": "光圈采样半径，单位像素。",
+          "initial": 14.0,
+          "minimum": 0.0,
+          "maximum": 100.0,
+          "choices": []
+        },
+        {
+          "key": "aperture",
+          "label": "光圈",
+          "help": "选择圆形、五边形、六边形或八边形散景。",
+          "initial": 0.0,
+          "minimum": 0.0,
+          "maximum": 3.0,
+          "choices": [
+            "圆形",
+            "五边形",
+            "六边形",
+            "八边形"
+          ]
+        },
+        {
+          "key": "threshold",
+          "label": "高光阈值",
+          "help": "高于此亮度的区域获得额外光斑权重。",
+          "initial": 0.65,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "boost",
+          "label": "高光增强",
+          "help": "增加高光在散景中的亮度。",
+          "initial": 1.2,
+          "minimum": 0.0,
+          "maximum": 4.0,
+          "choices": []
+        },
+        {
+          "key": "rotation",
+          "label": "光圈旋转",
+          "help": "多边形光圈的旋转角，单位度。",
+          "initial": 0.0,
+          "minimum": -180.0,
+          "maximum": 180.0,
+          "choices": []
+        },
+        {
+          "key": "edge",
+          "label": "边缘处理",
+          "help": "延伸重复边缘像素，镜像反射边缘内的内容，透明允许散景向画面外衰减。",
+          "initial": 0.0,
+          "minimum": 0.0,
+          "maximum": 2.0,
+          "choices": [
+            "延伸",
+            "镜像",
+            "透明"
+          ]
+        }
+      ],
+      "asset": "None",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX01.5",
+      "name": "条带移轴",
+      "help": "保留可旋转清晰带，两侧逐渐虚化。",
+      "group": 1,
+      "shader": 5,
+      "parameters": [
+        {
+          "key": "radius",
+          "label": "两侧模糊",
+          "help": "远离清晰带后的最大半径，单位像素。",
+          "initial": 18.0,
+          "minimum": 0.0,
+          "maximum": 100.0,
+          "choices": []
+        },
+        {
+          "key": "angle",
+          "label": "条带角度",
+          "help": "清晰带的旋转角，单位度。",
+          "initial": 0.0,
+          "minimum": -180.0,
+          "maximum": 180.0,
+          "choices": []
+        },
+        {
+          "key": "center",
+          "label": "条带位置",
+          "help": "沿条带法线移动清晰中心。",
+          "initial": 0.5,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "width",
+          "label": "清晰带宽",
+          "help": "清晰带占画布短边的比例。",
+          "initial": 0.18,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "feather",
+          "label": "过渡宽度",
+          "help": "清晰带两侧的渐变宽度。",
+          "initial": 0.18,
+          "minimum": 0.01,
+          "maximum": 1.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX01.6",
+      "name": "运动模糊",
+      "help": "使用插件已知的图层或相机位移；静止时不模糊，不分析视频光流。",
+      "group": 1,
+      "shader": 6,
+      "parameters": [
+        {
+          "key": "shutter",
+          "label": "快门比例",
+          "help": "以一帧已知运动位移为基准设置曝光长度。",
+          "initial": 0.8,
+          "minimum": 0.0,
+          "maximum": 3.0,
+          "choices": []
+        },
+        {
+          "key": "bias",
+          "label": "拖尾偏向",
+          "help": "零为曝光居中，一为向上一位置拖尾。",
+          "initial": 0.5,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX01.7",
+      "name": "残影拖尾",
+      "help": "混入此效果上一次输出；没有有效历史帧时直接显示当前画面。",
+      "group": 1,
+      "shader": 7,
+      "parameters": [
+        {
+          "key": "decay",
+          "label": "残影保留",
+          "help": "历史画面的保留比例。",
+          "initial": 0.75,
+          "minimum": 0.0,
+          "maximum": 0.98,
+          "choices": []
+        },
+        {
+          "key": "shift_x",
+          "label": "拖尾 X",
+          "help": "每帧历史画面的水平偏移，单位像素。",
+          "initial": 0.0,
+          "minimum": -40.0,
+          "maximum": 40.0,
+          "choices": []
+        },
+        {
+          "key": "shift_y",
+          "label": "拖尾 Y",
+          "help": "每帧历史画面的垂直偏移，单位像素。",
+          "initial": 0.0,
+          "minimum": -40.0,
+          "maximum": 40.0,
+          "choices": []
+        },
+        {
+          "key": "zoom",
+          "label": "历史缩放",
+          "help": "历史画面每帧的缩放倍率。",
+          "initial": 1.0,
+          "minimum": 0.9,
+          "maximum": 1.1,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": false,
+      "color2": false,
+      "history": true,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX01.8",
+      "name": "像素化",
+      "help": "规则方块或随机晶格重采样；所有候选模式均已开放。",
+      "group": 1,
+      "shader": 8,
+      "parameters": [
+        {
+          "key": "size",
+          "label": "像素块尺寸",
+          "help": "方块或晶格的平均尺寸，单位像素。",
+          "initial": 18.0,
+          "minimum": 2.0,
+          "maximum": 200.0,
+          "choices": []
+        },
+        {
+          "key": "mode",
+          "label": "排列",
+          "help": "规则块使用格点中心；晶格使用最近随机种子。",
+          "initial": 1.0,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": [
+            "规则方块",
+            "不规则晶格"
+          ]
+        },
+        {
+          "key": "jitter",
+          "label": "晶格不规则度",
+          "help": "控制种子在各单元内的偏移范围。",
+          "initial": 0.9,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX02.0",
+      "name": "锐化",
+      "help": "基于局部对比度降低强边缘过冲；可以与降噪独立叠加。",
+      "group": 2,
+      "shader": 0,
+      "parameters": [
+        {
+          "key": "amount",
+          "label": "锐化量",
+          "help": "增强局部高频细节。",
+          "initial": 0.8,
+          "minimum": 0.0,
+          "maximum": 3.0,
+          "choices": []
+        },
+        {
+          "key": "radius",
+          "label": "细节半径",
+          "help": "局部细节采样距离，单位像素。",
+          "initial": 1.0,
+          "minimum": 0.5,
+          "maximum": 4.0,
+          "choices": []
+        },
+        {
+          "key": "limit",
+          "label": "过冲限制",
+          "help": "限制每个通道单次增减量。",
+          "initial": 0.12,
+          "minimum": 0.01,
+          "maximum": 0.5,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX02.1",
+      "name": "降噪",
+      "help": "保边双边滤波平滑颗粒；九点中值去除孤立亮暗噪点。",
+      "group": 2,
+      "shader": 1,
+      "parameters": [
+        {
+          "key": "algorithm",
+          "label": "算法",
+          "help": "双边按色差保边；中值对各通道取九点中值。",
+          "initial": 0.0,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": [
+            "保边降噪",
+            "中值去噪"
+          ]
+        },
+        {
+          "key": "radius",
+          "label": "采样半径",
+          "help": "邻域间隔，单位像素。",
+          "initial": 1.5,
+          "minimum": 0.5,
+          "maximum": 5.0,
+          "choices": []
+        },
+        {
+          "key": "sigma",
+          "label": "色差容限",
+          "help": "双边滤波允许平滑的颜色差异。",
+          "initial": 0.12,
+          "minimum": 0.01,
+          "maximum": 1.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX02.2",
+      "name": "SMAA",
+      "help": "三遍形态抗锯齿：检测边缘、搜索形状并按覆盖面积混合。比 FXAA 多用两个中间缓冲。与 FXAA 二选一；处理素材当前像素，不使用历史帧。",
+      "group": 2,
+      "shader": 2,
+      "parameters": [
+        {
+          "key": "quality",
+          "label": "搜索质量",
+          "help": "省资源对应 SMAA 1x Low 的四步搜索；标准对应 Medium 的八步搜索。两档均不启用高耗时的对角线及圆角检测。",
+          "initial": 0.0,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": [
+            "省资源 · 4 步",
+            "标准 · 8 步"
+          ]
+        },
+        {
+          "key": "threshold",
+          "label": "边缘阈值",
+          "help": "越低越多边缘参与处理，也可能增加 GPU 占用。默认 0.15 优先减少集显负担。",
+          "initial": 0.15,
+          "minimum": 0.02,
+          "maximum": 0.5,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX02.3",
+      "name": "FXAA",
+      "help": "单遍快速近似抗锯齿：仅搜索高反差边缘并柔化台阶，细小文字可能变柔。优先用于资源紧张设备。与 SMAA 二选一。",
+      "group": 2,
+      "shader": 3,
+      "parameters": [
+        {
+          "key": "threshold",
+          "label": "边缘阈值",
+          "help": "局部反差低于最大亮度乘以此值时跳过。越高越省资源，但部分锯齿会保留。",
+          "initial": 0.1667,
+          "minimum": 0.05,
+          "maximum": 0.5,
+          "choices": []
+        },
+        {
+          "key": "subpixel",
+          "label": "细线柔化",
+          "help": "抑制单像素闪烁；越高细线越柔。0 仅修正边缘台阶。",
+          "initial": 0.5,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX02.4",
+      "name": "RCAS 清晰化",
+      "help": "AMD RCAS 的单遍五点自适应清晰化，限制黑白溢出。不放大分辨率，不生成缺失细节；可在抗锯齿后轻量恢复锐度。",
+      "group": 2,
+      "shader": 4,
+      "parameters": [
+        {
+          "key": "amount",
+          "label": "清晰程度",
+          "help": "0 保留原画；1 使用最大自适应清晰化。建议先用 0.25，避免视频噪点增强。",
+          "initial": 0.25,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "denoise",
+          "label": "噪点保护",
+          "help": "根据局部高通反差降低对孤立噪点的增强；不增加纹理采样次数，也不代替视频降噪。",
+          "initial": 1.0,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": [
+            "关闭",
+            "开启"
+          ]
+        }
+      ],
+      "asset": "None",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX03.0",
+      "name": "基础颜色",
+      "help": "Gamma、RGB 通道、曝光和饱和度在同一参数区调节。",
+      "group": 3,
+      "shader": 0,
+      "parameters": [
+        {
+          "key": "gamma",
+          "label": "Gamma",
+          "help": "大于一提亮中间调，小于一压暗。",
+          "initial": 1.05,
+          "minimum": 0.1,
+          "maximum": 4.0,
+          "choices": []
+        },
+        {
+          "key": "red",
+          "label": "红通道",
+          "help": "红色通道增益，零可隐藏该通道。",
+          "initial": 1.0,
+          "minimum": 0.0,
+          "maximum": 3.0,
+          "choices": []
+        },
+        {
+          "key": "green",
+          "label": "绿通道",
+          "help": "绿色通道增益，零可隐藏该通道。",
+          "initial": 1.0,
+          "minimum": 0.0,
+          "maximum": 3.0,
+          "choices": []
+        },
+        {
+          "key": "blue",
+          "label": "蓝通道",
+          "help": "蓝色通道增益，零可隐藏该通道。",
+          "initial": 1.0,
+          "minimum": 0.0,
+          "maximum": 3.0,
+          "choices": []
+        },
+        {
+          "key": "exposure",
+          "label": "曝光",
+          "help": "以档为单位的曝光补偿。",
+          "initial": 0.0,
+          "minimum": -5.0,
+          "maximum": 5.0,
+          "choices": []
+        },
+        {
+          "key": "saturation",
+          "label": "饱和度",
+          "help": "零为灰度，一为原始浓度。",
+          "initial": 1.0,
+          "minimum": 0.0,
+          "maximum": 3.0,
+          "choices": []
+        },
+        {
+          "key": "contrast",
+          "label": "对比度",
+          "help": "以中灰为中心调整对比。",
+          "initial": 1.0,
+          "minimum": 0.0,
+          "maximum": 3.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX03.1",
+      "name": "分色调色",
+      "help": "红黄绿青蓝紫六区独立保留色相、饱和度与密度；可额外把一个原始颜色区间映射到目标色。",
+      "group": 3,
+      "shader": 1,
+      "parameters": [
+        {
+          "key": "red_hue",
+          "label": "红色色相",
+          "help": "红色区的色相旋转，单位度；颜色区按原画面识别。",
+          "initial": 12.0,
+          "minimum": -180.0,
+          "maximum": 180.0,
+          "choices": []
+        },
+        {
+          "key": "red_saturation",
+          "label": "红色饱和度",
+          "help": "独立控制红色区的饱和度倍率。",
+          "initial": 1.1,
+          "minimum": 0.0,
+          "maximum": 3.0,
+          "choices": []
+        },
+        {
+          "key": "red_density",
+          "label": "红色密度",
+          "help": "正值加深红色区，负值减淡。",
+          "initial": 0.1,
+          "minimum": -1.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "yellow_hue",
+          "label": "黄色色相",
+          "help": "黄色区的色相旋转，单位度。",
+          "initial": 0.0,
+          "minimum": -180.0,
+          "maximum": 180.0,
+          "choices": []
+        },
+        {
+          "key": "yellow_saturation",
+          "label": "黄色饱和度",
+          "help": "独立控制黄色区的饱和度倍率。",
+          "initial": 1.0,
+          "minimum": 0.0,
+          "maximum": 3.0,
+          "choices": []
+        },
+        {
+          "key": "yellow_density",
+          "label": "黄色密度",
+          "help": "正值加深黄色区，负值减淡。",
+          "initial": 0.0,
+          "minimum": -1.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "green_hue",
+          "label": "绿色色相",
+          "help": "绿色区的色相旋转，单位度。",
+          "initial": 0.0,
+          "minimum": -180.0,
+          "maximum": 180.0,
+          "choices": []
+        },
+        {
+          "key": "green_saturation",
+          "label": "绿色饱和度",
+          "help": "独立控制绿色区的饱和度倍率。",
+          "initial": 1.0,
+          "minimum": 0.0,
+          "maximum": 3.0,
+          "choices": []
+        },
+        {
+          "key": "green_density",
+          "label": "绿色密度",
+          "help": "正值加深绿色区，负值减淡。",
+          "initial": 0.0,
+          "minimum": -1.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "cyan_hue",
+          "label": "青色色相",
+          "help": "青色区的色相旋转，单位度。",
+          "initial": 0.0,
+          "minimum": -180.0,
+          "maximum": 180.0,
+          "choices": []
+        },
+        {
+          "key": "cyan_saturation",
+          "label": "青色饱和度",
+          "help": "独立控制青色区的饱和度倍率。",
+          "initial": 1.0,
+          "minimum": 0.0,
+          "maximum": 3.0,
+          "choices": []
+        },
+        {
+          "key": "cyan_density",
+          "label": "青色密度",
+          "help": "正值加深青色区，负值减淡。",
+          "initial": 0.0,
+          "minimum": -1.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "blue_hue",
+          "label": "蓝色色相",
+          "help": "蓝色区的色相旋转，单位度。",
+          "initial": 0.0,
+          "minimum": -180.0,
+          "maximum": 180.0,
+          "choices": []
+        },
+        {
+          "key": "blue_saturation",
+          "label": "蓝色饱和度",
+          "help": "独立控制蓝色区的饱和度倍率。",
+          "initial": 1.0,
+          "minimum": 0.0,
+          "maximum": 3.0,
+          "choices": []
+        },
+        {
+          "key": "blue_density",
+          "label": "蓝色密度",
+          "help": "正值加深蓝色区，负值减淡。",
+          "initial": 0.0,
+          "minimum": -1.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "magenta_hue",
+          "label": "紫色色相",
+          "help": "紫色区的色相旋转，单位度。",
+          "initial": 0.0,
+          "minimum": -180.0,
+          "maximum": 180.0,
+          "choices": []
+        },
+        {
+          "key": "magenta_saturation",
+          "label": "紫色饱和度",
+          "help": "独立控制紫色区的饱和度倍率。",
+          "initial": 1.0,
+          "minimum": 0.0,
+          "maximum": 3.0,
+          "choices": []
+        },
+        {
+          "key": "magenta_density",
+          "label": "紫色密度",
+          "help": "正值加深紫色区，负值减淡。",
+          "initial": 0.0,
+          "minimum": -1.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "width",
+          "label": "区间宽度",
+          "help": "六个原始色相区间的半宽，单位度；重叠部分按权重平滑混合。",
+          "initial": 35.0,
+          "minimum": 5.0,
+          "maximum": 90.0,
+          "choices": []
+        },
+        {
+          "key": "remap",
+          "label": "重映射量",
+          "help": "启用目标色重映射后，所选原始区间靠拢目标色的比例。",
+          "initial": 0.8,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "range",
+          "label": "重映射颜色区间",
+          "help": "仅决定额外目标色重映射的区间；六区的独立调整始终保留。",
+          "initial": 0.0,
+          "minimum": 0.0,
+          "maximum": 5.0,
+          "choices": [
+            "红",
+            "黄",
+            "绿",
+            "青",
+            "蓝",
+            "紫"
+          ]
+        },
+        {
+          "key": "mode",
+          "label": "处理方式",
+          "help": "六色分区同时生效；可额外将所选区间转向颜色控件指定的目标色。",
+          "initial": 0.0,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": [
+            "六色独立调整",
+            "六色调整＋目标色重映射"
+          ]
+        }
+      ],
+      "asset": "None",
+      "color": true,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX03.2",
+      "name": "白平衡",
+      "help": "独立控制冷暖与绿紫偏色，并补偿近似亮度。",
+      "group": 3,
+      "shader": 2,
+      "parameters": [
+        {
+          "key": "temperature",
+          "label": "冷暖",
+          "help": "负值偏冷，正值偏暖。",
+          "initial": 0.15,
+          "minimum": -1.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "tint",
+          "label": "绿紫",
+          "help": "负值偏绿，正值偏紫。",
+          "initial": 0.0,
+          "minimum": -1.0,
+          "maximum": 1.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX03.3",
+      "name": "阴影／中间调／高光",
+      "help": "三段平滑亮度权重分别控制曝光与 RGB 染色。",
+      "group": 3,
+      "shader": 3,
+      "parameters": [
+        {
+          "key": "shadow_exp",
+          "label": "阴影曝光",
+          "help": "暗部曝光补偿，单位档。",
+          "initial": 0.1,
+          "minimum": -3.0,
+          "maximum": 3.0,
+          "choices": []
+        },
+        {
+          "key": "shadow_r",
+          "label": "阴影红",
+          "help": "暗部红色增减量。",
+          "initial": 0.0,
+          "minimum": -1.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "shadow_g",
+          "label": "阴影绿",
+          "help": "暗部绿色增减量。",
+          "initial": 0.0,
+          "minimum": -1.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "shadow_b",
+          "label": "阴影蓝",
+          "help": "暗部蓝色增减量。",
+          "initial": 0.04,
+          "minimum": -1.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "mid_exp",
+          "label": "中间调曝光",
+          "help": "中间亮度曝光补偿，单位档。",
+          "initial": 0.0,
+          "minimum": -3.0,
+          "maximum": 3.0,
+          "choices": []
+        },
+        {
+          "key": "mid_r",
+          "label": "中间调红",
+          "help": "中间调红色增减量。",
+          "initial": 0.0,
+          "minimum": -1.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "mid_g",
+          "label": "中间调绿",
+          "help": "中间调绿色增减量。",
+          "initial": 0.0,
+          "minimum": -1.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "mid_b",
+          "label": "中间调蓝",
+          "help": "中间调蓝色增减量。",
+          "initial": 0.0,
+          "minimum": -1.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "high_exp",
+          "label": "高光曝光",
+          "help": "高亮部曝光补偿，单位档。",
+          "initial": 0.0,
+          "minimum": -3.0,
+          "maximum": 3.0,
+          "choices": []
+        },
+        {
+          "key": "high_r",
+          "label": "高光红",
+          "help": "高光红色增减量。",
+          "initial": 0.03,
+          "minimum": -1.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "high_g",
+          "label": "高光绿",
+          "help": "高光绿色增减量。",
+          "initial": 0.0,
+          "minimum": -1.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "high_b",
+          "label": "高光蓝",
+          "help": "高光蓝色增减量。",
+          "initial": 0.0,
+          "minimum": -1.0,
+          "maximum": 1.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX03.4",
+      "name": "调色曲线",
+      "help": "编辑五个固定输入节点的输出值，以平滑曲线重映射亮度或单独通道。",
+      "group": 3,
+      "shader": 4,
+      "parameters": [
+        {
+          "key": "channel",
+          "label": "曲线通道",
+          "help": "亮度保持原色比例；RGB 分别选择单通道。",
+          "initial": 0.0,
+          "minimum": 0.0,
+          "maximum": 3.0,
+          "choices": [
+            "亮度",
+            "红",
+            "绿",
+            "蓝"
+          ]
+        },
+        {
+          "key": "black",
+          "label": "输入 0 的输出",
+          "help": "曲线黑场端点。",
+          "initial": 0.0,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "shadow",
+          "label": "输入 0.25 的输出",
+          "help": "曲线阴影节点。",
+          "initial": 0.2,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "middle",
+          "label": "输入 0.5 的输出",
+          "help": "曲线中灰节点。",
+          "initial": 0.5,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "highlight",
+          "label": "输入 0.75 的输出",
+          "help": "曲线高光节点。",
+          "initial": 0.8,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "white",
+          "label": "输入 1 的输出",
+          "help": "曲线白场端点。",
+          "initial": 1.0,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX03.5",
+      "name": "LUT表调色",
+      "help": "加载 .cube 三维调色表；缺失文件自动旁路，按表内定义域采样。",
+      "group": 3,
+      "shader": 5,
+      "parameters": [
+        {
+          "key": "mix",
+          "label": "调色比例",
+          "help": "在原始颜色和查找表结果之间混合。",
+          "initial": 1.0,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        }
+      ],
+      "asset": "Lut",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX03.6",
+      "name": "局部留色",
+      "help": "留下色彩控件指定的色相，其他部分变为灰度或第二颜色。",
+      "group": 3,
+      "shader": 6,
+      "parameters": [
+        {
+          "key": "tolerance",
+          "label": "色相容差",
+          "help": "保留色相的半宽，单位度。",
+          "initial": 28.0,
+          "minimum": 1.0,
+          "maximum": 180.0,
+          "choices": []
+        },
+        {
+          "key": "softness",
+          "label": "过渡宽度",
+          "help": "色相保留边界的柔和程度，单位度。",
+          "initial": 15.0,
+          "minimum": 1.0,
+          "maximum": 90.0,
+          "choices": []
+        },
+        {
+          "key": "background",
+          "label": "其余区域",
+          "help": "灰度保留明暗；染色使用第二颜色。",
+          "initial": 0.0,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": [
+            "灰度",
+            "第二颜色"
+          ]
+        },
+        {
+          "key": "min_sat",
+          "label": "最低饱和度",
+          "help": "低饱和区域不会被误识别为保留色。",
+          "initial": 0.15,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": true,
+      "color2": true,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX03.7",
+      "name": "色阶压缩",
+      "help": "按通道减少颜色级数，可用有序噪声减轻条带。",
+      "group": 3,
+      "shader": 7,
+      "parameters": [
+        {
+          "key": "levels",
+          "label": "每通道色阶",
+          "help": "每通道保留的离散层级数。",
+          "initial": 5.0,
+          "minimum": 2.0,
+          "maximum": 64.0,
+          "choices": []
+        },
+        {
+          "key": "dither",
+          "label": "抖动",
+          "help": "量化前加入的低幅度空间噪声。",
+          "initial": 0.15,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX03.8",
+      "name": "负片／明暗反转",
+      "help": "全部 RGB 取反，或反转明暗并保留色差信息。",
+      "group": 3,
+      "shader": 8,
+      "parameters": [
+        {
+          "key": "mode",
+          "label": "反转方式",
+          "help": "负片逐通道取反；明暗反转保留原始色差。",
+          "initial": 0.0,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": [
+            "负片",
+            "明暗反转"
+          ]
+        }
+      ],
+      "asset": "None",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX03.9",
+      "name": "自动变色",
+      "help": "以时间连续旋转原画面色相。",
+      "group": 3,
+      "shader": 9,
+      "parameters": [
+        {
+          "key": "speed",
+          "label": "循环速度",
+          "help": "每秒色相旋转圈数；负值反向。",
+          "initial": 0.08,
+          "minimum": -2.0,
+          "maximum": 2.0,
+          "choices": []
+        },
+        {
+          "key": "offset",
+          "label": "初始偏移",
+          "help": "色相起始角，单位度。",
+          "initial": 0.0,
+          "minimum": -180.0,
+          "maximum": 180.0,
+          "choices": []
+        },
+        {
+          "key": "saturation",
+          "label": "饱和度",
+          "help": "循环后的饱和度倍率。",
+          "initial": 1.1,
+          "minimum": 0.0,
+          "maximum": 3.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX04.0",
+      "name": "辉光",
+      "help": "高光溢出提取亮区；柔光辉光将模糊颜色以柔光方式叠加。",
+      "group": 4,
+      "shader": 0,
+      "parameters": [
+        {
+          "key": "mode",
+          "label": "辉光模式",
+          "help": "选择高光溢出或柔光混合。",
+          "initial": 0.0,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": [
+            "高光溢出",
+            "柔光辉光"
+          ]
+        },
+        {
+          "key": "radius",
+          "label": "扩散半径",
+          "help": "亮光扩散范围，单位像素。",
+          "initial": 20.0,
+          "minimum": 0.0,
+          "maximum": 160.0,
+          "choices": []
+        },
+        {
+          "key": "threshold",
+          "label": "高光阈值",
+          "help": "仅高于此亮度的采样参与高光溢出。",
+          "initial": 0.6,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "gain",
+          "label": "亮光强度",
+          "help": "扩散光的增益。",
+          "initial": 1.2,
+          "minimum": 0.0,
+          "maximum": 5.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX04.1",
+      "name": "星芒",
+      "help": "固定 24 次方向采样提取高光星线；可调四、六或八射线。",
+      "group": 4,
+      "shader": 1,
+      "parameters": [
+        {
+          "key": "length",
+          "label": "星线长度",
+          "help": "星芒半径，单位像素。",
+          "initial": 45.0,
+          "minimum": 0.0,
+          "maximum": 300.0,
+          "choices": []
+        },
+        {
+          "key": "threshold",
+          "label": "高光阈值",
+          "help": "只有高于此阈值的光点生成星线。",
+          "initial": 0.7,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "rays",
+          "label": "射线数量",
+          "help": "固定采样预算下分配四、六或八条射线。",
+          "initial": 0.0,
+          "minimum": 0.0,
+          "maximum": 2.0,
+          "choices": [
+            "四射线",
+            "六射线",
+            "八射线"
+          ]
+        },
+        {
+          "key": "angle",
+          "label": "旋转角",
+          "help": "星线方向旋转，单位度。",
+          "initial": 20.0,
+          "minimum": -180.0,
+          "maximum": 180.0,
+          "choices": []
+        },
+        {
+          "key": "gain",
+          "label": "星芒强度",
+          "help": "星线光的增益。",
+          "initial": 1.5,
+          "minimum": 0.0,
+          "maximum": 6.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX04.2",
+      "name": "色散／RGB 分离",
+      "help": "径向色散越靠边越强；独立错位沿设定方向移动红蓝通道。",
+      "group": 4,
+      "shader": 2,
+      "parameters": [
+        {
+          "key": "mode",
+          "label": "模式",
+          "help": "镜头色散或固定 RGB 错位。",
+          "initial": 0.0,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": [
+            "镜头边缘色散",
+            "RGB 独立错位"
+          ]
+        },
+        {
+          "key": "amount",
+          "label": "分离距离",
+          "help": "最大采样位移，单位像素。",
+          "initial": 5.0,
+          "minimum": 0.0,
+          "maximum": 100.0,
+          "choices": []
+        },
+        {
+          "key": "angle",
+          "label": "错位角度",
+          "help": "RGB 独立错位的方向，单位度。",
+          "initial": 0.0,
+          "minimum": -180.0,
+          "maximum": 180.0,
+          "choices": []
+        },
+        {
+          "key": "center_x",
+          "label": "镜头中心 X",
+          "help": "径向色散中心水平位置。",
+          "initial": 0.5,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "center_y",
+          "label": "镜头中心 Y",
+          "help": "径向色散中心垂直位置。",
+          "initial": 0.5,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX04.3",
+      "name": "流光扫过",
+      "help": "一条可旋转的柔亮光带周期性扫过素材。",
+      "group": 4,
+      "shader": 3,
+      "parameters": [
+        {
+          "key": "speed",
+          "label": "扫过速度",
+          "help": "每秒扫过画布次数；负值反向。",
+          "initial": 0.2,
+          "minimum": -2.0,
+          "maximum": 2.0,
+          "choices": []
+        },
+        {
+          "key": "width",
+          "label": "光带宽度",
+          "help": "光带占画布短边比例。",
+          "initial": 0.16,
+          "minimum": 0.01,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "angle",
+          "label": "光带角度",
+          "help": "光带旋转角，单位度。",
+          "initial": 25.0,
+          "minimum": -180.0,
+          "maximum": 180.0,
+          "choices": []
+        },
+        {
+          "key": "gain",
+          "label": "亮度",
+          "help": "光带的颜色增益。",
+          "initial": 1.0,
+          "minimum": 0.0,
+          "maximum": 5.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": true,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX04.4",
+      "name": "暗角",
+      "help": "圆度零为画布比例矩形，一为画布比例椭圆；支持中心与中心缩放。",
+      "group": 4,
+      "shader": 4,
+      "parameters": [
+        {
+          "key": "roundness",
+          "label": "圆度",
+          "help": "零为矩形，一为长短轴对应画布的椭圆。",
+          "initial": 1.0,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "center_x",
+          "label": "中心 X",
+          "help": "暗角中心水平位置。",
+          "initial": 0.5,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "center_y",
+          "label": "中心 Y",
+          "help": "暗角中心垂直位置。",
+          "initial": 0.5,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "scale",
+          "label": "中心缩放",
+          "help": "暗角轮廓相对于画布边界的缩放倍率。",
+          "initial": 1.0,
+          "minimum": 0.1,
+          "maximum": 3.0,
+          "choices": []
+        },
+        {
+          "key": "feather",
+          "label": "渐变宽度",
+          "help": "由中心到外缘的柔和过渡宽度。",
+          "initial": 0.6,
+          "minimum": 0.01,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "darkness",
+          "label": "压暗程度",
+          "help": "最外围的亮度削减比例。",
+          "initial": 0.7,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX04.5",
+      "name": "放射光束",
+      "help": "向指定光心进行 12 点高光积分，产生向外散射的光束。",
+      "group": 4,
+      "shader": 5,
+      "parameters": [
+        {
+          "key": "center_x",
+          "label": "光心 X",
+          "help": "光束的水平发散中心。",
+          "initial": 0.5,
+          "minimum": -1.0,
+          "maximum": 2.0,
+          "choices": []
+        },
+        {
+          "key": "center_y",
+          "label": "光心 Y",
+          "help": "光束的垂直发散中心。",
+          "initial": 0.3,
+          "minimum": -1.0,
+          "maximum": 2.0,
+          "choices": []
+        },
+        {
+          "key": "length",
+          "label": "光束长度",
+          "help": "沿像素到光心方向的积分比例。",
+          "initial": 0.7,
+          "minimum": 0.0,
+          "maximum": 1.5,
+          "choices": []
+        },
+        {
+          "key": "threshold",
+          "label": "高光阈值",
+          "help": "仅亮于此阈值的部分产生光束。",
+          "initial": 0.6,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "decay",
+          "label": "距离衰减",
+          "help": "越大则远距离光束衰减越快。",
+          "initial": 1.4,
+          "minimum": 0.0,
+          "maximum": 5.0,
+          "choices": []
+        },
+        {
+          "key": "gain",
+          "label": "光束强度",
+          "help": "积分光束的增益。",
+          "initial": 1.1,
+          "minimum": 0.0,
+          "maximum": 5.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX04.6",
+      "name": "镜头鬼影",
+      "help": "将高光沿镜头中心反射并缩放，叠加一串带轻微色差的镜片反光。",
+      "group": 4,
+      "shader": 6,
+      "parameters": [
+        {
+          "key": "threshold",
+          "label": "高光阈值",
+          "help": "生成镜片反光所需的亮度。",
+          "initial": 0.7,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "spread",
+          "label": "鬼影间距",
+          "help": "反射镜片之间的缩放差。",
+          "initial": 0.45,
+          "minimum": 0.05,
+          "maximum": 1.5,
+          "choices": []
+        },
+        {
+          "key": "radius",
+          "label": "柔化半径",
+          "help": "反光的柔化半径，单位像素。",
+          "initial": 8.0,
+          "minimum": 0.0,
+          "maximum": 60.0,
+          "choices": []
+        },
+        {
+          "key": "gain",
+          "label": "反光强度",
+          "help": "镜片反光叠加量。",
+          "initial": 0.65,
+          "minimum": 0.0,
+          "maximum": 3.0,
+          "choices": []
+        },
+        {
+          "key": "count",
+          "label": "镜片数量",
+          "help": "反光数量，最多六层。",
+          "initial": 4.0,
+          "minimum": 1.0,
+          "maximum": 6.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX04.7",
+      "name": "胶片漏光",
+      "help": "从指定边缘渗入缓慢移动的暖色或自选颜色光斑。",
+      "group": 4,
+      "shader": 7,
+      "parameters": [
+        {
+          "key": "side",
+          "label": "漏光边缘",
+          "help": "从左、右、上或下边缘进入。",
+          "initial": 0.0,
+          "minimum": 0.0,
+          "maximum": 3.0,
+          "choices": [
+            "左",
+            "右",
+            "上",
+            "下"
+          ]
+        },
+        {
+          "key": "width",
+          "label": "渗入宽度",
+          "help": "漏光从边缘向内扩散的比例。",
+          "initial": 0.35,
+          "minimum": 0.01,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "speed",
+          "label": "流动速度",
+          "help": "漏光斑的缓慢变化速度。",
+          "initial": 0.3,
+          "minimum": 0.0,
+          "maximum": 3.0,
+          "choices": []
+        },
+        {
+          "key": "gain",
+          "label": "漏光强度",
+          "help": "进入画面的彩色光量。",
+          "initial": 0.8,
+          "minimum": 0.0,
+          "maximum": 4.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": true,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX05.0",
+      "name": "环境色受光",
+      "help": "可选参考图层提供环境颜色；未选择时使用柔和暖光。启用场景灯时跟随该灯，否则使用随素材移动的独立局部灯光。",
+      "group": 5,
+      "shader": 0,
+      "parameters": [
+        {
+          "key": "amount",
+          "label": "环境染色",
+          "help": "环境颜色参与素材颜色的比例。",
+          "initial": 0.45,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "radius",
+          "label": "参考模糊",
+          "help": "参考画面的平滑半径，单位像素。",
+          "initial": 30.0,
+          "minimum": 0.0,
+          "maximum": 200.0,
+          "choices": []
+        },
+        {
+          "key": "direction",
+          "label": "方向影响",
+          "help": "控制场景灯或独立局部灯方向对环境受光的影响。",
+          "initial": 0.5,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "scale",
+          "label": "受光表面比例",
+          "help": "一为图层当前实际宽高；随图层旋转与缩放，再按此比例调整受光计算表面。",
+          "initial": 1.0,
+          "minimum": 0.01,
+          "maximum": 10.0,
+          "choices": []
+        }
+      ],
+      "asset": "Source",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX05.1",
+      "name": "背后柔光",
+      "help": "沿素材 Alpha 轮廓叠加内侧轮廓光与外侧柔光；不透明矩形也可显示内侧轮廓。未启用场景灯时使用独立局部灯光。",
+      "group": 5,
+      "shader": 1,
+      "parameters": [
+        {
+          "key": "radius",
+          "label": "柔光半径",
+          "help": "背光扩散半径，单位像素。",
+          "initial": 25.0,
+          "minimum": 0.0,
+          "maximum": 150.0,
+          "choices": []
+        },
+        {
+          "key": "offset",
+          "label": "背光偏移",
+          "help": "沿背光方向移动的像素距离。",
+          "initial": 12.0,
+          "minimum": -100.0,
+          "maximum": 100.0,
+          "choices": []
+        },
+        {
+          "key": "gain",
+          "label": "背光强度",
+          "help": "灯光颜色和强度之外的局部增益。",
+          "initial": 1.0,
+          "minimum": 0.0,
+          "maximum": 5.0,
+          "choices": []
+        },
+        {
+          "key": "scale",
+          "label": "受光表面比例",
+          "help": "一为图层当前实际宽高；再按此比例调整背光计算表面。",
+          "initial": 1.0,
+          "minimum": 0.01,
+          "maximum": 10.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": true,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX05.2",
+      "name": "烛光",
+      "help": "叠加连续噪声闪动与暖色受光；跟随已启用的场景灯，无场景灯时使用独立局部灯光。可单独调整相对灯光投影中心的偏移与光照大小。",
+      "group": 5,
+      "shader": 2,
+      "parameters": [
+        {
+          "key": "flicker",
+          "label": "闪动幅度",
+          "help": "烛光亮度不规则变化幅度。",
+          "initial": 0.2,
+          "minimum": 0.0,
+          "maximum": 0.9,
+          "choices": []
+        },
+        {
+          "key": "speed",
+          "label": "闪动速度",
+          "help": "连续闪动的变化速度。",
+          "initial": 3.0,
+          "minimum": 0.1,
+          "maximum": 15.0,
+          "choices": []
+        },
+        {
+          "key": "warmth",
+          "label": "暖色比例",
+          "help": "灯光颜色向暖橙色靠拢的比例。",
+          "initial": 0.75,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "gain",
+          "label": "烛光强度",
+          "help": "烛光照射增益。",
+          "initial": 0.7,
+          "minimum": 0.0,
+          "maximum": 4.0,
+          "choices": []
+        },
+        {
+          "key": "scale",
+          "label": "受光表面比例",
+          "help": "一为图层当前实际宽高；再按此比例调整烛光计算表面。",
+          "initial": 1.0,
+          "minimum": 0.01,
+          "maximum": 10.0,
+          "choices": []
+        },
+        {
+          "key": "center_x",
+          "label": "中心 X 偏移",
+          "help": "相对灯光投影中心的水平偏移，以素材宽度为一：0 跟随原灯光，正值向右，负值向左；随素材变换。",
+          "initial": 0.0,
+          "minimum": -1.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "center_y",
+          "label": "中心 Y 偏移",
+          "help": "相对灯光投影中心的垂直偏移，以素材高度为一：0 跟随原灯光，正值向下，负值向上；随素材变换。",
+          "initial": 0.0,
+          "minimum": -1.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "size",
+          "label": "光照大小比例",
+          "help": "围绕中心缩放烛光的受光范围，1 为原始范围；越小越集中，越大越宽。与受光表面比例分开控制。",
+          "initial": 1.0,
+          "minimum": 0.01,
+          "maximum": 10.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": true,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX05.3",
+      "name": "聚光灯",
+      "help": "局部光斑照亮素材并压暗外围；跟随已启用的场景灯，无场景灯时使用独立局部灯光。可单独调整相对灯光投影中心的偏移与光照大小。",
+      "group": 5,
+      "shader": 3,
+      "parameters": [
+        {
+          "key": "radius",
+          "label": "光斑半径",
+          "help": "聚光半径占受光表面实际宽度的比例。",
+          "initial": 0.35,
+          "minimum": 0.01,
+          "maximum": 2.0,
+          "choices": []
+        },
+        {
+          "key": "softness",
+          "label": "边缘柔和",
+          "help": "聚光边缘渐变的比例。",
+          "initial": 0.5,
+          "minimum": 0.01,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "ambient",
+          "label": "外围亮度",
+          "help": "未受聚光区域保留的素材亮度。",
+          "initial": 0.35,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "gain",
+          "label": "聚光强度",
+          "help": "灯光强度之外的局部增益。",
+          "initial": 1.0,
+          "minimum": 0.0,
+          "maximum": 5.0,
+          "choices": []
+        },
+        {
+          "key": "scale",
+          "label": "受光表面比例",
+          "help": "一为图层当前实际宽高；再按此比例调整聚光计算表面。",
+          "initial": 1.0,
+          "minimum": 0.01,
+          "maximum": 10.0,
+          "choices": []
+        },
+        {
+          "key": "center_x",
+          "label": "中心 X 偏移",
+          "help": "相对灯光投影中心的水平偏移，以素材宽度为一：0 跟随原灯光，正值向右，负值向左；随素材变换。",
+          "initial": 0.0,
+          "minimum": -1.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "center_y",
+          "label": "中心 Y 偏移",
+          "help": "相对灯光投影中心的垂直偏移，以素材高度为一：0 跟随原灯光，正值向下，负值向上；随素材变换。",
+          "initial": 0.0,
+          "minimum": -1.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "size",
+          "label": "光照大小比例",
+          "help": "围绕中心缩放光斑范围，1 保留光斑半径设定；最终半径为光斑半径乘以此比例。与受光表面比例分开控制。",
+          "initial": 1.0,
+          "minimum": 0.01,
+          "maximum": 10.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": true,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX05.4",
+      "name": "表面高光",
+      "help": "按图层实际平面方向产生镜面高光；可选择用亮度梯度生成细节法线。未启用场景灯时使用独立局部灯光。",
+      "group": 5,
+      "shader": 4,
+      "parameters": [
+        {
+          "key": "normal_x",
+          "label": "表面朝向 X",
+          "help": "沿图层局部水平方向倾斜法线；随图层旋转。",
+          "initial": 0.0,
+          "minimum": -1.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "normal_y",
+          "label": "表面朝向 Y",
+          "help": "沿图层局部垂直方向倾斜法线；随图层旋转。",
+          "initial": 0.0,
+          "minimum": -1.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "roughness",
+          "label": "粗糙度",
+          "help": "越小则镜面亮斑越集中。",
+          "initial": 0.35,
+          "minimum": 0.02,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "gain",
+          "label": "高光强度",
+          "help": "镜面高光的局部增益。",
+          "initial": 1.5,
+          "minimum": 0.0,
+          "maximum": 8.0,
+          "choices": []
+        },
+        {
+          "key": "normal_mode",
+          "label": "细节法线",
+          "help": "直接使用表面方向，或从亮度梯度生成附加法线。",
+          "initial": 0.0,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": [
+            "平面法线",
+            "亮度生成法线"
+          ]
+        },
+        {
+          "key": "bump",
+          "label": "凹凸强度",
+          "help": "亮度梯度转法线时的放大系数。",
+          "initial": 2.0,
+          "minimum": 0.0,
+          "maximum": 10.0,
+          "choices": []
+        },
+        {
+          "key": "scale",
+          "label": "受光表面比例",
+          "help": "一为图层当前实际宽高；再按此比例调整高光位置和灯距衰减。",
+          "initial": 1.0,
+          "minimum": 0.01,
+          "maximum": 10.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX05.5",
+      "name": "投影／内阴影",
+      "help": "默认在素材轮廓内显示阴影；外投影需源矩形内有透明留白，不能越出源矩形。跨图层空间投影由场景灯与接收层控制。",
+      "group": 5,
+      "shader": 5,
+      "parameters": [
+        {
+          "key": "mode",
+          "label": "阴影模式",
+          "help": "内阴影适用于不透明矩形和透明素材；外投影需在素材四周留透明空间。",
+          "initial": 1.0,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": [
+            "外投影",
+            "内阴影"
+          ]
+        },
+        {
+          "key": "distance",
+          "label": "偏移距离",
+          "help": "沿场景灯或独立局部灯反方向的二维偏移，单位像素。",
+          "initial": 15.0,
+          "minimum": 0.0,
+          "maximum": 200.0,
+          "choices": []
+        },
+        {
+          "key": "radius",
+          "label": "阴影模糊",
+          "help": "阴影 Alpha 的平滑半径，单位像素。",
+          "initial": 12.0,
+          "minimum": 0.0,
+          "maximum": 100.0,
+          "choices": []
+        },
+        {
+          "key": "opacity",
+          "label": "阴影强度",
+          "help": "第二颜色作为阴影色；此参数控制浓度。",
+          "initial": 0.65,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "scale",
+          "label": "受光表面比例",
+          "help": "一为图层当前实际宽高；阴影方向投影到旋转后的图层平面。",
+          "initial": 1.0,
+          "minimum": 0.01,
+          "maximum": 10.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": false,
+      "color2": true,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX06.0",
+      "name": "描边",
+      "help": "沿 Alpha 轮廓向外或向内绘制描边；输出仍限制在源矩形内。",
+      "group": 6,
+      "shader": 0,
+      "parameters": [
+        {
+          "key": "position",
+          "label": "描边位置",
+          "help": "外侧扩大轮廓，内侧保留在原有 Alpha 内。",
+          "initial": 0.0,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": [
+            "外侧",
+            "内侧"
+          ]
+        },
+        {
+          "key": "width",
+          "label": "描边宽度",
+          "help": "轮廓半径，单位像素。",
+          "initial": 4.0,
+          "minimum": 0.5,
+          "maximum": 60.0,
+          "choices": []
+        },
+        {
+          "key": "opacity",
+          "label": "描边浓度",
+          "help": "所选颜色的描边 Alpha。",
+          "initial": 1.0,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "softness",
+          "label": "边缘柔和",
+          "help": "控制描边边界的过渡宽度。",
+          "initial": 0.15,
+          "minimum": 0.01,
+          "maximum": 1.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": true,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX06.1",
+      "name": "内发光",
+      "help": "由模糊 Alpha 计算内边界距离，独立叠加柔和内光。",
+      "group": 6,
+      "shader": 1,
+      "parameters": [
+        {
+          "key": "radius",
+          "label": "发光半径",
+          "help": "光线向轮廓内部扩散的范围，单位像素。",
+          "initial": 12.0,
+          "minimum": 0.0,
+          "maximum": 100.0,
+          "choices": []
+        },
+        {
+          "key": "gain",
+          "label": "发光强度",
+          "help": "内光的颜色增益。",
+          "initial": 1.0,
+          "minimum": 0.0,
+          "maximum": 5.0,
+          "choices": []
+        },
+        {
+          "key": "falloff",
+          "label": "光线集中度",
+          "help": "越大则光越集中在轮廓附近。",
+          "initial": 1.3,
+          "minimum": 0.1,
+          "maximum": 5.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": true,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX06.2",
+      "name": "边缘线稿",
+      "help": "按画面内部亮度梯度提取线条，可叠在线上或显示为纸底线稿。",
+      "group": 6,
+      "shader": 2,
+      "parameters": [
+        {
+          "key": "radius",
+          "label": "线条尺度",
+          "help": "边缘检测采样间隔，单位像素。",
+          "initial": 1.0,
+          "minimum": 0.5,
+          "maximum": 10.0,
+          "choices": []
+        },
+        {
+          "key": "threshold",
+          "label": "边缘阈值",
+          "help": "只有强于阈值的梯度形成线条。",
+          "initial": 0.12,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "softness",
+          "label": "过渡宽度",
+          "help": "边缘线从无到有的柔和程度。",
+          "initial": 0.1,
+          "minimum": 0.01,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "mode",
+          "label": "线稿底图",
+          "help": "在原画面叠加线条，或使用第二颜色为纸底。",
+          "initial": 0.0,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": [
+            "原画叠加",
+            "纯色纸底"
+          ]
+        }
+      ],
+      "asset": "None",
+      "color": true,
+      "color2": true,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX07.0",
+      "name": "雨窗水滴",
+      "help": "水滴折射现有画面，并留下随重力下落的水痕；保留素材透明度。",
+      "group": 7,
+      "shader": 0,
+      "parameters": [
+        {
+          "key": "density",
+          "label": "雨滴密度",
+          "help": "提高玻璃上雨滴网格的密度。",
+          "initial": 18.0,
+          "minimum": 4.0,
+          "maximum": 60.0,
+          "choices": []
+        },
+        {
+          "key": "size",
+          "label": "水滴大小",
+          "help": "控制每个网格内水滴的宽度。",
+          "initial": 0.22,
+          "minimum": 0.04,
+          "maximum": 0.45,
+          "choices": []
+        },
+        {
+          "key": "refraction",
+          "label": "折射像素",
+          "help": "水滴表面引起的背景位移，单位为像素。",
+          "initial": 12.0,
+          "minimum": 0.0,
+          "maximum": 60.0,
+          "choices": []
+        },
+        {
+          "key": "speed",
+          "label": "下落速度",
+          "help": "调节水滴及水痕向下移动的速度。",
+          "initial": 0.35,
+          "minimum": 0.0,
+          "maximum": 3.0,
+          "choices": []
+        },
+        {
+          "key": "trails",
+          "label": "水痕长度",
+          "help": "调节雨滴后方细长水痕的长度。",
+          "initial": 0.65,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "shine",
+          "label": "水滴反光",
+          "help": "控制雨滴边缘的亮部反光。",
+          "initial": 0.25,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX07.1",
+      "name": "流云",
+      "help": "生成多层流动云雾纹理；两种颜色控制云与背景，不使用空间深度。",
+      "group": 7,
+      "shader": 1,
+      "parameters": [
+        {
+          "key": "scale",
+          "label": "云团尺度",
+          "help": "数值越高，云团越小且纹理越密。",
+          "initial": 4.0,
+          "minimum": 0.5,
+          "maximum": 20.0,
+          "choices": []
+        },
+        {
+          "key": "speed",
+          "label": "流动速度",
+          "help": "控制云层随时间平移和内部演化的速度。",
+          "initial": 0.15,
+          "minimum": 0.0,
+          "maximum": 2.0,
+          "choices": []
+        },
+        {
+          "key": "coverage",
+          "label": "云量",
+          "help": "提高云团覆盖面积，降低则出现更多空隙。",
+          "initial": 0.55,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "softness",
+          "label": "云边柔和度",
+          "help": "控制云团密度边界的过渡宽度。",
+          "initial": 0.25,
+          "minimum": 0.02,
+          "maximum": 0.6,
+          "choices": []
+        },
+        {
+          "key": "opacity",
+          "label": "云层透明度",
+          "help": "调节生成云层的最大透明度。",
+          "initial": 0.8,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": true,
+      "color2": true,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX07.2",
+      "name": "水面／水波",
+      "help": "海面模式生成透视水纹与天空背景；涟漪模式只折射当前素材。",
+      "group": 7,
+      "shader": 2,
+      "parameters": [
+        {
+          "key": "mode",
+          "label": "模式",
+          "help": "选择生成海面背景，或在当前画面上产生同心涟漪。",
+          "initial": 0.0,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": [
+            "海面背景",
+            "画面涟漪"
+          ]
+        },
+        {
+          "key": "frequency",
+          "label": "波纹密度",
+          "help": "控制波峰之间的距离与海面细节密度。",
+          "initial": 20.0,
+          "minimum": 2.0,
+          "maximum": 80.0,
+          "choices": []
+        },
+        {
+          "key": "amplitude",
+          "label": "波幅像素",
+          "help": "涟漪位移以像素计；海面模式用于波峰起伏和反光。",
+          "initial": 10.0,
+          "minimum": 0.0,
+          "maximum": 50.0,
+          "choices": []
+        },
+        {
+          "key": "speed",
+          "label": "波动速度",
+          "help": "控制波峰移动和海面演化的速度。",
+          "initial": 1.0,
+          "minimum": 0.0,
+          "maximum": 5.0,
+          "choices": []
+        },
+        {
+          "key": "center_x",
+          "label": "涟漪中心 X",
+          "help": "涟漪中心的横向位置，零为左侧。",
+          "initial": 0.5,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "center_y",
+          "label": "涟漪中心 Y",
+          "help": "涟漪中心的纵向位置，零为顶部。",
+          "initial": 0.5,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "horizon",
+          "label": "海平线",
+          "help": "海面背景中的海平线高度。",
+          "initial": 0.35,
+          "minimum": 0.05,
+          "maximum": 0.8,
+          "choices": []
+        },
+        {
+          "key": "shine",
+          "label": "水面反光",
+          "help": "控制海面波峰的镜面反光强度。",
+          "initial": 0.6,
+          "minimum": 0.0,
+          "maximum": 2.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": true,
+      "color2": true,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX07.3",
+      "name": "热浪",
+      "help": "用向上流动的折射场扭动现有画面；可让画面底部更强。",
+      "group": 7,
+      "shader": 3,
+      "parameters": [
+        {
+          "key": "amount",
+          "label": "折射像素",
+          "help": "控制热空气引起的最大背景位移。",
+          "initial": 8.0,
+          "minimum": 0.0,
+          "maximum": 50.0,
+          "choices": []
+        },
+        {
+          "key": "scale",
+          "label": "空气纹理尺度",
+          "help": "控制折射场的空间频率。",
+          "initial": 10.0,
+          "minimum": 1.0,
+          "maximum": 40.0,
+          "choices": []
+        },
+        {
+          "key": "speed",
+          "label": "上升速度",
+          "help": "控制热浪从下向上流动的速度。",
+          "initial": 0.7,
+          "minimum": 0.0,
+          "maximum": 4.0,
+          "choices": []
+        },
+        {
+          "key": "bottom_bias",
+          "label": "底部集中",
+          "help": "零为全画面均匀，一为主要集中在画面底部。",
+          "initial": 0.7,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX07.4",
+      "name": "火焰",
+      "help": "生成透明背景的上升火舌，颜色由外焰和内焰两种颜色控制。",
+      "group": 7,
+      "shader": 4,
+      "parameters": [
+        {
+          "key": "height",
+          "label": "火焰高度",
+          "help": "控制火焰从画面底部延伸的高度。",
+          "initial": 0.75,
+          "minimum": 0.1,
+          "maximum": 1.5,
+          "choices": []
+        },
+        {
+          "key": "detail",
+          "label": "火舌密度",
+          "help": "控制火舌和扰动纹理的细密程度。",
+          "initial": 5.0,
+          "minimum": 1.0,
+          "maximum": 16.0,
+          "choices": []
+        },
+        {
+          "key": "speed",
+          "label": "燃烧速度",
+          "help": "控制火焰向上运动和形状演变的速度。",
+          "initial": 1.0,
+          "minimum": 0.0,
+          "maximum": 5.0,
+          "choices": []
+        },
+        {
+          "key": "intensity",
+          "label": "火焰亮度",
+          "help": "调节内外焰的发光强度。",
+          "initial": 1.4,
+          "minimum": 0.0,
+          "maximum": 4.0,
+          "choices": []
+        },
+        {
+          "key": "opacity",
+          "label": "火焰透明度",
+          "help": "控制生成火焰的最大透明度。",
+          "initial": 1.0,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": true,
+      "color2": true,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX07.5",
+      "name": "余烬火星",
+      "help": "生成有明亮核心、柔和光晕和向上漂移轨迹的火星。",
+      "group": 7,
+      "shader": 5,
+      "parameters": [
+        {
+          "key": "count",
+          "label": "火星数量",
+          "help": "控制同时存在的火星数量，最多二十颗。",
+          "initial": 16.0,
+          "minimum": 1.0,
+          "maximum": 20.0,
+          "choices": []
+        },
+        {
+          "key": "size",
+          "label": "火星半径",
+          "help": "控制火星核心大小，单位为像素。",
+          "initial": 3.0,
+          "minimum": 0.5,
+          "maximum": 15.0,
+          "choices": []
+        },
+        {
+          "key": "speed",
+          "label": "上升速度",
+          "help": "控制火星穿过画面的速度。",
+          "initial": 0.2,
+          "minimum": 0.0,
+          "maximum": 2.0,
+          "choices": []
+        },
+        {
+          "key": "drift",
+          "label": "横向飘动",
+          "help": "控制火星左右摆动的范围。",
+          "initial": 0.08,
+          "minimum": 0.0,
+          "maximum": 0.4,
+          "choices": []
+        },
+        {
+          "key": "seed",
+          "label": "随机种子",
+          "help": "改变火星的初始位置、速度和明暗。",
+          "initial": 7.0,
+          "minimum": 0.0,
+          "maximum": 100.0,
+          "choices": []
+        },
+        {
+          "key": "glow",
+          "label": "光晕强度",
+          "help": "控制火星核心周围的柔光。",
+          "initial": 1.0,
+          "minimum": 0.0,
+          "maximum": 4.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": true,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX07.6",
+      "name": "烟花",
+      "help": "生成三组循环爆开的径向火花，带重力下坠与短尾迹；透明背景。",
+      "group": 7,
+      "shader": 6,
+      "parameters": [
+        {
+          "key": "radius",
+          "label": "爆开范围",
+          "help": "控制烟花火星向外飞散的范围。",
+          "initial": 0.3,
+          "minimum": 0.05,
+          "maximum": 0.6,
+          "choices": []
+        },
+        {
+          "key": "speed",
+          "label": "循环速度",
+          "help": "控制三组烟花从爆开到消散的循环速度。",
+          "initial": 0.4,
+          "minimum": 0.05,
+          "maximum": 2.0,
+          "choices": []
+        },
+        {
+          "key": "size",
+          "label": "火花半径",
+          "help": "控制火花和短尾迹的宽度，单位为像素。",
+          "initial": 2.0,
+          "minimum": 0.5,
+          "maximum": 8.0,
+          "choices": []
+        },
+        {
+          "key": "gravity",
+          "label": "下坠重力",
+          "help": "控制火花在爆开后向下弯曲的程度。",
+          "initial": 0.15,
+          "minimum": 0.0,
+          "maximum": 0.6,
+          "choices": []
+        },
+        {
+          "key": "seed",
+          "label": "随机种子",
+          "help": "改变烟花的爆点位置与火花方向。",
+          "initial": 3.0,
+          "minimum": 0.0,
+          "maximum": 100.0,
+          "choices": []
+        },
+        {
+          "key": "multicolor",
+          "label": "彩色比例",
+          "help": "零使用指定颜色，一使用多色烟花。",
+          "initial": 1.0,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": true,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX08.0",
+      "name": "数字故障",
+      "help": "按离散时间产生跳块、横条断裂和 RGB 错位，保留素材透明度。",
+      "group": 8,
+      "shader": 0,
+      "parameters": [
+        {
+          "key": "amount",
+          "label": "错位像素",
+          "help": "控制故障块横向错位的最大像素量。",
+          "initial": 28.0,
+          "minimum": 0.0,
+          "maximum": 200.0,
+          "choices": []
+        },
+        {
+          "key": "blocks",
+          "label": "分块数量",
+          "help": "控制画面纵向划分成多少个故障带。",
+          "initial": 32.0,
+          "minimum": 4.0,
+          "maximum": 120.0,
+          "choices": []
+        },
+        {
+          "key": "rate",
+          "label": "变化频率",
+          "help": "每秒重新抽取故障位置的次数。",
+          "initial": 8.0,
+          "minimum": 0.2,
+          "maximum": 60.0,
+          "choices": []
+        },
+        {
+          "key": "chance",
+          "label": "出现概率",
+          "help": "控制每个条块在一次更新中发生故障的概率。",
+          "initial": 0.2,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "split",
+          "label": "RGB 分离像素",
+          "help": "控制故障区域内红蓝通道错位距离。",
+          "initial": 6.0,
+          "minimum": 0.0,
+          "maximum": 40.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX08.1",
+      "name": "旧电视／模拟故障",
+      "help": "用垂直滚屏、逐行横抖和信号雪花模拟模拟电视失稳。",
+      "group": 8,
+      "shader": 1,
+      "parameters": [
+        {
+          "key": "wobble",
+          "label": "行抖动像素",
+          "help": "控制不同行的横向信号偏移。",
+          "initial": 8.0,
+          "minimum": 0.0,
+          "maximum": 100.0,
+          "choices": []
+        },
+        {
+          "key": "roll",
+          "label": "垂直滚屏",
+          "help": "控制画面每秒沿垂直方向滚动的比例。",
+          "initial": 0.03,
+          "minimum": -0.5,
+          "maximum": 0.5,
+          "choices": []
+        },
+        {
+          "key": "noise",
+          "label": "雪花强度",
+          "help": "控制叠加随机信号噪声的强度。",
+          "initial": 0.12,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "speed",
+          "label": "失稳速度",
+          "help": "控制横向抖动随时间变化的速度。",
+          "initial": 12.0,
+          "minimum": 0.1,
+          "maximum": 60.0,
+          "choices": []
+        },
+        {
+          "key": "drift",
+          "label": "颜色漂移像素",
+          "help": "控制红蓝信号在水平方向上的偏移。",
+          "initial": 3.0,
+          "minimum": 0.0,
+          "maximum": 30.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX08.2",
+      "name": "VHS／VCR 磁带",
+      "help": "模拟磁带色度拖延、水平抖动与底部磁头切换噪声。",
+      "group": 8,
+      "shader": 2,
+      "parameters": [
+        {
+          "key": "chroma_lag",
+          "label": "色度拖延像素",
+          "help": "控制磁带色彩相对亮度向右拖延的距离。",
+          "initial": 6.0,
+          "minimum": 0.0,
+          "maximum": 40.0,
+          "choices": []
+        },
+        {
+          "key": "wobble",
+          "label": "磁带抖动像素",
+          "help": "控制磁带走带不稳引起的水平弯曲。",
+          "initial": 4.0,
+          "minimum": 0.0,
+          "maximum": 40.0,
+          "choices": []
+        },
+        {
+          "key": "tracking",
+          "label": "底部跟踪噪声",
+          "help": "控制画面底部磁头切换干扰的强度。",
+          "initial": 0.4,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "noise",
+          "label": "颗粒强度",
+          "help": "控制画面上的磁带噪声。",
+          "initial": 0.08,
+          "minimum": 0.0,
+          "maximum": 0.5,
+          "choices": []
+        },
+        {
+          "key": "saturation",
+          "label": "色彩饱和度",
+          "help": "降低后形成旧磁带褪色的颜色。",
+          "initial": 0.75,
+          "minimum": 0.0,
+          "maximum": 1.5,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX08.3",
+      "name": "CRT 屏幕",
+      "help": "组合桶形曲率、RGB 荧光子像素和屏边暗化，超出屏幕的区域透明。",
+      "group": 8,
+      "shader": 3,
+      "parameters": [
+        {
+          "key": "curvature",
+          "label": "屏幕曲率",
+          "help": "控制屏幕边缘的弯曲程度。",
+          "initial": 0.18,
+          "minimum": 0.0,
+          "maximum": 0.7,
+          "choices": []
+        },
+        {
+          "key": "subpixel",
+          "label": "子像素强度",
+          "help": "控制红绿蓝荧光条纹的可见程度。",
+          "initial": 0.55,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "pitch",
+          "label": "子像素宽度",
+          "help": "控制每条 RGB 荧光条的宽度，单位为像素。",
+          "initial": 1.0,
+          "minimum": 0.5,
+          "maximum": 6.0,
+          "choices": []
+        },
+        {
+          "key": "vignette",
+          "label": "屏边暗化",
+          "help": "控制 CRT 屏幕边缘相对中央的亮度衰减。",
+          "initial": 0.25,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "gain",
+          "label": "荧光亮度",
+          "help": "补偿荧光子像素与曲率造成的亮度变化。",
+          "initial": 1.2,
+          "minimum": 0.2,
+          "maximum": 2.5,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX08.4",
+      "name": "扫描效果",
+      "help": "扫描线调制亮暗；隔行模式按真实渲染帧在奇偶行之间保留上一帧画面。",
+      "group": 8,
+      "shader": 4,
+      "parameters": [
+        {
+          "key": "mode",
+          "label": "扫描模式",
+          "help": "隔行模式使用历史图像更新交替行，并非只画暗线。",
+          "initial": 0.0,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": [
+            "扫描线",
+            "隔行扫描"
+          ]
+        },
+        {
+          "key": "line_height",
+          "label": "扫描线高度",
+          "help": "控制每组明暗线或隔行条带的高度，单位为像素。",
+          "initial": 2.0,
+          "minimum": 1.0,
+          "maximum": 8.0,
+          "choices": []
+        },
+        {
+          "key": "darkness",
+          "label": "暗线强度",
+          "help": "控制扫描线或未更新行的亮度降低量。",
+          "initial": 0.3,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "speed",
+          "label": "扫描移动速度",
+          "help": "仅扫描线模式使用，控制条纹向下移动速度。",
+          "initial": 0.2,
+          "minimum": -3.0,
+          "maximum": 3.0,
+          "choices": []
+        },
+        {
+          "key": "field_order",
+          "label": "场序",
+          "help": "选择隔行模式先更新奇数行还是偶数行。",
+          "initial": 0.0,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": [
+            "偶数行优先",
+            "奇数行优先"
+          ]
+        }
+      ],
+      "asset": "None",
+      "color": false,
+      "color2": false,
+      "history": true,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX08.5",
+      "name": "NTSC 模拟",
+      "help": "在 YIQ 信号域带宽限制色度并模拟副载波串色、点爬和颜色相位误差。",
+      "group": 8,
+      "shader": 5,
+      "parameters": [
+        {
+          "key": "chroma_width",
+          "label": "色度扩散像素",
+          "help": "模拟色度带宽较窄引起的横向颜色扩散。",
+          "initial": 3.0,
+          "minimum": 0.5,
+          "maximum": 12.0,
+          "choices": []
+        },
+        {
+          "key": "crosstalk",
+          "label": "串色强度",
+          "help": "控制亮度细节和色度副载波之间的相互干扰。",
+          "initial": 0.2,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "phase",
+          "label": "色彩相位",
+          "help": "旋转 YIQ 色度相位，单位为度。",
+          "initial": 5.0,
+          "minimum": -90.0,
+          "maximum": 90.0,
+          "choices": []
+        },
+        {
+          "key": "crawl",
+          "label": "点爬速度",
+          "help": "控制模拟副载波相位随时间漂移的速度。",
+          "initial": 1.0,
+          "minimum": 0.0,
+          "maximum": 4.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX08.6",
+      "name": "CRT 开关机",
+      "help": "用手动进度控制单素材从亮点、亮线展开或收拢消失。",
+      "group": 8,
+      "shader": 6,
+      "parameters": [
+        {
+          "key": "mode",
+          "label": "动画方向",
+          "help": "开机从亮点展开，关机按相反顺序收拢。",
+          "initial": 1.0,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": [
+            "开机",
+            "关机"
+          ]
+        },
+        {
+          "key": "progress",
+          "label": "动画进度",
+          "help": "零为开始，一为结束；可由关键帧或手动调节驱动。",
+          "initial": 0.55,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "line_width",
+          "label": "亮线宽度",
+          "help": "控制收拢过程中最细亮线的宽度，单位为像素。",
+          "initial": 2.0,
+          "minimum": 0.5,
+          "maximum": 12.0,
+          "choices": []
+        },
+        {
+          "key": "flash",
+          "label": "收拢闪光",
+          "help": "控制画面接近亮线时的白色闪光强度。",
+          "initial": 0.8,
+          "minimum": 0.0,
+          "maximum": 3.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX08.7",
+      "name": "老式编码色块",
+      "help": "生成块内有限调色板、低分辨率色度和量化误差的视觉风格；不改变直播编码器。",
+      "group": 8,
+      "shader": 7,
+      "parameters": [
+        {
+          "key": "block",
+          "label": "编码块大小",
+          "help": "控制块状调色板分组的尺寸，单位为像素。",
+          "initial": 8.0,
+          "minimum": 2.0,
+          "maximum": 32.0,
+          "choices": []
+        },
+        {
+          "key": "levels",
+          "label": "颜色量化级数",
+          "help": "控制色度通道可使用的颜色级数。",
+          "initial": 8.0,
+          "minimum": 2.0,
+          "maximum": 32.0,
+          "choices": []
+        },
+        {
+          "key": "banding",
+          "label": "块内简化",
+          "help": "控制块内原始颜色被有限端点颜色替代的程度。",
+          "initial": 0.7,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "dither",
+          "label": "量化抖动",
+          "help": "用小幅有序抖动打散颜色量化边界。",
+          "initial": 0.3,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX08.8",
+      "name": "胶片颗粒与磨损",
+      "help": "组合随机颗粒、梯度 Perlin 或三角网格 Simplex 噪声，以及划痕和尘点。",
+      "group": 8,
+      "shader": 8,
+      "parameters": [
+        {
+          "key": "mode",
+          "label": "噪声算法",
+          "help": "Perlin 使用方格梯度插值，Simplex 使用三角网格梯度核。",
+          "initial": 0.0,
+          "minimum": 0.0,
+          "maximum": 2.0,
+          "choices": [
+            "随机颗粒",
+            "Perlin",
+            "Simplex"
+          ]
+        },
+        {
+          "key": "grain",
+          "label": "颗粒强度",
+          "help": "控制噪声引起的明暗变化幅度。",
+          "initial": 0.12,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "size",
+          "label": "颗粒尺寸",
+          "help": "控制噪声特征尺寸，单位为像素。",
+          "initial": 1.5,
+          "minimum": 0.5,
+          "maximum": 40.0,
+          "choices": []
+        },
+        {
+          "key": "rate",
+          "label": "更新频率",
+          "help": "控制每秒重新生成噪声和胶片磨损的次数。",
+          "initial": 24.0,
+          "minimum": 0.5,
+          "maximum": 60.0,
+          "choices": []
+        },
+        {
+          "key": "scratches",
+          "label": "划痕数量",
+          "help": "控制竖向胶片划痕出现的比例。",
+          "initial": 0.12,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "dust",
+          "label": "尘点数量",
+          "help": "控制随机灰尘斑点覆盖的比例。",
+          "initial": 0.08,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "colored",
+          "label": "彩色颗粒",
+          "help": "零为黑白颗粒，一为三个颜色通道独立变化。",
+          "initial": 0.0,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX08.9",
+      "name": "科幻屏幕",
+      "help": "选择保留素材透明度的全息扫描，或用数字字符雨重新绘制素材。",
+      "group": 8,
+      "shader": 9,
+      "parameters": [
+        {
+          "key": "mode",
+          "label": "显示模式",
+          "help": "全息模式叠加蓝绿色扫描，字符雨模式显示下落的数字。",
+          "initial": 0.0,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": [
+            "全息投影",
+            "数字字符雨"
+          ]
+        },
+        {
+          "key": "cell",
+          "label": "字符高度",
+          "help": "控制数字字符网格高度，单位为像素。",
+          "initial": 18.0,
+          "minimum": 6.0,
+          "maximum": 60.0,
+          "choices": []
+        },
+        {
+          "key": "speed",
+          "label": "动画速度",
+          "help": "控制字符雨下落或全息扫描线的移动速度。",
+          "initial": 0.8,
+          "minimum": 0.0,
+          "maximum": 4.0,
+          "choices": []
+        },
+        {
+          "key": "glow",
+          "label": "荧光强度",
+          "help": "控制全息投影和数字字符的发光亮度。",
+          "initial": 1.2,
+          "minimum": 0.1,
+          "maximum": 3.0,
+          "choices": []
+        },
+        {
+          "key": "source_mix",
+          "label": "素材明暗权重",
+          "help": "控制数字字符亮度受原素材明暗影响的程度。",
+          "initial": 0.7,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "opacity",
+          "label": "显示透明度",
+          "help": "控制全息屏幕的透明程度。",
+          "initial": 0.85,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": true,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX09.0",
+      "name": "漫画网线",
+      "help": "用明暗分级、方向排线和轮廓线重绘为黑白漫画。",
+      "group": 9,
+      "shader": 0,
+      "parameters": [
+        {
+          "key": "spacing",
+          "label": "排线间距",
+          "help": "控制漫画阴影排线之间的距离，单位为像素。",
+          "initial": 6.0,
+          "minimum": 2.0,
+          "maximum": 24.0,
+          "choices": []
+        },
+        {
+          "key": "line_width",
+          "label": "线条宽度",
+          "help": "控制排线和轮廓的粗细，单位为像素。",
+          "initial": 1.0,
+          "minimum": 0.3,
+          "maximum": 4.0,
+          "choices": []
+        },
+        {
+          "key": "edge",
+          "label": "轮廓强度",
+          "help": "提高后会强调原素材的明暗边缘。",
+          "initial": 2.0,
+          "minimum": 0.0,
+          "maximum": 8.0,
+          "choices": []
+        },
+        {
+          "key": "contrast",
+          "label": "阴影对比",
+          "help": "控制漫画阴影覆盖范围与亮暗对比。",
+          "initial": 1.2,
+          "minimum": 0.2,
+          "maximum": 3.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX09.1",
+      "name": "卡通平涂",
+      "help": "先柔化微小细节，再量化明暗与颜色，并叠加清晰的卡通轮廓。",
+      "group": 9,
+      "shader": 1,
+      "parameters": [
+        {
+          "key": "levels",
+          "label": "明暗层数",
+          "help": "控制平涂画面的颜色和明暗分层数量。",
+          "initial": 5.0,
+          "minimum": 2.0,
+          "maximum": 16.0,
+          "choices": []
+        },
+        {
+          "key": "smooth",
+          "label": "细节柔化",
+          "help": "控制量化前的柔化半径，单位为像素。",
+          "initial": 1.5,
+          "minimum": 0.0,
+          "maximum": 6.0,
+          "choices": []
+        },
+        {
+          "key": "edge",
+          "label": "轮廓强度",
+          "help": "提高后会加深卡通画面的轮廓线。",
+          "initial": 2.0,
+          "minimum": 0.0,
+          "maximum": 8.0,
+          "choices": []
+        },
+        {
+          "key": "saturation",
+          "label": "颜色饱和度",
+          "help": "控制平涂后颜色的鲜艳程度。",
+          "initial": 1.1,
+          "minimum": 0.0,
+          "maximum": 2.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX09.2",
+      "name": "铅笔素描",
+      "help": "通过灰度颜色减淡与方向笔触重绘为铅笔素描。",
+      "group": 9,
+      "shader": 2,
+      "parameters": [
+        {
+          "key": "radius",
+          "label": "铅笔细节尺度",
+          "help": "颜色减淡素描所用的模糊半径，单位为像素。",
+          "initial": 3.0,
+          "minimum": 0.5,
+          "maximum": 12.0,
+          "choices": []
+        },
+        {
+          "key": "edge",
+          "label": "轮廓浓度",
+          "help": "控制素描轮廓的铅墨深度。",
+          "initial": 1.2,
+          "minimum": 0.0,
+          "maximum": 5.0,
+          "choices": []
+        },
+        {
+          "key": "paper",
+          "label": "纸纹强度",
+          "help": "控制静态纸张纹理对铅笔明暗的影响。",
+          "initial": 0.15,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "hatch",
+          "label": "笔触强度",
+          "help": "控制暗部方向笔触的可见程度。",
+          "initial": 0.3,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX09.3",
+      "name": "保边油画",
+      "help": "比较四个局部区域的颜色方差，选取最平滑区域形成保留轮廓的色块。",
+      "group": 9,
+      "shader": 3,
+      "parameters": [
+        {
+          "key": "radius",
+          "label": "笔触半径",
+          "help": "控制参与局部方差比较的画笔范围，单位为像素。",
+          "initial": 4.0,
+          "minimum": 0.5,
+          "maximum": 16.0,
+          "choices": []
+        },
+        {
+          "key": "mix",
+          "label": "油画覆盖",
+          "help": "控制局部平滑色块与原始细节的混合比例。",
+          "initial": 1.0,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "texture",
+          "label": "画布纹理",
+          "help": "控制油画表面细小画布纹理的强度。",
+          "initial": 0.08,
+          "minimum": 0.0,
+          "maximum": 0.4,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX09.4",
+      "name": "掌机像素风",
+      "help": "用 Game Boy、GBC 或都市怪谈色板重绘像素，并按指定更新帧率保留画面。",
+      "group": 9,
+      "shader": 4,
+      "parameters": [
+        {
+          "key": "palette",
+          "label": "掌机色板",
+          "help": "选择四色绿屏、GBC 彩色量化或都市怪谈紫绿色板。",
+          "initial": 0.0,
+          "minimum": 0.0,
+          "maximum": 2.0,
+          "choices": [
+            "Game Boy",
+            "GBC",
+            "都市怪谈"
+          ]
+        },
+        {
+          "key": "pixel",
+          "label": "像素大小",
+          "help": "控制每个掌机像素块的尺寸，单位为像素。",
+          "initial": 5.0,
+          "minimum": 1.0,
+          "maximum": 24.0,
+          "choices": []
+        },
+        {
+          "key": "dither",
+          "label": "点阵抖色",
+          "help": "控制有序抖色在相邻色阶间的混合强度。",
+          "initial": 0.55,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "update_fps",
+          "label": "画面更新帧率",
+          "help": "按每秒指定次数更新画面；两次更新之间保留上次结果。",
+          "initial": 12.0,
+          "minimum": 1.0,
+          "maximum": 60.0,
+          "choices": []
+        },
+        {
+          "key": "contrast",
+          "label": "色板对比",
+          "help": "量化前调整亮暗，帮助不同素材匹配固定色板。",
+          "initial": 1.1,
+          "minimum": 0.2,
+          "maximum": 3.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": false,
+      "color2": false,
+      "history": true,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX09.5",
+      "name": "字符画",
+      "help": "按每格素材明暗选择实际线段字符，支持彩色字符或指定前景颜色。",
+      "group": 9,
+      "shader": 5,
+      "parameters": [
+        {
+          "key": "cell",
+          "label": "字符高度",
+          "help": "控制每个 ASCII 字符所占的像素高度。",
+          "initial": 14.0,
+          "minimum": 6.0,
+          "maximum": 48.0,
+          "choices": []
+        },
+        {
+          "key": "colored",
+          "label": "原素材颜色",
+          "help": "零使用指定前景色，一使用当前格子的原素材颜色。",
+          "initial": 1.0,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "background",
+          "label": "背景亮度",
+          "help": "控制字符空白处的底色明度。",
+          "initial": 0.03,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "contrast",
+          "label": "字符明暗对比",
+          "help": "调整亮度映射，改变稀疏与浓密字符的分布。",
+          "initial": 1.2,
+          "minimum": 0.2,
+          "maximum": 3.0,
+          "choices": []
+        },
+        {
+          "key": "thickness",
+          "label": "字符笔画粗细",
+          "help": "控制字符线段宽度相对字符格子的比例。",
+          "initial": 0.09,
+          "minimum": 0.03,
+          "maximum": 0.2,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": true,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX09.6",
+      "name": "浮雕",
+      "help": "沿指定光线方向比较相邻明暗，使轮廓呈现凸起或凹刻的浮雕质感。",
+      "group": 9,
+      "shader": 6,
+      "parameters": [
+        {
+          "key": "angle",
+          "label": "光照角度",
+          "help": "控制浮雕亮暗边缘的方向，单位为度。",
+          "initial": 135.0,
+          "minimum": -180.0,
+          "maximum": 180.0,
+          "choices": []
+        },
+        {
+          "key": "radius",
+          "label": "雕刻宽度",
+          "help": "控制两侧取样的间距，单位为像素。",
+          "initial": 2.0,
+          "minimum": 0.5,
+          "maximum": 12.0,
+          "choices": []
+        },
+        {
+          "key": "depth",
+          "label": "浮雕深度",
+          "help": "控制局部明暗差形成浮雕的强度。",
+          "initial": 3.0,
+          "minimum": 0.0,
+          "maximum": 10.0,
+          "choices": []
+        },
+        {
+          "key": "color_mix",
+          "label": "保留原色",
+          "help": "零为灰色浮雕，一保留素材的原始颜色。",
+          "initial": 0.25,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX09.7",
+      "name": "伪热成像",
+      "help": "将图像明暗映射为伪彩热像，不能测量实际温度。",
+      "group": 9,
+      "shader": 7,
+      "parameters": [
+        {
+          "key": "palette",
+          "label": "伪彩色板",
+          "help": "选择铁红、彩虹或冷暖双色的明暗映射。",
+          "initial": 0.0,
+          "minimum": 0.0,
+          "maximum": 2.0,
+          "choices": [
+            "铁红热像",
+            "彩虹热像",
+            "冷暖双色"
+          ]
+        },
+        {
+          "key": "contrast",
+          "label": "热像对比",
+          "help": "调整亮度映射，使明暗在伪彩范围内展开。",
+          "initial": 1.2,
+          "minimum": 0.2,
+          "maximum": 4.0,
+          "choices": []
+        },
+        {
+          "key": "offset",
+          "label": "映射偏移",
+          "help": "整体移动伪彩映射的明暗范围。",
+          "initial": 0.0,
+          "minimum": -0.5,
+          "maximum": 0.5,
+          "choices": []
+        },
+        {
+          "key": "invert",
+          "label": "反转明暗",
+          "help": "选择亮处为高温色，或反转为暗处对应高温色。",
+          "initial": 0.0,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": [
+            "亮处高温",
+            "暗处高温"
+          ]
+        }
+      ],
+      "asset": "None",
+      "color": true,
+      "color2": true,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX09.8",
+      "name": "手绘抖线感",
+      "help": "按离散节奏轻微扰动轮廓的位置与墨线，模拟逐帧重画。",
+      "group": 9,
+      "shader": 8,
+      "parameters": [
+        {
+          "key": "amount",
+          "label": "抖线幅度",
+          "help": "控制手绘轮廓位移，单位为像素。",
+          "initial": 2.0,
+          "minimum": 0.0,
+          "maximum": 10.0,
+          "choices": []
+        },
+        {
+          "key": "rate",
+          "label": "重画频率",
+          "help": "控制每秒重新生成抖线形状的次数。",
+          "initial": 8.0,
+          "minimum": 0.5,
+          "maximum": 30.0,
+          "choices": []
+        },
+        {
+          "key": "scale",
+          "label": "线条变化尺度",
+          "help": "控制抖线沿轮廓发生变化的空间频率。",
+          "initial": 12.0,
+          "minimum": 2.0,
+          "maximum": 40.0,
+          "choices": []
+        },
+        {
+          "key": "ink",
+          "label": "轮廓墨线",
+          "help": "控制重新绘制轮廓时叠加的墨线浓度。",
+          "initial": 1.0,
+          "minimum": 0.0,
+          "maximum": 4.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX10.0",
+      "name": "四角透视",
+      "help": "通过逆单应映射把素材投影到四个角点组成的凸四边形；退化区域透明。",
+      "group": 10,
+      "shader": 0,
+      "parameters": [
+        {
+          "key": "tl_x",
+          "label": "左上 X",
+          "help": "左上角横坐标，以素材宽度为单位。",
+          "initial": 0.08,
+          "minimum": -0.5,
+          "maximum": 1.5,
+          "choices": []
+        },
+        {
+          "key": "tl_y",
+          "label": "左上 Y",
+          "help": "左上角纵坐标，以素材高度为单位。",
+          "initial": 0.08,
+          "minimum": -0.5,
+          "maximum": 1.5,
+          "choices": []
+        },
+        {
+          "key": "tr_x",
+          "label": "右上 X",
+          "help": "右上角横坐标，以素材宽度为单位。",
+          "initial": 0.92,
+          "minimum": -0.5,
+          "maximum": 1.5,
+          "choices": []
+        },
+        {
+          "key": "tr_y",
+          "label": "右上 Y",
+          "help": "右上角纵坐标，以素材高度为单位。",
+          "initial": 0.18,
+          "minimum": -0.5,
+          "maximum": 1.5,
+          "choices": []
+        },
+        {
+          "key": "br_x",
+          "label": "右下 X",
+          "help": "右下角横坐标，以素材宽度为单位。",
+          "initial": 0.98,
+          "minimum": -0.5,
+          "maximum": 1.5,
+          "choices": []
+        },
+        {
+          "key": "br_y",
+          "label": "右下 Y",
+          "help": "右下角纵坐标，以素材高度为单位。",
+          "initial": 0.92,
+          "minimum": -0.5,
+          "maximum": 1.5,
+          "choices": []
+        },
+        {
+          "key": "bl_x",
+          "label": "左下 X",
+          "help": "左下角横坐标，以素材宽度为单位。",
+          "initial": 0.02,
+          "minimum": -0.5,
+          "maximum": 1.5,
+          "choices": []
+        },
+        {
+          "key": "bl_y",
+          "label": "左下 Y",
+          "help": "左下角纵坐标，以素材高度为单位。",
+          "initial": 0.98,
+          "minimum": -0.5,
+          "maximum": 1.5,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX10.1",
+      "name": "曲面弯折",
+      "help": "以柱面逆映射弯曲素材，并用边缘压缩和明暗表现曲面。",
+      "group": 10,
+      "shader": 1,
+      "parameters": [
+        {
+          "key": "axis",
+          "label": "弯折方向",
+          "help": "选择沿横向或纵向形成柱面弯折。",
+          "initial": 0.0,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": [
+            "横向弯折",
+            "纵向弯折"
+          ]
+        },
+        {
+          "key": "bend",
+          "label": "弯曲量",
+          "help": "控制曲面弯曲程度，负值改变曲面明暗方向。",
+          "initial": 0.8,
+          "minimum": -1.4,
+          "maximum": 1.4,
+          "choices": []
+        },
+        {
+          "key": "shade",
+          "label": "曲面明暗",
+          "help": "控制曲面边缘的明暗起伏强度。",
+          "initial": 0.35,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "perspective",
+          "label": "边缘压缩",
+          "help": "控制垂直于弯曲方向的边缘收缩程度。",
+          "initial": 0.2,
+          "minimum": 0.0,
+          "maximum": 0.7,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX10.2",
+      "name": "鼓起／收缩",
+      "help": "在指定圆形范围内径向鼓起或捏缩，范围以外保持原样。",
+      "group": 10,
+      "shader": 2,
+      "parameters": [
+        {
+          "key": "amount",
+          "label": "鼓缩程度",
+          "help": "正值鼓起中心，负值将中心捏缩。",
+          "initial": 0.55,
+          "minimum": -0.9,
+          "maximum": 0.9,
+          "choices": []
+        },
+        {
+          "key": "radius",
+          "label": "影响半径",
+          "help": "以画面短边为单位控制局部鼓缩范围。",
+          "initial": 0.45,
+          "minimum": 0.05,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "center_x",
+          "label": "中心 X",
+          "help": "鼓缩中心的横向归一化位置。",
+          "initial": 0.5,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "center_y",
+          "label": "中心 Y",
+          "help": "鼓缩中心的纵向归一化位置。",
+          "initial": 0.5,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX10.3",
+      "name": "鱼眼",
+      "help": "用径向广角投影改变中心和边缘比例，可切换反向鱼眼。",
+      "group": 10,
+      "shader": 3,
+      "parameters": [
+        {
+          "key": "amount",
+          "label": "鱼眼强度",
+          "help": "控制径向广角投影的弯曲强度。",
+          "initial": 1.5,
+          "minimum": 0.01,
+          "maximum": 3.0,
+          "choices": []
+        },
+        {
+          "key": "zoom",
+          "label": "画面缩放",
+          "help": "控制鱼眼取样范围，放大后可减少透明边缘。",
+          "initial": 1.0,
+          "minimum": 0.4,
+          "maximum": 2.0,
+          "choices": []
+        },
+        {
+          "key": "center_x",
+          "label": "镜头中心 X",
+          "help": "鱼眼镜头中心的横向位置。",
+          "initial": 0.5,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "center_y",
+          "label": "镜头中心 Y",
+          "help": "鱼眼镜头中心的纵向位置。",
+          "initial": 0.5,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "inverse",
+          "label": "投影方向",
+          "help": "选择向外扩张的鱼眼或向内压缩的反向投影。",
+          "initial": 0.0,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": [
+            "鱼眼",
+            "反向鱼眼"
+          ]
+        }
+      ],
+      "asset": "None",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX10.4",
+      "name": "玻璃折射",
+      "help": "用程序玻璃纹理或辅助图像的高度梯度折射素材，并加入表面反光。",
+      "group": 10,
+      "shader": 4,
+      "parameters": [
+        {
+          "key": "amount",
+          "label": "折射像素",
+          "help": "控制玻璃表面法线引起的取样位移。",
+          "initial": 12.0,
+          "minimum": 0.0,
+          "maximum": 80.0,
+          "choices": []
+        },
+        {
+          "key": "scale",
+          "label": "玻璃纹理尺度",
+          "help": "控制程序玻璃纹理的细密程度。",
+          "initial": 8.0,
+          "minimum": 1.0,
+          "maximum": 40.0,
+          "choices": []
+        },
+        {
+          "key": "speed",
+          "label": "纹理移动速度",
+          "help": "控制玻璃纹理随时间移动的速度。",
+          "initial": 0.08,
+          "minimum": 0.0,
+          "maximum": 2.0,
+          "choices": []
+        },
+        {
+          "key": "highlight",
+          "label": "表面反光",
+          "help": "控制玻璃表面高光的强度。",
+          "initial": 0.2,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "mode",
+          "label": "玻璃高度来源",
+          "help": "辅助图像用亮度作为高度；未指定辅助时使用程序玻璃。",
+          "initial": 0.0,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": [
+            "程序玻璃",
+            "辅助图像高度"
+          ]
+        }
+      ],
+      "asset": "Image",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX10.5",
+      "name": "置换贴图",
+      "help": "使用指定辅助图像的 RG、亮度或亮度梯度驱动素材位移；缺少辅助时旁路。",
+      "group": 10,
+      "shader": 5,
+      "parameters": [
+        {
+          "key": "amount_x",
+          "label": "横向置换像素",
+          "help": "辅助图像控制的横向最大位移。",
+          "initial": 20.0,
+          "minimum": -200.0,
+          "maximum": 200.0,
+          "choices": []
+        },
+        {
+          "key": "amount_y",
+          "label": "纵向置换像素",
+          "help": "辅助图像控制的纵向最大位移。",
+          "initial": 20.0,
+          "minimum": -200.0,
+          "maximum": 200.0,
+          "choices": []
+        },
+        {
+          "key": "mode",
+          "label": "置换通道",
+          "help": "选择红绿通道、亮度对角位移或亮度梯度法线。",
+          "initial": 0.0,
+          "minimum": 0.0,
+          "maximum": 2.0,
+          "choices": [
+            "红／绿通道",
+            "亮度",
+            "亮度梯度"
+          ]
+        },
+        {
+          "key": "scale",
+          "label": "贴图缩放",
+          "help": "控制置换贴图在素材上的重复频率。",
+          "initial": 1.0,
+          "minimum": 0.1,
+          "maximum": 8.0,
+          "choices": []
+        },
+        {
+          "key": "offset_x",
+          "label": "贴图偏移 X",
+          "help": "控制辅助置换贴图的横向偏移。",
+          "initial": 0.0,
+          "minimum": -1.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "offset_y",
+          "label": "贴图偏移 Y",
+          "help": "控制辅助置换贴图的纵向偏移。",
+          "initial": 0.0,
+          "minimum": -1.0,
+          "maximum": 1.0,
+          "choices": []
+        }
+      ],
+      "asset": "Image",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX10.6",
+      "name": "动态扭曲",
+      "help": "在同一入口选择湍流、色散波浪、波浪晕动或连续锯齿形折射。",
+      "group": 10,
+      "shader": 6,
+      "parameters": [
+        {
+          "key": "mode",
+          "label": "扭曲模式",
+          "help": "四种模式分别使用噪声场、彩色正弦波、交叉晃动或三角波。",
+          "initial": 0.0,
+          "minimum": 0.0,
+          "maximum": 3.0,
+          "choices": [
+            "湍流",
+            "色散波浪",
+            "波浪晕动",
+            "锯齿波"
+          ]
+        },
+        {
+          "key": "amount",
+          "label": "扭曲像素",
+          "help": "控制扭曲的最大取样偏移。",
+          "initial": 15.0,
+          "minimum": 0.0,
+          "maximum": 100.0,
+          "choices": []
+        },
+        {
+          "key": "scale",
+          "label": "波浪频率",
+          "help": "控制波纹或湍流纹理在画面中的密度。",
+          "initial": 8.0,
+          "minimum": 0.5,
+          "maximum": 40.0,
+          "choices": []
+        },
+        {
+          "key": "speed",
+          "label": "动画速度",
+          "help": "控制扭曲纹理随时间演化的速度。",
+          "initial": 0.7,
+          "minimum": 0.0,
+          "maximum": 5.0,
+          "choices": []
+        },
+        {
+          "key": "angle",
+          "label": "波浪方向",
+          "help": "控制方向性波浪和锯齿的角度，单位为度。",
+          "initial": 0.0,
+          "minimum": -180.0,
+          "maximum": 180.0,
+          "choices": []
+        },
+        {
+          "key": "chroma",
+          "label": "色散距离",
+          "help": "仅色散波浪使用，控制红蓝通道额外偏移比例。",
+          "initial": 0.4,
+          "minimum": 0.0,
+          "maximum": 2.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX10.7",
+      "name": "分片错位",
+      "help": "将素材分成条块，控制真实透明缝隙、交替错位和随时间摆动。",
+      "group": 10,
+      "shader": 7,
+      "parameters": [
+        {
+          "key": "axis",
+          "label": "分片方向",
+          "help": "选择横向条带或纵向条带。",
+          "initial": 0.0,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": [
+            "横向条带",
+            "纵向条带"
+          ]
+        },
+        {
+          "key": "count",
+          "label": "条带数量",
+          "help": "控制素材被分割的条带总数。",
+          "initial": 8.0,
+          "minimum": 2.0,
+          "maximum": 40.0,
+          "choices": []
+        },
+        {
+          "key": "gap",
+          "label": "分片缝隙",
+          "help": "每条带中被裁成透明缝隙的比例。",
+          "initial": 0.08,
+          "minimum": 0.0,
+          "maximum": 0.8,
+          "choices": []
+        },
+        {
+          "key": "offset",
+          "label": "交替偏移像素",
+          "help": "相邻条带向相反方向偏移的距离。",
+          "initial": 12.0,
+          "minimum": 0.0,
+          "maximum": 200.0,
+          "choices": []
+        },
+        {
+          "key": "swing",
+          "label": "摆动像素",
+          "help": "控制条带随时间摆动的幅度。",
+          "initial": 10.0,
+          "minimum": 0.0,
+          "maximum": 100.0,
+          "choices": []
+        },
+        {
+          "key": "speed",
+          "label": "摆动速度",
+          "help": "控制不同条带摆动的时间速度。",
+          "initial": 0.8,
+          "minimum": 0.0,
+          "maximum": 5.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX10.8",
+      "name": "翻页／卷角",
+      "help": "从选定角落卷起单素材，用圆柱卷面显示纸背和高光；卷去区域透明。",
+      "group": 10,
+      "shader": 8,
+      "parameters": [
+        {
+          "key": "corner",
+          "label": "卷起角落",
+          "help": "选择从哪一个角落开始单素材翻页。",
+          "initial": 1.0,
+          "minimum": 0.0,
+          "maximum": 3.0,
+          "choices": [
+            "左上",
+            "右上",
+            "左下",
+            "右下"
+          ]
+        },
+        {
+          "key": "progress",
+          "label": "翻页进度",
+          "help": "零为展开状态，一为素材完全卷走。",
+          "initial": 0.32,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "radius",
+          "label": "卷曲半径",
+          "help": "控制纸张圆柱卷面的宽度，以画面短边为单位。",
+          "initial": 0.1,
+          "minimum": 0.02,
+          "maximum": 0.3,
+          "choices": []
+        },
+        {
+          "key": "back",
+          "label": "纸背亮度",
+          "help": "控制卷曲纸背的明暗，仍保留淡化的素材纹理。",
+          "initial": 0.8,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "shine",
+          "label": "卷面高光",
+          "help": "控制圆柱卷面朝向光线部分的亮度。",
+          "initial": 0.4,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX10.9",
+      "name": "纹理排列",
+      "help": "选择重复或镜像平铺、递归分割旋转，以及角扇区镜面万花筒。",
+      "group": 10,
+      "shader": 9,
+      "parameters": [
+        {
+          "key": "mode",
+          "label": "排列模式",
+          "help": "选择平铺、按网格层级旋转，或镜面万花筒。",
+          "initial": 0.0,
+          "minimum": 0.0,
+          "maximum": 2.0,
+          "choices": [
+            "重复平铺",
+            "递归分割旋转",
+            "镜面万花筒"
+          ]
+        },
+        {
+          "key": "scale",
+          "label": "重复倍数",
+          "help": "控制平铺频率或万花筒的取样放大比例。",
+          "initial": 3.0,
+          "minimum": 0.25,
+          "maximum": 12.0,
+          "choices": []
+        },
+        {
+          "key": "rotation",
+          "label": "旋转角度",
+          "help": "控制每个纹理单元或万花筒的旋转，单位为度。",
+          "initial": 15.0,
+          "minimum": -180.0,
+          "maximum": 180.0,
+          "choices": []
+        },
+        {
+          "key": "speed",
+          "label": "旋转速度",
+          "help": "控制纹理随时间旋转的速度，单位为每秒弧度。",
+          "initial": 0.15,
+          "minimum": -3.0,
+          "maximum": 3.0,
+          "choices": []
+        },
+        {
+          "key": "mirror",
+          "label": "平铺镜像",
+          "help": "开启后平铺单元交替镜像，减少相邻边缘的不连续。",
+          "initial": 1.0,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": [
+            "不镜像",
+            "交替镜像"
+          ]
+        },
+        {
+          "key": "depth",
+          "label": "递归层数",
+          "help": "控制递归分割旋转模式的网格层级，最多五层。",
+          "initial": 3.0,
+          "minimum": 1.0,
+          "maximum": 5.0,
+          "choices": []
+        },
+        {
+          "key": "segments",
+          "label": "万花筒镜面数",
+          "help": "控制围绕中心重复的镜面扇区数量。",
+          "initial": 8.0,
+          "minimum": 2.0,
+          "maximum": 24.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX11.0",
+      "name": "立体厚度",
+      "help": "在素材矩形内生成圆角厚面板或透明轮廓挤出；这是像素级 2.5D 外观。",
+      "group": 11,
+      "shader": 0,
+      "parameters": [
+        {
+          "key": "mode",
+          "label": "形态",
+          "help": "两种厚度外观。",
+          "initial": 0.0,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": [
+            "圆角厚面板",
+            "透明轮廓挤出"
+          ]
+        },
+        {
+          "key": "depth",
+          "label": "厚度",
+          "help": "挤出长度，像素。",
+          "initial": 24.0,
+          "minimum": 0.0,
+          "maximum": 160.0,
+          "choices": []
+        },
+        {
+          "key": "angle",
+          "label": "挤出方向",
+          "help": "图像平面内方向，度。",
+          "initial": 45.0,
+          "minimum": -180.0,
+          "maximum": 180.0,
+          "choices": []
+        },
+        {
+          "key": "radius",
+          "label": "面板圆角",
+          "help": "仅圆角厚面板，像素。",
+          "initial": 28.0,
+          "minimum": 0.0,
+          "maximum": 240.0,
+          "choices": []
+        },
+        {
+          "key": "shade",
+          "label": "侧面明度",
+          "help": "侧面相对颜色明度。",
+          "initial": 0.55,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "bevel",
+          "label": "边缘亮边",
+          "help": "像素宽度。",
+          "initial": 2.0,
+          "minimum": 0.0,
+          "maximum": 12.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": true,
+      "color2": true,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX11.2",
+      "name": "随机抖动",
+      "help": "平滑确定性随机运动叠加到图层原有坐标与旋转。",
+      "group": 11,
+      "shader": 2,
+      "parameters": [
+        {
+          "key": "amplitude_x",
+          "label": "横向幅度",
+          "help": "场景单位。",
+          "initial": 8.0,
+          "minimum": 0.0,
+          "maximum": 300.0,
+          "choices": []
+        },
+        {
+          "key": "amplitude_y",
+          "label": "纵向幅度",
+          "help": "场景单位。",
+          "initial": 6.0,
+          "minimum": 0.0,
+          "maximum": 300.0,
+          "choices": []
+        },
+        {
+          "key": "frequency",
+          "label": "频率",
+          "help": "每秒随机关键点数。",
+          "initial": 12.0,
+          "minimum": 0.1,
+          "maximum": 60.0,
+          "choices": []
+        },
+        {
+          "key": "rotation",
+          "label": "旋转幅度",
+          "help": "绕图层 Z 轴，度。",
+          "initial": 0.4,
+          "minimum": 0.0,
+          "maximum": 30.0,
+          "choices": []
+        },
+        {
+          "key": "seed",
+          "label": "随机种子",
+          "help": "固定种子便于复现。",
+          "initial": 1.0,
+          "minimum": 0.0,
+          "maximum": 1000.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": true,
+      "stage": false
+    },
+    {
+      "id": "FX11.3",
+      "name": "呼吸缩放",
+      "help": "在当前图层缩放上乘以周期性呼吸系数。",
+      "group": 11,
+      "shader": 3,
+      "parameters": [
+        {
+          "key": "amplitude",
+          "label": "缩放幅度",
+          "help": "相对基础缩放的比例。",
+          "initial": 0.04,
+          "minimum": 0.0,
+          "maximum": 0.9,
+          "choices": []
+        },
+        {
+          "key": "frequency",
+          "label": "频率",
+          "help": "每秒周期数。",
+          "initial": 0.7,
+          "minimum": 0.01,
+          "maximum": 10.0,
+          "choices": []
+        },
+        {
+          "key": "phase",
+          "label": "相位",
+          "help": "周期偏移。",
+          "initial": 0.0,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "axes",
+          "label": "缩放轴",
+          "help": "选择同步或单轴呼吸。",
+          "initial": 0.0,
+          "minimum": 0.0,
+          "maximum": 2.0,
+          "choices": [
+            "等比",
+            "横向",
+            "纵向"
+          ]
+        }
+      ],
+      "asset": "None",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": true,
+      "stage": false
+    },
+    {
+      "id": "FX11.4",
+      "name": "闪烁",
+      "help": "在当前图层透明度上乘以平滑明暗或开关节奏。",
+      "group": 11,
+      "shader": 4,
+      "parameters": [
+        {
+          "key": "mode",
+          "label": "节奏",
+          "help": "平滑呼吸、硬切开关或随机闪烁。",
+          "initial": 0.0,
+          "minimum": 0.0,
+          "maximum": 2.0,
+          "choices": [
+            "平滑明暗",
+            "开关节奏",
+            "随机闪烁"
+          ]
+        },
+        {
+          "key": "frequency",
+          "label": "频率",
+          "help": "每秒周期数。",
+          "initial": 2.0,
+          "minimum": 0.01,
+          "maximum": 30.0,
+          "choices": []
+        },
+        {
+          "key": "minimum",
+          "label": "最低透明度",
+          "help": "乘数下限。",
+          "initial": 0.25,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "duty",
+          "label": "亮起占比",
+          "help": "每周期亮起的比例。",
+          "initial": 0.5,
+          "minimum": 0.01,
+          "maximum": 0.99,
+          "choices": []
+        },
+        {
+          "key": "phase",
+          "label": "相位",
+          "help": "周期偏移。",
+          "initial": 0.0,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "seed",
+          "label": "随机种子",
+          "help": "随机闪烁使用。",
+          "initial": 3.0,
+          "minimum": 0.0,
+          "maximum": 1000.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": true,
+      "stage": false
+    },
+    {
+      "id": "FX12.0",
+      "name": "形状裁切",
+      "help": "按选定形状裁切；四边形顶点应依次围绕轮廓设置，避免自交。",
+      "group": 12,
+      "shader": 0,
+      "parameters": [
+        {
+          "key": "shape",
+          "label": "形状",
+          "help": "选择后显示对应形状参数。",
+          "initial": 2.0,
+          "minimum": 0.0,
+          "maximum": 4.0,
+          "choices": [
+            "四边形",
+            "多边形",
+            "圆角矩形",
+            "圆形",
+            "椭圆形"
+          ]
+        },
+        {
+          "key": "center_x",
+          "label": "中心 X",
+          "help": "[shape=1,2,3,4] 归一化坐标。",
+          "initial": 0.5,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "center_y",
+          "label": "中心 Y",
+          "help": "[shape=1,2,3,4] 归一化坐标。",
+          "initial": 0.5,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "width",
+          "label": "宽度／直径",
+          "help": "[shape=1,2,3,4] 圆形直径相对画面短边。",
+          "initial": 0.84,
+          "minimum": 0.01,
+          "maximum": 2.0,
+          "choices": []
+        },
+        {
+          "key": "height",
+          "label": "高度",
+          "help": "[shape=1,2,4] 相对画面高度。",
+          "initial": 0.84,
+          "minimum": 0.01,
+          "maximum": 2.0,
+          "choices": []
+        },
+        {
+          "key": "radius",
+          "label": "圆角半径",
+          "help": "[shape=2] 像素。",
+          "initial": 40.0,
+          "minimum": 0.0,
+          "maximum": 1000.0,
+          "choices": []
+        },
+        {
+          "key": "sides",
+          "label": "边数",
+          "help": "[shape=1] 取最近整数。",
+          "initial": 6.0,
+          "minimum": 3.0,
+          "maximum": 12.0,
+          "choices": []
+        },
+        {
+          "key": "rotation",
+          "label": "旋转",
+          "help": "[shape=1,2,4] 度。",
+          "initial": 0.0,
+          "minimum": -180.0,
+          "maximum": 180.0,
+          "choices": []
+        },
+        {
+          "key": "tl_x",
+          "label": "左上 X",
+          "help": "[shape=0] 归一化顶点坐标。",
+          "initial": 0.08,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "tl_y",
+          "label": "左上 Y",
+          "help": "[shape=0] 归一化顶点坐标。",
+          "initial": 0.08,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "tr_x",
+          "label": "右上 X",
+          "help": "[shape=0] 归一化顶点坐标。",
+          "initial": 0.92,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "tr_y",
+          "label": "右上 Y",
+          "help": "[shape=0] 归一化顶点坐标。",
+          "initial": 0.08,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "br_x",
+          "label": "右下 X",
+          "help": "[shape=0] 归一化顶点坐标。",
+          "initial": 0.92,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "br_y",
+          "label": "右下 Y",
+          "help": "[shape=0] 归一化顶点坐标。",
+          "initial": 0.92,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "bl_x",
+          "label": "左下 X",
+          "help": "[shape=0] 归一化顶点坐标。",
+          "initial": 0.08,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "bl_y",
+          "label": "左下 Y",
+          "help": "[shape=0] 归一化顶点坐标。",
+          "initial": 0.92,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX12.1",
+      "name": "科幻开窗",
+      "help": "切角窗口、动态边光与轻微轮廓呼吸。",
+      "group": 12,
+      "shader": 1,
+      "parameters": [
+        {
+          "key": "margin",
+          "label": "边距",
+          "help": "相对画面短边。",
+          "initial": 0.04,
+          "minimum": 0.0,
+          "maximum": 0.45,
+          "choices": []
+        },
+        {
+          "key": "corner",
+          "label": "切角",
+          "help": "相对画面短边。",
+          "initial": 0.12,
+          "minimum": 0.0,
+          "maximum": 0.45,
+          "choices": []
+        },
+        {
+          "key": "border",
+          "label": "边光宽度",
+          "help": "像素。",
+          "initial": 3.0,
+          "minimum": 0.0,
+          "maximum": 30.0,
+          "choices": []
+        },
+        {
+          "key": "motion",
+          "label": "轮廓呼吸",
+          "help": "相对画面短边的变化幅度。",
+          "initial": 0.008,
+          "minimum": 0.0,
+          "maximum": 0.1,
+          "choices": []
+        },
+        {
+          "key": "speed",
+          "label": "动画速度",
+          "help": "每秒周期数。",
+          "initial": 0.7,
+          "minimum": 0.0,
+          "maximum": 10.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": true,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX12.2",
+      "name": "动态源遮罩",
+      "help": "选择辅助图层，用其透明度或亮度控制当前素材。未选择时保持原图。",
+      "group": 12,
+      "shader": 2,
+      "parameters": [
+        {
+          "key": "channel",
+          "label": "遮罩通道",
+          "help": "使用另一幅画面的透明度或颜色。",
+          "initial": 1.0,
+          "minimum": 0.0,
+          "maximum": 4.0,
+          "choices": [
+            "透明度",
+            "亮度",
+            "红色",
+            "绿色",
+            "蓝色"
+          ]
+        },
+        {
+          "key": "threshold",
+          "label": "阈值",
+          "help": "遮罩中点。",
+          "initial": 0.5,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "softness",
+          "label": "软化范围",
+          "help": "阈值过渡宽度。",
+          "initial": 0.2,
+          "minimum": 0.001,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "invert",
+          "label": "反转",
+          "help": "反转遮罩值。",
+          "initial": 0.0,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": [
+            "关闭",
+            "开启"
+          ]
+        }
+      ],
+      "asset": "Source",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX12.3",
+      "name": "亮度转透明",
+      "help": "按亮度抠除黑底或白底，并可去除对应底色的边缘污染。",
+      "group": 12,
+      "shader": 3,
+      "parameters": [
+        {
+          "key": "mode",
+          "label": "去除底色",
+          "help": "去黑或去白。",
+          "initial": 0.0,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": [
+            "去黑底",
+            "去白底"
+          ]
+        },
+        {
+          "key": "threshold",
+          "label": "亮度阈值",
+          "help": "透明与保留的分界。",
+          "initial": 0.08,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "softness",
+          "label": "过渡宽度",
+          "help": "亮度过渡范围。",
+          "initial": 0.15,
+          "minimum": 0.001,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "unmatte",
+          "label": "底色清理",
+          "help": "按遮罩去除底色混色。",
+          "initial": 0.7,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX12.4",
+      "name": "透明杂边清理",
+      "help": "压低半透明残留，同时保留可调的边缘过渡。",
+      "group": 12,
+      "shader": 4,
+      "parameters": [
+        {
+          "key": "threshold",
+          "label": "透明度阈值",
+          "help": "低于此值的像素被清除。",
+          "initial": 0.15,
+          "minimum": 0.0,
+          "maximum": 0.99,
+          "choices": []
+        },
+        {
+          "key": "softness",
+          "label": "过渡宽度",
+          "help": "设置低值获得较硬边缘。",
+          "initial": 0.08,
+          "minimum": 0.001,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "normalize",
+          "label": "保留区域实化",
+          "help": "将保留的半透明像素推向不透明。",
+          "initial": 0.3,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX12.5",
+      "name": "透明度／渐变淡出",
+      "help": "整体透明度与任意方向的线性渐变。",
+      "group": 12,
+      "shader": 5,
+      "parameters": [
+        {
+          "key": "opacity",
+          "label": "整体透明度",
+          "help": "乘以原素材透明度。",
+          "initial": 0.8,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "gradient",
+          "label": "渐变强度",
+          "help": "零表示只调整整体透明度。",
+          "initial": 1.0,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "angle",
+          "label": "渐变方向",
+          "help": "度。",
+          "initial": 0.0,
+          "minimum": -180.0,
+          "maximum": 180.0,
+          "choices": []
+        },
+        {
+          "key": "start",
+          "label": "渐变起点",
+          "help": "归一化投影距离。",
+          "initial": 0.0,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "end",
+          "label": "渐变终点",
+          "help": "归一化投影距离。",
+          "initial": 1.0,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "invert",
+          "label": "反转方向",
+          "help": "反转渐变。",
+          "initial": 0.0,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": [
+            "关闭",
+            "开启"
+          ]
+        }
+      ],
+      "asset": "None",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX12.9",
+      "name": "渐变叠加",
+      "help": "在素材可见轮廓内覆盖纯色、线性或径向渐变，保留原素材透明度。",
+      "group": 12,
+      "shader": 9,
+      "parameters": [
+        {
+          "key": "mode",
+          "label": "叠加类型",
+          "help": "选择纯色、线性渐变或径向渐变。",
+          "initial": 1.0,
+          "minimum": 0.0,
+          "maximum": 2.0,
+          "choices": [
+            "纯色",
+            "线性渐变",
+            "径向渐变"
+          ]
+        },
+        {
+          "key": "center_x",
+          "label": "中心 X",
+          "help": "[shape=1,2] 渐变中心，素材归一化横向坐标。",
+          "initial": 0.5,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "center_y",
+          "label": "中心 Y",
+          "help": "[shape=1,2] 渐变中心，素材归一化纵向坐标。",
+          "initial": 0.5,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "scale",
+          "label": "渐变范围",
+          "help": "[shape=1,2] 相对素材短边的整体范围。",
+          "initial": 1.0,
+          "minimum": 0.01,
+          "maximum": 4.0,
+          "choices": []
+        },
+        {
+          "key": "softness",
+          "label": "柔度",
+          "help": "[shape=1,2] 颜色过渡占范围的比例；较小值形成硬边。",
+          "initial": 1.0,
+          "minimum": 0.01,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "reverse",
+          "label": "反向渐变",
+          "help": "[shape=1,2] 交换渐变方向。",
+          "initial": 0.0,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": [
+            "关闭",
+            "开启"
+          ]
+        },
+        {
+          "key": "angle",
+          "label": "渐变角度",
+          "help": "[shape=1] 度；零从左到右，九十从上到下。",
+          "initial": 0.0,
+          "minimum": -180.0,
+          "maximum": 180.0,
+          "choices": []
+        },
+        {
+          "key": "scale_x",
+          "label": "径向横向比例",
+          "help": "[shape=2] 横向半径倍率；与纵向不同时形成椭圆。",
+          "initial": 1.0,
+          "minimum": 0.01,
+          "maximum": 4.0,
+          "choices": []
+        },
+        {
+          "key": "scale_y",
+          "label": "径向纵向比例",
+          "help": "[shape=2] 纵向半径倍率；两个轴相同时保持圆形。",
+          "initial": 1.0,
+          "minimum": 0.01,
+          "maximum": 4.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": true,
+      "color2": true,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX12.6",
+      "name": "混合模式",
+      "help": "将辅助图层按选定公式混入当前素材的可见区域。未选辅助源时保持原图。",
+      "group": 12,
+      "shader": 6,
+      "parameters": [
+        {
+          "key": "mode",
+          "label": "混合模式",
+          "help": "基础与扩充模式统一选择。",
+          "initial": 2.0,
+          "minimum": 0.0,
+          "maximum": 9.0,
+          "choices": [
+            "正常",
+            "相加",
+            "相乘",
+            "变暗",
+            "变亮",
+            "滤色",
+            "叠加",
+            "柔光",
+            "差值",
+            "排除"
+          ]
+        },
+        {
+          "key": "opacity",
+          "label": "混合透明度",
+          "help": "辅助源混入比例。",
+          "initial": 0.65,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        }
+      ],
+      "asset": "Source",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX12.7",
+      "name": "动态纹理覆盖",
+      "help": "平铺并移动选定辅助源纹理，保持素材轮廓。未选辅助源时保持原图。",
+      "group": 12,
+      "shader": 7,
+      "parameters": [
+        {
+          "key": "scale",
+          "label": "平铺次数",
+          "help": "每轴重复次数。",
+          "initial": 2.0,
+          "minimum": 0.1,
+          "maximum": 20.0,
+          "choices": []
+        },
+        {
+          "key": "speed_x",
+          "label": "横向流动",
+          "help": "每秒 UV 位移。",
+          "initial": 0.05,
+          "minimum": -2.0,
+          "maximum": 2.0,
+          "choices": []
+        },
+        {
+          "key": "speed_y",
+          "label": "纵向流动",
+          "help": "每秒 UV 位移。",
+          "initial": 0.02,
+          "minimum": -2.0,
+          "maximum": 2.0,
+          "choices": []
+        },
+        {
+          "key": "opacity",
+          "label": "覆盖强度",
+          "help": "纹理混入比例。",
+          "initial": 0.4,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "mode",
+          "label": "覆盖方式",
+          "help": "正常、相乘或滤色。",
+          "initial": 1.0,
+          "minimum": 0.0,
+          "maximum": 2.0,
+          "choices": [
+            "正常",
+            "相乘",
+            "滤色"
+          ]
+        }
+      ],
+      "asset": "Image",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX12.8",
+      "name": "燃烧溶解",
+      "help": "程序噪声驱动单素材显隐及高温边缘。",
+      "group": 12,
+      "shader": 8,
+      "parameters": [
+        {
+          "key": "progress",
+          "label": "溶解进度",
+          "help": "零完整保留，一完全消失。",
+          "initial": 0.35,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "scale",
+          "label": "噪声密度",
+          "help": "烧蚀纹理密度。",
+          "initial": 12.0,
+          "minimum": 1.0,
+          "maximum": 100.0,
+          "choices": []
+        },
+        {
+          "key": "edge",
+          "label": "燃烧边缘",
+          "help": "噪声阈值带宽。",
+          "initial": 0.08,
+          "minimum": 0.001,
+          "maximum": 0.4,
+          "choices": []
+        },
+        {
+          "key": "softness",
+          "label": "边缘柔度",
+          "help": "噪声阈值过渡。",
+          "initial": 0.02,
+          "minimum": 0.001,
+          "maximum": 0.3,
+          "choices": []
+        },
+        {
+          "key": "speed",
+          "label": "噪声流动",
+          "help": "每秒纹理运动。",
+          "initial": 0.15,
+          "minimum": 0.0,
+          "maximum": 5.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": true,
+      "color2": true,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX13.0",
+      "name": "LED 演出舞台",
+      "help": "把素材画面采样为发光灯珠与黑色缝隙，模拟真实LED屏幕；圆点或RGB灯珠可选。",
+      "group": 13,
+      "shader": 0,
+      "parameters": [
+        {
+          "key": "spacing",
+          "label": "灯珠间距",
+          "help": "每个LED单元的像素尺寸，越大越容易看到独立灯珠与缝隙。",
+          "initial": 12.0,
+          "minimum": 3.0,
+          "maximum": 80.0,
+          "choices": []
+        },
+        {
+          "key": "fill",
+          "label": "灯珠尺寸",
+          "help": "灯珠占单元的比例；越小黑色缝隙越明显。",
+          "initial": 0.72,
+          "minimum": 0.1,
+          "maximum": 0.95,
+          "choices": []
+        },
+        {
+          "key": "gain",
+          "label": "发光亮度",
+          "help": "灯珠颜色来自原素材；控制其发光亮度。",
+          "initial": 1.3,
+          "minimum": 0.0,
+          "maximum": 4.0,
+          "choices": []
+        },
+        {
+          "key": "mode",
+          "label": "灯珠排列",
+          "help": "圆点为单色LED单元；RGB将源颜色分解成红绿蓝三颗灯珠。",
+          "initial": 0.0,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": [
+            "圆形灯珠",
+            "RGB三色灯珠"
+          ]
+        },
+        {
+          "key": "glow",
+          "label": "灯珠柔光",
+          "help": "以固定九点邻域形成低强度柔光，零关闭柔光采样。",
+          "initial": 0.12,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "scan",
+          "label": "扫描亮度",
+          "help": "控制每行灯珠的扫描明暗差；零为稳定屏幕。",
+          "initial": 0.0,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "speed",
+          "label": "扫描速度",
+          "help": "仅扫描亮度非零时生效，单位为每秒扫描周期。",
+          "initial": 0.4,
+          "minimum": 0.0,
+          "maximum": 4.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX13.1",
+      "name": "21:9 宽银幕",
+      "help": "在整个Spatial FX舞台完成合成后处理上下区域；不改变OBS全局画布。多个对象启用时使用时间轴第一项有效设置。",
+      "group": 13,
+      "shader": 1,
+      "parameters": [
+        {
+          "key": "mode",
+          "label": "外围处理",
+          "help": "黑边：上下覆盖不透明黑色；透明裁切：裁掉上下内容并保留中间21:9区域，外围透明。关闭即恢复。",
+          "initial": 0.0,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": [
+            "黑边覆盖",
+            "透明裁切"
+          ]
+        }
+      ],
+      "asset": "None",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": true
+    },
+    {
+      "id": "FX13.2",
+      "name": "动画氛围柔光",
+      "help": "共享模糊副本，以滤色、柔光或相乘塑造明暗氛围。",
+      "group": 13,
+      "shader": 2,
+      "parameters": [
+        {
+          "key": "radius",
+          "label": "柔光半径",
+          "help": "像素。",
+          "initial": 12.0,
+          "minimum": 0.0,
+          "maximum": 100.0,
+          "choices": []
+        },
+        {
+          "key": "amount",
+          "label": "混合强度",
+          "help": "模糊副本混入量。",
+          "initial": 0.5,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        },
+        {
+          "key": "mode",
+          "label": "混合方式",
+          "help": "明亮柔光或暗部氛围。",
+          "initial": 0.0,
+          "minimum": 0.0,
+          "maximum": 2.0,
+          "choices": [
+            "滤色",
+            "柔光",
+            "相乘"
+          ]
+        },
+        {
+          "key": "saturation",
+          "label": "饱和度",
+          "help": "最终色彩浓度。",
+          "initial": 1.1,
+          "minimum": 0.0,
+          "maximum": 2.0,
+          "choices": []
+        },
+        {
+          "key": "tint",
+          "label": "氛围染色",
+          "help": "颜色混入柔光副本的比例。",
+          "initial": 0.1,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": true,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    },
+    {
+      "id": "FX13.3",
+      "name": "醉酒眩晕",
+      "help": "周期性镜头偏移、脉动、共享模糊与高光组合。",
+      "group": 13,
+      "shader": 3,
+      "parameters": [
+        {
+          "key": "sway",
+          "label": "晃动",
+          "help": "UV 偏移幅度。",
+          "initial": 0.018,
+          "minimum": 0.0,
+          "maximum": 0.15,
+          "choices": []
+        },
+        {
+          "key": "speed",
+          "label": "节奏",
+          "help": "每秒周期数。",
+          "initial": 0.45,
+          "minimum": 0.01,
+          "maximum": 4.0,
+          "choices": []
+        },
+        {
+          "key": "blur",
+          "label": "失焦",
+          "help": "像素。",
+          "initial": 7.0,
+          "minimum": 0.0,
+          "maximum": 60.0,
+          "choices": []
+        },
+        {
+          "key": "glow",
+          "label": "辉光",
+          "help": "失焦高光混入量。",
+          "initial": 0.3,
+          "minimum": 0.0,
+          "maximum": 2.0,
+          "choices": []
+        },
+        {
+          "key": "pulse",
+          "label": "脉动",
+          "help": "周期性缩放幅度。",
+          "initial": 0.025,
+          "minimum": 0.0,
+          "maximum": 0.2,
+          "choices": []
+        },
+        {
+          "key": "double",
+          "label": "重影间距",
+          "help": "第二视像素偏移。",
+          "initial": 5.0,
+          "minimum": 0.0,
+          "maximum": 60.0,
+          "choices": []
+        }
+      ],
+      "asset": "None",
+      "color": false,
+      "color2": false,
+      "history": false,
+      "geometry": false,
+      "stage": false
+    }
+  ]
+}

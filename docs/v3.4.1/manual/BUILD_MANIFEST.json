@@ -1,0 +1,19 @@
+{
+  "version": "3.4.1",
+  "effects": 95,
+  "groups": 13,
+  "parameters": 474,
+  "screenshots": 111,
+  "runtime_defaults_and_ranges_crosschecked": true,
+  "prose_sha256": "0f27817c2bab5d1f2265b18edcd9a73745013424a1be3c942016dbdae4994493",
+  "html_sha256": "02db3fa2b3b93dc0dbd82524348c051a7e3d31885d5073a6238f942467c53a2b",
+  "bytes": 8845056,
+  "animations": [
+    "depth parallax",
+    "keyframe interpolation and Bezier",
+    "bound light movement",
+    "FX activation gates",
+    "BPM grid"
+  ],
+  "note": "Illustrations are not OBS runtime tests. Browser validation is reported separately."
+}
