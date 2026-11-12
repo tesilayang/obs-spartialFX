@@ -79,6 +79,16 @@ float4 ExtractGlowPS(BlurVert v):TARGET{
  return float4(c.rgb*excess/max(peak,.00001),c.a);
 }
 technique ExtractGlow {pass {vertex_shader=BlurVS(v);pixel_shader=ExtractGlowPS(v);}}
+float4 EnvironmentPS(BlurVert v):TARGET{
+ // A small smooth illumination field carries color, never reference detail.
+ float2 cell=min(floor(saturate(v.uv)*2),float2(1,1));
+ float2 t=saturate(v.uv)*2-cell;
+ float2 a=.08+cell*.42,b=a+.42;
+ float4 top=lerp(image.Sample(linear_sampler,float2(a.x,a.y)),image.Sample(linear_sampler,float2(b.x,a.y)),t.x);
+ float4 bottom=lerp(image.Sample(linear_sampler,float2(a.x,b.y)),image.Sample(linear_sampler,float2(b.x,b.y)),t.x);
+ return lerp(top,bottom,t.y);
+}
+technique EnvironmentField {pass {vertex_shader=BlurVS(v);pixel_shader=EnvironmentPS(v);}}
 technique Reduce {pass {vertex_shader=BlurVS(v);pixel_shader=ReducePS(v);}}
 technique Convolve {pass {vertex_shader=BlurVS(v);pixel_shader=ConvolvePS(v);}}
 technique Aperture {pass {vertex_shader=BlurVS(v);pixel_shader=AperturePS(v);}}

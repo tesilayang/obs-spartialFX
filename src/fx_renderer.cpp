@@ -37,7 +37,7 @@ struct History {
 };
 struct Asset {gs_texture_t*texture=nullptr;std::shared_ptr<const FxPixels>pixels;~Asset(){gs_texture_destroy(texture);}};
 bool denseBlur(const FxDefinition&d){return d.group==1&&(d.shader==0||d.shader==1||d.shader==2||d.shader==4||d.shader==5);}
-struct LayerResources {std::array<Surface,2>ping;Surface temporalRaw,glowExtract;std::unique_ptr<FxBlur>blur;std::unique_ptr<FxAA>aa;std::map<std::string,std::unique_ptr<History>>history;std::map<std::string,std::unique_ptr<Asset>>assets;};
+struct LayerResources {std::array<Surface,2>ping;Surface temporalRaw,glowExtract,environmentField;std::unique_ptr<FxBlur>blur,environmentBlur,backlightBlur;std::unique_ptr<FxAA>aa;std::map<std::string,std::unique_ptr<History>>history;std::map<std::string,std::unique_ptr<Asset>>assets;};
 }
 struct FxRenderer::Impl {
  std::map<std::string,gs_effect_t*>effects;std::set<std::string>attempted,needed;std::map<std::string,std::unique_ptr<LayerResources>>layers;std::set<std::string>validIds;
@@ -58,7 +58,7 @@ struct FxRenderer::Impl {
   auto common=file("effects/fx_common.body"),body=file("effects/fx"+(def.group<10?std::string("0"):std::string())+std::to_string(def.group)+".body"),footer=file("effects/fx_footer.body");
   // Specialize before D3D compilation: unused sibling branches must disappear.
   char*error=nullptr;
-  if(!body.empty()&&!footer.empty()&&specializeFxShader(common,body,def.shader)){
+  if(!body.empty()&&!footer.empty()&&specializeFxShader(common,body,def.shader,def.group==5)){
    // OBS compiles each declared technique. Keep only this child's render path.
    std::istringstream footerLines(footer);std::ostringstream selectedFooter;std::string footerLine;
    while(std::getline(footerLines,footerLine)){
@@ -78,13 +78,13 @@ struct FxRenderer::Impl {
 };
 FxRenderer::FxRenderer():impl(std::make_unique<Impl>()){}FxRenderer::~FxRenderer()=default;
 uint64_t FxRenderer::allocations()const{return impl->allocated;}uint64_t FxRenderer::passes()const{return impl->draws;}uint64_t FxRenderer::failures()const{return impl->errors;}
-void FxRenderer::beginFrame(const std::vector<Layer>&layers){auto&s=*impl;s.validIds.clear();s.needed.clear();s.instanceOrder.clear();for(auto&l:layers){s.instanceOrder.push_back(l.instanceId);bool pixel=false;for(auto&d:fxCatalog())if(!d.geometry&&!d.stage&&activeFx(l.fx,d)){pixel=true;s.needed.insert(d.id);if(denseBlur(d)||d.id=="FX04.0")s.needed.insert("dense-blur");}if(pixel)s.validIds.insert(l.instanceId);}
+void FxRenderer::beginFrame(const std::vector<Layer>&layers){auto&s=*impl;s.validIds.clear();s.needed.clear();s.instanceOrder.clear();for(auto&l:layers){s.instanceOrder.push_back(l.instanceId);bool pixel=false;for(auto&d:fxCatalog())if(!d.geometry&&!d.stage&&activeFx(l.fx,d)){pixel=true;s.needed.insert(d.id);if(denseBlur(d)||d.id=="FX04.0"||d.id=="FX05.0"||d.id=="FX05.1")s.needed.insert("dense-blur");}if(pixel)s.validIds.insert(l.instanceId);}
  for(auto it=s.layers.begin();it!=s.layers.end();)if(!s.validIds.count(it->first))it=s.layers.erase(it);else++it;
  for(auto it=s.effects.begin();it!=s.effects.end();)if(!s.needed.count(it->first)){gs_effect_destroy(it->second);s.attempted.erase(it->first);it=s.effects.erase(it);}else++it;
  if(!s.needed.count("FX02.2"))s.smaaTables.reset();
 }
 gs_texture_t*FxRenderer::process(const Layer&layer,gs_texture_t*original,const FxRenderContext&ctx,const std::vector<gs_texture_t*>&references){
- auto&s=*impl;if(!original||!s.validIds.count(layer.instanceId))return original;if(s.frameStamp!=ctx.frame){s.frameStamp=ctx.frame;++s.frameIndex;}auto&slot=s.layers[layer.instanceId];if(!slot)slot=std::make_unique<LayerResources>();auto&res=*slot;auto*current=original;size_t ping=0;std::set<std::string>historyActive,assetsActive;bool blurActive=false,aaActive=false,glowActive=false;
+ auto&s=*impl;if(!original||!s.validIds.count(layer.instanceId))return original;if(s.frameStamp!=ctx.frame){s.frameStamp=ctx.frame;++s.frameIndex;}auto&slot=s.layers[layer.instanceId];if(!slot)slot=std::make_unique<LayerResources>();auto&res=*slot;auto*current=original;size_t ping=0;std::set<std::string>historyActive,assetsActive;bool blurActive=false,aaActive=false,glowActive=false,environmentActive=false,backlightActive=false;
  for(auto&def:fxCatalog()){
   auto*f=activeFx(layer.fx,def);if(!f||def.geometry||def.stage)continue;auto*e=s.effect(def);if(!e)continue;auto*auxiliary=ctx.auxiliary;bool auxValid=false;
   if(def.id=="FX02.2"){
@@ -99,6 +99,26 @@ gs_texture_t*FxRenderer::process(const Layer&layer,gs_texture_t*original,const F
   // OBS tracks texture dependencies before D3D removes sibling branches.
   // Bind a valid image even for children which do not use the dense blur path.
   texture(e,"blur_image",current);scalar(e,"blur_minimum_radius",1);
+  texture(e,"environment_image",current);
+  if(def.id=="FX05.0"&&auxValid){
+   auto*kernel=s.blurEffect();if(!kernel)continue;
+   environmentActive=true;if(!res.environmentBlur)res.environmentBlur=std::make_unique<FxBlur>();
+   const auto w=gs_texture_get_width(auxiliary),h=gs_texture_get_height(auxiliary);
+   auto*smoothed=res.environmentBlur->render(kernel,auxiliary,w,h,f->values[1],0,0,0,0,0,0,0,{},s.allocated,s.draws);
+   if(!smoothed||!res.environmentField.begin(16,16,s.allocated)){++s.errors;continue;}
+   texture(kernel,"image",smoothed);gs_blend_state_push();gs_enable_blending(false);
+   while(gs_effect_loop(kernel,"EnvironmentField"))gs_draw_sprite(smoothed,0,16,16);
+   gs_blend_state_pop();gs_texrender_end(res.environmentField.value);++s.draws;
+   texture(e,"environment_image",gs_texrender_get_texture(res.environmentField.value));
+  }
+  if(def.id=="FX05.1"){
+   two(e,"source_size",ctx.sourceWidth,ctx.sourceHeight);
+   auto*kernel=s.blurEffect();if(!kernel)continue;
+   backlightActive=true;if(!res.backlightBlur)res.backlightBlur=std::make_unique<FxBlur>();
+   const double captureScale=double(ctx.width)/std::max(1u,ctx.sourceWidth);
+   auto*soft=res.backlightBlur->render(kernel,current,ctx.width,ctx.height,f->values[0]*captureScale,0,2,0,0,0,0,0,{},s.allocated,s.draws);
+   if(!soft){++s.errors;continue;}texture(e,"blur_image",soft);
+  }
   if(def.id=="FX04.0"){
    auto*kernel=s.blurEffect();if(!kernel)continue;blurActive=true;glowActive=true;
    if(!res.blur)res.blur=std::make_unique<FxBlur>();
@@ -141,6 +161,8 @@ gs_texture_t*FxRenderer::process(const Layer&layer,gs_texture_t*original,const F
  if(historyActive.empty())res.temporalRaw.release();
  if(!blurActive)res.blur.reset();
  if(!glowActive)res.glowExtract.release();
+ if(!environmentActive){res.environmentBlur.reset();res.environmentField.release();}
+ if(!backlightActive)res.backlightBlur.reset();
  if(!aaActive)res.aa.reset();
  for(auto it=res.assets.begin();it!=res.assets.end();)if(!assetsActive.count(it->first))it=res.assets.erase(it);else++it;
  return current;

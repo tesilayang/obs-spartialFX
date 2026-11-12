@@ -135,3 +135,14 @@ XY 偏移跟随图层缩放，Z 是世界单位的局部深度；若之后需要
 | 2026-10-31/3.2 | evaluateSceneAt | 各模块采样整组旧帧 | TimeUs逐参数→环绕→源布局补偿→effectivePlane→灯光，仍RzRyRx/1500参考距离 | schema3采样等价，独立旧播放范围 | tests/scene_evaluator_tests.cpp；work/v3.2/gpu33 | 空间属性、时间轴、结构图、stage、灯光、FX |
 | 2026-10-31/3.2 | 全画面合成 | 无 | 最后复用texrender，倍率/预乘RGB与Alpha同步缩放 | 默认1，无初始变化 | camera_remake_probe.py（实际状态见VALIDATION） | 输出，不改灯位置 |
 | 2026-10-31/3.2 | 节拍拆段 | 整组帧/旧上限 | 贝塞尔de Casteljau绝对手柄；旧分段三次保留归一化子区间 | 原轨迹不变，既有同时间帧跳过 | animation_tests，含奇数微秒/零差过冲 | 独立参数轨、曲线图、渲染 |
+
+## v3.4.2 背后柔光的素材局部坐标
+
+- FX05.1 的背光 XYZ 是图层材质内的局部参数，原点为裁剪后素材中心，X 向右、Y 向下、Z 正值在素材背面；单位为原素材像素。图层最终位姿继续由 `evaluateSceneAt()` 求值，整个材质结果随后跟随图层变换。
+- 受光表面比例乘在局部表面坐标上；不修改图层基础坐标，不写入世界灯光位置，不替代灯光页的绑定公式。
+- `sourceWidth/sourceHeight` 保留原素材尺寸，`width/height` 表示捕获纹理尺寸。表面位置为 `(uv - layer_uv_center) * source_size * scale`；高斯半径在提交捕获管线前乘 `captureWidth/sourceWidth`。最长边 2048 的捕获上限不能改变参数的像素单位。
+- FX05.0 的“参考模糊”延续捕获采样画面的像素单位；其提示必须写明“参考采样画面像素”，不能与背光原素材像素混用。
+
+| 日期/版本 | 参数或接口 | 原计算方式 | 新计算方式 | 旧配置迁移 | 单测及 GPU 证据 | 消费者 |
+|---|---|---|---|---|---|---|
+| 2026-11-12/3.4.2 修补 | FX05.1 背光位置、扩散 | 单个 offset，9 点稀疏 Alpha 采样 | 原素材像素 XYZ、连续分离高斯、局部光线与距离衰减；捕获尺寸在边界换算 | offset 映射到 XY，Z 默认 200；保留 radius/gain/scale，视觉为近似迁移 | fx_tests；v342patch_probe；v342patch_boundaries 的 1080p/4K 同比对照 | FX05.1 材质与舞台最终图层 |

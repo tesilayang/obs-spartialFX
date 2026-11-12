@@ -83,7 +83,7 @@ try:
  # All legal control combinations must leave finite intermediates. A subsequent
  # neutral luminance curve must not turn a blown-out white highlight black.
  extreme=fx('FX03.0',dict(neutral,gamma=.1,red=3,green=3,blue=3,exposure=5))
- identity=fx('FX03.4',{'black':0,'shadow':.25,'middle':.5,'highlight':.75,'white':1,'channel':0})
+ identity=fx('FX03.4',{'input_black':0,'input_white':1,'output_black':0,'output_white':1,'gamma':1,'channel':0})
  n.update({'layers':[dict(layer,fx_stack={'attached':True,'group_states':groups,'effects':[extreme,identity]})]});time.sleep(.2)
  extreme_image=shot('color-extreme-curve');pixel=extreme_image.getpixel((230,80))
  check(min(pixel[:3])>245 and pixel[3]==255,'legal extreme grade stays finite through following luminance curve',pixel)
@@ -99,7 +99,8 @@ try:
  for zone in ('shadow','mid','high'):
   response('FX03.3',zone+'_exp',-2,2)
   for color in ('r','g','b'):response('FX03.3',zone+'_'+color,-.4,.4)
- for key in ('black','shadow','middle','highlight','white'):response('FX03.4',key,0,1)
+ for key in ('input_black','input_white','output_black','output_white'):response('FX03.4',key,0,1)
+ response('FX03.4','gamma',.1,10)
  response('FX03.7','levels',2,32)
  response('FX03.9','offset',-90,90,{'speed':0})
  for identifier,key,lo,hi,p in (

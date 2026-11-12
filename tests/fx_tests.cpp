@@ -1,4 +1,5 @@
 #include "model.hpp"
+#include "fx_shader.hpp"
 #include <obs.h>
 #include <iostream>
 #include <cstdlib>
@@ -53,7 +54,26 @@ static void quality341(){
  auto clamped=spatial::readFxStack(invalid);obs_data_release(invalid);
  require(clamped.effects.size()==3&&clamped.effects[0].values[0]==1&&clamped.effects[0].values[1]==.02&&clamped.effects[1].values[0]==.5&&clamped.effects[1].values[1]==0&&clamped.effects[2].values[0]==1&&clamped.effects[2].values[1]==0,"new quality controls sanitize imported invalid numeric values");
 }
-int main(){quality341();
+static void patch342ShaderIsolation(){
+ const std::string children="float4 fxApply(float2 uv) { float4 c = src(uv); if (effect_id == 0) { return environment_image.Sample(s,uv); } if (effect_id == 1) { if (c.a > 0) { c.rgb *= 2; } return soft_alpha(uv); } if (effect_id == 2) { return c; } return c; }";
+ for(int selected=0;selected<3;++selected){std::string common="uniform int effect_id;",body=children;require(spatial::specializeFxShader(common,body,selected,true),"material shader child specialization succeeds");require(body.find("effect_id")==std::string::npos&&common.empty(),"runtime selector eliminated before OBS parsing");require((body.find("environment_image")!=std::string::npos)==(selected==0)&& (body.find("soft_alpha")!=std::string::npos)==(selected==1),"only selected child contributes texture dependencies");require((body.find("c.rgb *= 2")!=std::string::npos)==(selected==1),"nested child braces retained without sibling code");}
+ std::string common="uniform int effect_id;",broken="if (effect_id == 0) { return c;";require(!spatial::specializeFxShader(common,broken,0,true),"malformed isolated child rejected");
+}
+static void patch342Persistence(){
+ auto*input=obs_data_create_from_json(R"({"fx_stack":{"attached":true,"group_states":[{},{},{"enabled":true},{"enabled":true},{"enabled":true}],"group_order":[{"group":5},{"group":3},{"group":4}],"effects":[{"id":"FX03.4","parameters":{"input_black":0.12,"input_white":0.85,"output_black":0.05,"output_white":0.95,"gamma":1.35}},{"id":"FX05.1","parameters":{"light_x":-75,"light_y":125,"light_z":300}}]}})");
+ auto restored=spatial::readFxStack(input);auto*saved=obs_data_create();spatial::writeFxStack(saved,restored);auto*stack=obs_data_get_obj(saved,"fx_stack");
+ auto*order=obs_data_get_array(stack,"group_order");require(obs_data_array_count(order)==3,"enabled group activation order roundtrips");obs_data_array_release(order);
+ const auto*levels=spatial::findFx(restored,"FX03.4");const auto*def=spatial::fxDefinition("FX03.4");require(def->parameters.size()==6,"levels exposes channel plus five actual levels controls");
+ for(const char*key:{"input_black","input_white","output_black","output_white","gamma"})parameterIndex(*def,key);
+ require(levels->values[parameterIndex(*def,"gamma")]==1.35,"levels gamma retains exact value");
+ const auto*back=spatial::findFx(restored,"FX05.1");def=spatial::fxDefinition("FX05.1");require(back->values[parameterIndex(*def,"light_x")]==-75&&back->values[parameterIndex(*def,"light_y")]==125&&back->values[parameterIndex(*def,"light_z")]==300,"backlight independent XYZ roundtrips");
+ obs_data_release(stack);obs_data_release(saved);obs_data_release(input);
+ input=obs_data_create_from_json(R"({"fx_stack":{"effects":[{"id":"FX03.4","parameters":{"channel":2,"black":0.1,"shadow":0.3,"middle":0.6,"highlight":0.8,"white":0.9}},{"id":"FX05.1","parameters":{"radius":91.14,"offset":12,"gain":1.5,"scale":2}}]}})");
+ restored=spatial::readFxStack(input);levels=spatial::findFx(restored,"FX03.4");def=spatial::fxDefinition("FX03.4");
+ require(levels->values[parameterIndex(*def,"output_black")]==.1&&levels->values[parameterIndex(*def,"output_white")]==.9&&levels->values[parameterIndex(*def,"channel")]==2,"old curve endpoints and channel migrate to levels");
+ back=spatial::findFx(restored,"FX05.1");def=spatial::fxDefinition("FX05.1");require(back->values[parameterIndex(*def,"radius")]==91.14&&back->values[parameterIndex(*def,"gain")]==1.5&&back->values[parameterIndex(*def,"scale")]==2,"old backlight shared parameters retained");obs_data_release(input);
+}
+int main(){patch342ShaderIsolation();patch342Persistence();quality341();
  for(const char*id:{"FX05.1","FX05.2","FX05.3"}){
   const auto*def=spatial::fxDefinition(id);require(def&&def->color,"backlight candle and spotlight expose their own color");
   spatial::FxStack stack;auto light=spatial::makeFx(*def);light.color={.12,.34,.56};stack.effects.push_back(light);

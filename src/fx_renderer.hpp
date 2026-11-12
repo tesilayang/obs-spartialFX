@@ -6,6 +6,7 @@
 namespace spatial {
 struct FxRenderContext {
  uint64_t frame=0;double elapsed=0;uint32_t width=1,height=1;Vec3 position{};
+ uint32_t sourceWidth=1,sourceHeight=1;
  Vec3 right{1,0,0},down{0,1,0},normal{0,0,-1},cameraPosition{0,0,-1500};
  double uvCenterX=.5,uvCenterY=.5;
  double uvSpanX=1,uvSpanY=1;

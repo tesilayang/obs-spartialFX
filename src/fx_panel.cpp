@@ -125,9 +125,10 @@ void FxPanel::rebuild(){
      }
      auto*f=findFx(l->fx,effectId);if(!f){l->fx.effects.push_back(makeFx(*d));f=&l->fx.effects.back();}f->enabled=on;if(on)build();parameters->setVisible(on);if(changed)changed();});
    }
-   connect(b,&QToolButton::toggled,this,[this,id,index,buttons,panels](bool on){if(auto*l=layer(id)){l->fx.groups[index]=on;for(size_t k=0;k<13;++k)(*panels)[k]->setVisible(k==index&&on);if(changed)changed();}});
+   connect(b,&QToolButton::toggled,this,[this,id,index,panels,detailLayout](bool on){if(auto*l=layer(id)){l->fx.groups[index]=on;auto&order=l->fx.groupOrder;const int group=int(index)+1;order.erase(std::remove(order.begin(),order.end(),group),order.end());if(on){order.push_back(group);detailLayout->removeWidget((*panels)[index]);detailLayout->addWidget((*panels)[index]);}(*panels)[index]->setVisible(on);if(changed)changed();}});
    if(entry.fx.groups[index])panel->show();
   }
+  for(int group:entry.fx.groupOrder)if(group>=1&&group<=13&&entry.fx.groups[size_t(group-1)]){auto*w=(*panels)[size_t(group-1)];detailLayout->removeWidget(w);detailLayout->addWidget(w);}
  }
  installHoverHelp(cards);
 }

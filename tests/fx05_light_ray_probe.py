@@ -16,7 +16,8 @@ parser.add_argument("--output", type=pathlib.Path, default=ROOT / "work/v3.4-blu
 args = parser.parse_args()
 out = args.output.resolve()
 out.mkdir(parents=True, exist_ok=True)
-shader = args.shader.read_text(encoding="utf-8").split("float fx05_attenuation", 1)[0]
+shader = args.shader.read_text(encoding="utf-8").split("float3 fx05_surface", 1)[1].split("float fx05_attenuation", 1)[0]
+shader = "float3 fx05_surface" + shader
 # The baseline effects call fx05_ray and ignore independent center/size inputs.
 call = "fx05_controlled_ray(uv,scale,center,size)" if "fx05_controlled_ray" in shader else "fx05_ray(uv,scale)"
 prefix = r'''

@@ -1,3 +1,11 @@
+uniform texture2d blur_image;
+uniform texture2d environment_image;
+uniform float2 source_size;
+float fx05_soft_alpha(float2 uv)
+{
+    if (uv.x < 0 || uv.y < 0 || uv.x > 1 || uv.y > 1) return 0;
+    return saturate(blur_image.Sample(fx_sampler, uv).a);
+}
 float3 fx05_surface(float2 uv, float scale)
 {
     return layer_position + ((uv.x - layer_uv_center.x) * layer_right + (uv.y - layer_uv_center.y) * layer_down) * scale;
@@ -59,38 +67,49 @@ float4 fxApply(float2 uv)
 {
     float4 c = src(uv);
     if (effect_id == 0) {
-        float3 reference = float3(0.0, 0.0, 0.0);
-        float weights = 0.0;
-        for (int iy = 0; iy < 3; iy++) {
-            for (int ix = 0; ix < 3; ix++) {
-                float2 offset = float2(float(ix) - 1.0, float(iy) - 1.0) * p0.y * pixel_size;
-                float4 tap = aux(uv + offset);
-                float weight = (ix == 1 ? 2.0 : 1.0) * (iy == 1 ? 2.0 : 1.0) * tap.a;
-                reference += tap.rgb * weight;
-                weights += weight;
-            }
+        float3 reference = lamp_color;
+        if (auxiliary_valid > 0.5) {
+            float4 field = environment_image.Sample(fx_sampler, uv);
+            if (field.a > 0.00001) reference = field.rgb / field.a;
         }
-        reference = weights > 0.00001 ? reference / weights : float3(1.0, 1.0, 1.0);
         float3 ray = fx05_ray(uv, p0.w);
         float facing = saturate(dot(fx05_normal(), ray) / max(length(ray), 0.00001));
         float amount = saturate(p0.x * fx05_attenuation(ray) * lerp(1.0, facing, p0.z));
-        // The source reference is optional; never multiply the subject by
-        // itself when no reference was selected (aux() otherwise falls back).
-        float3 illuminated = c.rgb * (float3(0.65, 0.65, 0.65) + lamp_color * 0.7);
-        if (auxiliary_valid > 0.5 && weights > 0.00001) {
-            illuminated = lerp(c.rgb, reference * lamp_color, 0.5);
-        }
-        return float4(lerp(c.rgb, illuminated, amount), c.a);
+        if (amount <= 0.0) return c;
+        float y = luminance(reference);
+        float3 gains = y > 0.00001 ? clamp(reference / y, 0.25, 3.5) : float3(1,1,1);
+        gains /= max(luminance(gains), 0.00001);
+        float subjectY = max(luminance(c.rgb), 0.0);
+        float3 adjusted = c.rgb * lerp(float3(1,1,1), gains, amount);
+        adjusted *= subjectY / max(luminance(adjusted), 0.00001);
+        // Fit chroma into the available gamut around the unchanged luminance.
+        // Avoid clipping saturated reference colors and losing fine contrast.
+        float3 chroma = adjusted - subjectY;
+        float low = min(min(chroma.r,chroma.g),chroma.b);
+        float high = max(max(chroma.r,chroma.g),chroma.b);
+        float ceiling = max(max(max(c.r,c.g),c.b),1.0);
+        float fit = min(1.0,min(subjectY/max(-low,0.00001),(ceiling-subjectY)/max(high,0.00001)));
+        return float4(subjectY + chroma*fit, c.a);
     }
     if (effect_id == 1) {
-        float3 ray = fx05_ray(uv, p0.w);
-        float2 displacement = fx05_direction(uv, p0.w) * p0.y * pixel_size;
-        float alpha = fx05_alpha(uv - displacement, p0.x);
-        float attenuation = fx05_attenuation(ray);
-        float glow_alpha = saturate(alpha * p0.z * attenuation);
-        float rim = saturate(c.a - fx05_alpha(uv + displacement, p0.x));
-        float4 lit = float4(c.rgb + tint.rgb * rim * p0.z * attenuation, c.a);
-        return over(lit, float4(tint.rgb, glow_alpha));
+        float soft = fx05_soft_alpha(uv);
+        float2 step_uv = max(p0.x * 0.08, 1.0) / max(source_size,float2(1,1));
+        float2 outward = float2(fx05_soft_alpha(uv-float2(step_uv.x,0))-fx05_soft_alpha(uv+float2(step_uv.x,0)),
+                                 fx05_soft_alpha(uv-float2(0,step_uv.y))-fx05_soft_alpha(uv+float2(0,step_uv.y)));
+        outward /= max(length(outward), 0.00001);
+        float2 surfacePoint = (uv-layer_uv_center) * source_size * p1.y;
+        float3 ray = float3(p0.y-surfacePoint.x, p0.z-surfacePoint.y, p0.w);
+        float distance = max(length(ray), 0.00001);
+        float3 direction = ray/distance;
+        float facing = 0.25 + 0.75*saturate(dot(outward,direction.xy)+abs(direction.z)*0.4);
+        float extent = max(max(source_size.x,source_size.y),1.0);
+        float attenuation = 1.0/(1.0+distance*distance/(extent*extent*0.25));
+        float behind = 0.5 + 0.5*p0.w/(abs(p0.w)+100.0);
+        float amount = max(p1.x,0.0)*attenuation*facing*behind;
+        float rim = saturate((1.0-soft)*2.0);
+        float4 lit = float4(c.rgb+tint.rgb*rim*amount, c.a);
+        float halo = 1.0-exp(-soft*amount*1.5);
+        return over(lit,float4(tint.rgb,halo));
     }
     if (effect_id == 2) {
         float3 ray = fx05_controlled_ray(uv, p1.x, p1.yz, p1.w);

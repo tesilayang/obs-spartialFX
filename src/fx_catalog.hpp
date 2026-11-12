@@ -18,7 +18,7 @@ struct FxInstance {
  Vec3 color{1,.85,.6},color2{.1,.2,.4};std::string reference,path,assetError;
  std::shared_ptr<const FxPixels> pixels;
 };
-struct FxStack {bool attached=false;std::array<bool,13> groups{};std::vector<FxInstance> effects;};
+struct FxStack {bool attached=false;std::array<bool,13> groups{};std::vector<FxInstance> effects;std::vector<int> groupOrder;};
 struct FxGroup {const char*name;const char*help;};
 const std::array<FxGroup,13>&fxGroups();
 const std::vector<FxDefinition>&fxCatalog();

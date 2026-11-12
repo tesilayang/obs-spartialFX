@@ -250,6 +250,7 @@ void render(void *data,gs_effect_t*){
       if(motion.instance!=m.layers[i].instanceId){motion={};motion.instance=m.layers[i].instanceId;}
       if(motion.frame!=frame){motion.previous=motion.current;motion.valid=motion.frame!=0;motion.current=center;motion.frame=frame;}
       FxRenderContext context;context.frame=frame;context.elapsed=fxTime;context.width=s.cache[i].width;context.height=s.cache[i].height;context.position=planes[i].position;
+      context.sourceWidth=sourceWidths[i];context.sourceHeight=sourceHeights[i];
       context.right=multiply(rotate({1,0,0},planes[i].rotation),sourceWidths[i]*planes[i].scaleX);context.down=multiply(rotate({0,1,0},planes[i].rotation),sourceHeights[i]*planes[i].scaleY);context.normal=rotate({0,0,-1},planes[i].rotation);
       context.cameraPosition=camera.position;context.uvCenterX=.5+double(drawLayers[i].cropLeft-drawLayers[i].cropRight)/(2*sourceWidths[i]);context.uvCenterY=.5+double(drawLayers[i].cropTop-drawLayers[i].cropBottom)/(2*sourceHeights[i]);
       context.uvSpanX=double(widths[i])/sourceWidths[i];context.uvSpanY=double(heights[i])/sourceHeights[i];
