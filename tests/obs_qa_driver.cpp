@@ -118,6 +118,7 @@ void lifecycle(){
 #include "v33ui_qa.inc"
 #include "v34_qa.inc"
 #include "v341_qa.inc"
+#include "v342_qa.inc"
 void exercise(){
     auto*main=mainWidget();if(main)main->resize(1460,920);if(scenario=="baseline"){QTimer::singleShot(3000,qApp,[]{mainWidget()->close();});return;}auto*p=panel();if(!p){check(false,"dock found for scenario");finish();return;}
     if(scenario=="baseline"){QTimer::singleShot(3000,qApp,[]{mainWidget()->close();});return;}
@@ -146,6 +147,8 @@ void exercise(){
         return;
     }
     if(scenario=="v341"){v341exercise();return;}
+    if(scenario=="v342"){v342exercise();return;}
+    if(scenario=="v342-persist"){v342persist();return;}
     if(scenario=="v341-persist"){v341persist();return;}
     if(scenario=="v34"){v34exercise();return;}
     if(scenario=="v34-persist"){v34persist();return;}

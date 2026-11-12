@@ -9,12 +9,10 @@ struct FxLightingState {
     double intensity=1.5,range=2500;
 };
 
-// Material FX have a local rig when there is no enabled scene lamp. This does
-// not enable StageModel::light or the separate scene illumination pass.
-inline FxLightingState resolveFxLighting(bool enabled,FxLightingState configured,
-                                         Vec3 position,Vec3 right,Vec3 down,Vec3 normal)
+// Material FX always own their rig. A stage lamp may be disabled, out of range,
+// behind the plane, or black; none of those states may disable the FX group.
+inline FxLightingState localFxLighting(Vec3 position,Vec3 right,Vec3 down,Vec3 normal)
 {
-    if(enabled)return configured;
     const auto magnitude=[](Vec3 v){return std::sqrt(v.x*v.x+v.y*v.y+v.z*v.z);};
     const double extent=std::max({magnitude(right),magnitude(down),1.0});
     const double normalLength=magnitude(normal);

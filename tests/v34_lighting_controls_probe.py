@@ -86,13 +86,14 @@ try:
   def area(pic):return sum(1 for r,g,b,a in pic.getdata() if r>85)
   check(area(large)>area(small)*2,identifier+' size control expands illuminated area',{'small':area(small),'large':area(large)})
   large.save(out/(identifier+'-large.png'))
-  # Stage master is optional. An explicit enabled lamp still contributes its parameters.
+  # v3.4.2: material FX own their light. Stage lamp movement cannot steal it.
   a=apply(identifier,dict(fixed,center_x=0,center_y=0,size=.3),light_enabled=True,fx_enabled=False,light_x=-400,light_y=-100,light_z=-350,light_intensity=2)
   b=apply(identifier,dict(fixed,center_x=0,center_y=0,size=.3),light_enabled=True,fx_enabled=False,light_x=400,light_y=100,light_z=-350,light_intensity=2)
-  check(delta(a,b)>.1,identifier+' default offsets retain configured lamp movement',delta(a,b))
-  # Zero intensity must remain zero; the rig must not silently override the lamp.
+  check(delta(a,b)<.1,identifier+' independent rig ignores stage lamp movement',delta(a,b))
+  # A zero-intensity stage lamp must not switch off independent material FX.
   zero=apply(identifier,dict(fixed),light_enabled=True,fx_enabled=False,light_intensity=0)
-  check(delta(zero,original)<.001,identifier+' configured zero-intensity lamp stays dark',delta(zero,original))
+  local=apply(identifier,dict(fixed),light_enabled=False,fx_enabled=False)
+  check(delta(zero,local)<.1 and delta(zero,original)>.1,identifier+' zero-intensity stage lamp leaves material light intact',delta(zero,local))
   states=[]
   for master in (False,True):
    update({'fx_enabled':master,'light_enabled':True,'light_intensity':2,'light_x':-300,'light_y':-180,'light_z':-400,'layers':[layer,reference]});plain=shot()

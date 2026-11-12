@@ -41,7 +41,7 @@ QDoubleSpinBox *SpatialDock::number(QFormLayout *form,const char *label,const ch
 SpatialDock::SpatialDock(QWidget *parent):QWidget(parent){
     setObjectName("spatial.dock");setMinimumWidth(440);
     auto*column=new QVBoxLayout(this);column->setContentsMargins(12,10,12,10);column->setSpacing(8);
-    auto*title=new QLabel("SPATIAL FX  <span style='color:#8c9aad;font-size:10px'>3.4.1 · OBS NATIVE</span>");title->setObjectName("spatial.version");title->setStyleSheet("font-weight:700;font-size:16px;letter-spacing:2px;");column->addWidget(title);
+    auto*title=new QLabel("SPATIAL FX  <span style='color:#8c9aad;font-size:10px'>3.4.2 · OBS NATIVE</span>");title->setObjectName("spatial.version");title->setStyleSheet("font-weight:700;font-size:16px;letter-spacing:2px;");column->addWidget(title);
     sceneLabel=new QLabel;sceneLabel->setObjectName("spatial.scene");sceneLabel->setWordWrap(true);column->addWidget(sceneLabel);
     auto*stageRow=new QHBoxLayout;stageChoice=new QComboBox;stageChoice->setObjectName("spatial.stage-choice");stageRow->addWidget(stageChoice,1);
     auto*create=button(stageRow,"新建舞台","spatial.create-stage");column->addLayout(stageRow);

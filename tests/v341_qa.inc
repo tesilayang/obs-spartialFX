@@ -23,7 +23,7 @@ void v341exercise(){
  aa->click();check(!smaa->isVisible()&&quality341effect("FX02.2").value("enabled").toBool(),"section folding preserves chosen processing state");aa->click();
  check(!aa->toolTip().isEmpty()&&!clarity->toolTip().isEmpty()&&!smaa->toolTip().isEmpty()&&!fxaa->toolTip().isEmpty(),"new sections and algorithms explain their cost and behavior on hover");
  bool nativeHidden=true;for(auto*c:p->findChildren<QCheckBox*>())nativeHidden&=!c->text().contains("Native AA")&&!c->text().contains("NAA");check(nativeHidden,"deferred Native AA has no visible placeholder");
- auto*version=p->findChild<QLabel*>("spatial.version");check(version&&version->text().contains("3.4.1"),"dock identifies v3.4.1");
+ auto*version=p->findChild<QLabel*>("spatial.version");check(version&&version->text().contains("3.4.2"),"dock identifies current v3.4.2 while retaining v341 quality controls");
  if(auto*scroll=p->findChild<QScrollArea*>("spatial.fx-scroll34"))scroll->ensureWidgetVisible(aa);fx34wait();check(p->grab().save(output+"/quality-controls.png"),"actual v341 quality controls screenshot");
  check(!fx34stack(1).value("attached").toBool(),"quality effects stay independent per layer instance");fx34checkGpuFailures();obs_frontend_save();QTimer::singleShot(800,qApp,finish);
 }

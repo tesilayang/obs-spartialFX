@@ -87,11 +87,11 @@ try:
  for i in range(6):
   identifier=f'FX05.{i}';pic=apply(identifier,light_enabled=False,fx_enabled=False);pic.save(out/(identifier+'-local-light.png'))
   check(delta(original,pic)>.1,'local default light actually affects '+identifier,delta(original,pic))
- # Explicit spatial light is still used, rather than replaced by local rig.
- a=apply('FX05.2',light_enabled=True,light_x=-400,light_y=-200,light_z=-350,light_intensity=2)
- b=apply('FX05.2',light_enabled=True,light_x=400,light_y=200,light_z=-350,light_intensity=2)
- check(delta(a,b)>.1,'configured spatial lamp movement changes material lighting',delta(a,b))
- zero=apply('FX05.2',light_enabled=True,light_intensity=0);check(delta(zero,original)<.001,'explicit enabled zero-intensity lamp stays dark')
+ # v3.4.2 material rigs are independent of the spatial lamp and its master.
+ a=apply('FX05.2',{'flicker':0},light_enabled=True,light_x=-400,light_y=-200,light_z=-350,light_intensity=2)
+ b=apply('FX05.2',{'flicker':0},light_enabled=True,light_x=400,light_y=200,light_z=-350,light_intensity=2)
+ check(delta(a,b)<.1,'stage lamp movement leaves independent material lighting unchanged',delta(a,b))
+ zero=apply('FX05.2',{'flicker':0},light_enabled=True,light_intensity=0);check(delta(zero,a)<.1 and delta(zero,original)>.1,'zero-intensity stage lamp cannot disable material lighting')
  # Opaque fixture enables analytical gradients, screen masks, LED cells.
  uniform=Image.new('RGBA',(1920,1080),(150,120,90,255));uniform.save(out/'opaque.png')
  o.call('SetInputSettings',{'inputName':actorName,'inputSettings':{'file':str(out/'opaque.png')}});update({'light_enabled':False,'layers':[layer,reference]});opaque=shot('opaque-original')

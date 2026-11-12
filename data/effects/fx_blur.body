@@ -67,6 +67,18 @@ float4 AperturePS(BlurVert v):TARGET{
  }}
  return total/max(norm,.00001);
 }
+float4 ExtractGlowPS(BlurVert v):TARGET{
+ float4 c=image.Sample(linear_sampler,v.uv);
+ float3 rgb=c.rgb/max(c.a,.00001);
+ float peak=max(max(rgb.r,rgb.g),rgb.b);
+ // Relative threshold in source RGB, before gain. A small knee avoids a hard
+ // pop as a color crosses the threshold; threshold=1 rejects SDR whites.
+ float excess=max(peak-threshold,0);
+ float knee=max(threshold*.1,.0001);
+ excess=excess*excess/(excess+knee);
+ return float4(c.rgb*excess/max(peak,.00001),c.a);
+}
+technique ExtractGlow {pass {vertex_shader=BlurVS(v);pixel_shader=ExtractGlowPS(v);}}
 technique Reduce {pass {vertex_shader=BlurVS(v);pixel_shader=ReducePS(v);}}
 technique Convolve {pass {vertex_shader=BlurVS(v);pixel_shader=ConvolvePS(v);}}
 technique Aperture {pass {vertex_shader=BlurVS(v);pixel_shader=AperturePS(v);}}

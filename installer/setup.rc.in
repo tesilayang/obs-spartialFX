@@ -1,6 +1,6 @@
 1 VERSIONINFO
-FILEVERSION 3,4,1,0
-PRODUCTVERSION 3,4,1,0
+FILEVERSION 3,4,2,0
+PRODUCTVERSION 3,4,2,0
 FILEOS 0x40004L
 FILETYPE 0x1L
 BEGIN
@@ -10,10 +10,10 @@ BEGIN
   BEGIN
    VALUE "CompanyName", "OBS Spatial FX contributors"
    VALUE "FileDescription", "OBS Spatial FX Setup"
-   VALUE "FileVersion", "3.4.1"
+   VALUE "FileVersion", "3.4.2"
    VALUE "ProductName", "OBS Spatial FX"
-   VALUE "ProductVersion", "3.4.1"
-   VALUE "OriginalFilename", "OBS_Spatial_FX_V3.4.1_Setup.exe"
+   VALUE "ProductVersion", "3.4.2"
+   VALUE "OriginalFilename", "OBS_Spatial_FX_V3.4.2_Setup.exe"
   END
  END
  BLOCK "VarFileInfo"

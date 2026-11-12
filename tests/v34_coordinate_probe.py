@@ -22,6 +22,7 @@ def fx(identifier,params={}):
  return {'attached':True,'group_states':[{'enabled':i==d['group']-1} for i in range(13)],'effects':[{'id':identifier,'enabled':True,'strength':1,'parameters':dict(d['parameters'],**params)}]}
 def imagefile(path):o.call('SetInputSettings',{'inputName':actor,'inputSettings':{'file':str(path)}});time.sleep(.2)
 try:
+ imagefile(root/'fixture.png')
  update({'layers':[layer],'animation':[],'timeline_preview':False,'camera_x':0,'camera_y':0,'camera_z':-1500,'camera_rx':0,'camera_ry':0,'camera_rz':0})
  original=shot('original');update({'layers':[dict(layer,fx_stack=fx('FX03.8'))]});inverse=shot('negative')
  a,b=original.getpixel((65,90)),inverse.getpixel((65,90));check(a[3]==255 and b[3]==255 and max(abs(a[i]+b[i]-255) for i in range(3))<=2,'selected child performs actual RGB inversion',{'original':a,'inverse':b})

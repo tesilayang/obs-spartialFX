@@ -1,35 +1,21 @@
+uniform texture2d blur_image;
 float3 fx04_bright(float4 c, float threshold)
 {
-    float y = luminance(c.rgb);
+    float y = max(max(c.r, c.g), c.b);
     return c.rgb * c.a * max(y - threshold, 0.0) / max(y, 0.00001);
-}
-
-float3 fx04_bloom(float2 uv, float radius, float threshold)
-{
-    float3 total = fx04_bright(src(uv), threshold) * 2.0;
-    float weights = 2.0;
-    for (int k = 0; k < 12; k++) {
-        float angle = float(k) * 2.39996323;
-        float r = sqrt((float(k) + 0.5) / 12.0);
-        float weight = exp(-2.0 * r * r);
-        float2 offset = float2(cos(angle), sin(angle)) * r * radius * pixel_size;
-        total += fx04_bright(src(uv + offset), threshold) * weight;
-        weights += weight;
-    }
-    return total / weights;
 }
 
 float4 fxApply(float2 uv)
 {
     float4 c = src(uv);
     if (effect_id == 0) {
+        float3 bloom = blur_image.Sample(fx_sampler, uv).rgb * p0.w;
         if (p0.x < 0.5) {
-            float3 bloom = fx04_bloom(uv, p0.y, p0.z);
-            return float4(c.rgb + bloom * p0.w, c.a);
+            return float4(c.rgb + bloom, c.a);
         }
-        float3 blurred = blurAt(uv, p0.y).rgb;
-        float3 soft = (1.0 - 2.0 * blurred) * c.rgb * c.rgb + 2.0 * blurred * c.rgb;
-        return float4(max(lerp(c.rgb, soft, min(p0.w, 1.0)) + blurred * max(p0.w - 1.0, 0.0) * 0.25, 0.0), c.a);
+        // Screen-like soft glow: threshold=1 or gain=0 is exactly neutral.
+        float3 soft = 1.0 - exp(-bloom);
+        return float4(c.rgb + max(1.0 - c.rgb, 0.0) * soft, c.a);
     }
     if (effect_id == 1) {
         float rays = 4.0;

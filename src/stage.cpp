@@ -243,17 +243,16 @@ void render(void *data,gs_effect_t*){
     // Capture every input before resolving references; forward references never read stale surfaces.
     std::vector<gs_texture_t*>textures(m.layers.size(),nullptr);
     s.fx->beginFrame(m.layers);
-    Light materialLight=m.light;if(!materialLight.enabled)for(auto&lamp:m.extraLights)if(lamp.enabled){materialLight=lamp;break;}
-    if(!materialLight.bindUuid.empty())for(size_t i=0;i<m.layers.size();++i)if(lightMatchesLayer(materialLight,m.layers[i])){materialLight.position=bindPosition(materialLight.position,planes[i]);break;}
     std::array<bool,32> drawn{};for(size_t n=0;n<count;++n)drawn[order[n]]=true;
     // Hidden/missing frames break the motion history; reappearing is not motion.
     for(size_t i=0;i<s.motion.size();++i)if(!drawn[i])s.motion[i]={};
     for(size_t n=0;n<count;++n){const auto i=order[n];auto&motion=s.motion[i];auto center=project(planes[i].position,camera,m.width,m.height);
       if(motion.instance!=m.layers[i].instanceId){motion={};motion.instance=m.layers[i].instanceId;}
       if(motion.frame!=frame){motion.previous=motion.current;motion.valid=motion.frame!=0;motion.current=center;motion.frame=frame;}
-      FxRenderContext context;context.frame=frame;context.elapsed=fxTime;context.width=s.cache[i].width;context.height=s.cache[i].height;context.position=planes[i].position;context.light=materialLight;
+      FxRenderContext context;context.frame=frame;context.elapsed=fxTime;context.width=s.cache[i].width;context.height=s.cache[i].height;context.position=planes[i].position;
       context.right=multiply(rotate({1,0,0},planes[i].rotation),sourceWidths[i]*planes[i].scaleX);context.down=multiply(rotate({0,1,0},planes[i].rotation),sourceHeights[i]*planes[i].scaleY);context.normal=rotate({0,0,-1},planes[i].rotation);
       context.cameraPosition=camera.position;context.uvCenterX=.5+double(drawLayers[i].cropLeft-drawLayers[i].cropRight)/(2*sourceWidths[i]);context.uvCenterY=.5+double(drawLayers[i].cropTop-drawLayers[i].cropBottom)/(2*sourceHeights[i]);
+      context.uvSpanX=double(widths[i])/sourceWidths[i];context.uvSpanY=double(heights[i])/sourceHeights[i];
       if(motion.valid&&center.visible&&motion.previous.visible){const auto uv=motionUvFromScreen(planes[i].position,context.right,context.down,camera,m.width,m.height,center.x-motion.previous.x,center.y-motion.previous.y);context.motionX=uv.x;context.motionY=uv.y;}
       textures[i]=s.fx->process(drawLayers[i],raw[i],context,raw);
     }

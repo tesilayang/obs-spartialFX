@@ -24,19 +24,20 @@ void four(gs_effect_t*e,const char*n,double a,double b,double c,double d){if(aut
 void texture(gs_effect_t*e,const char*n,gs_texture_t*t){if(auto*p=gs_effect_get_param_by_name(e,n))gs_effect_set_texture(p,t);}
 struct Surface {
  gs_texrender_t*value=nullptr;Surface()=default;Surface(const Surface&)=delete;Surface&operator=(const Surface&)=delete;
- ~Surface(){release();}void release(){gs_texrender_destroy(value);value=nullptr;}bool begin(uint32_t w,uint32_t h,uint64_t&alloc){if(!value){value=gs_texrender_create(GS_RGBA,GS_ZS_NONE);++alloc;}gs_texrender_reset(value);if(!gs_texrender_begin(value,w,h))return false;vec4 clear;vec4_zero(&clear);gs_clear(GS_CLEAR_COLOR,&clear,0,0);gs_ortho(0,float(w),0,float(h),-100,100);return true;}
+ ~Surface(){release();}void release(){gs_texrender_destroy(value);value=nullptr;}bool begin(uint32_t w,uint32_t h,uint64_t&alloc){if(!value){value=gs_texrender_create(GS_RGBA16F,GS_ZS_NONE);++alloc;}gs_texrender_reset(value);if(!gs_texrender_begin(value,w,h))return false;vec4 clear;vec4_zero(&clear);gs_clear(GS_CLEAR_COLOR,&clear,0,0);gs_ortho(0,float(w),0,float(h),-100,100);return true;}
 };
 struct History {
  gs_texture_t*previous=nullptr,*next=nullptr;uint32_t width=0,height=0;uint64_t frame=0;bool valid=false,pending=false;double time=0,nextTime=0;
  ~History(){gs_texture_destroy(previous);gs_texture_destroy(next);}
  void prepare(uint32_t w,uint32_t h,uint64_t current,uint64_t&alloc){
-  if(w!=width||h!=height){gs_texture_destroy(previous);gs_texture_destroy(next);previous=gs_texture_create(w,h,GS_RGBA,1,nullptr,0);next=gs_texture_create(w,h,GS_RGBA,1,nullptr,0);alloc+=2;width=w;height=h;valid=false;pending=false;}
+  // History is copied from temporalRaw; formats must match for D3D CopyResource.
+  if(w!=width||h!=height){gs_texture_destroy(previous);gs_texture_destroy(next);previous=gs_texture_create(w,h,GS_RGBA16F,1,nullptr,0);next=gs_texture_create(w,h,GS_RGBA16F,1,nullptr,0);alloc+=2;width=w;height=h;valid=false;pending=false;}
   if(frame!=current){if(pending){std::swap(previous,next);valid=true;time=nextTime;}frame=current;pending=false;}
  }
 };
 struct Asset {gs_texture_t*texture=nullptr;std::shared_ptr<const FxPixels>pixels;~Asset(){gs_texture_destroy(texture);}};
 bool denseBlur(const FxDefinition&d){return d.group==1&&(d.shader==0||d.shader==1||d.shader==2||d.shader==4||d.shader==5);}
-struct LayerResources {std::array<Surface,2>ping;Surface temporalRaw;std::unique_ptr<FxBlur>blur;std::unique_ptr<FxAA>aa;std::map<std::string,std::unique_ptr<History>>history;std::map<std::string,std::unique_ptr<Asset>>assets;};
+struct LayerResources {std::array<Surface,2>ping;Surface temporalRaw,glowExtract;std::unique_ptr<FxBlur>blur;std::unique_ptr<FxAA>aa;std::map<std::string,std::unique_ptr<History>>history;std::map<std::string,std::unique_ptr<Asset>>assets;};
 }
 struct FxRenderer::Impl {
  std::map<std::string,gs_effect_t*>effects;std::set<std::string>attempted,needed;std::map<std::string,std::unique_ptr<LayerResources>>layers;std::set<std::string>validIds;
@@ -52,7 +53,7 @@ struct FxRenderer::Impl {
   auto&compiled=effects[def.id];if(attempted.count(def.id))return compiled;attempted.insert(def.id);
   if(def.id=="FX02.2"){
    auto source=file("effects/fx_smaa.body");char*error=nullptr;compiled=gs_effect_create(source.c_str(),"spatial-smaa-1x",&error);
-   if(!compiled){++errors;blog(LOG_ERROR,"[SpatialFX 3.4.1] SMAA shader failed: %s",error?error:"missing shader");}bfree(error);return compiled;
+   if(!compiled){++errors;blog(LOG_ERROR,"[SpatialFX 3.4.2] SMAA shader failed: %s",error?error:"missing shader");}bfree(error);return compiled;
   }
   auto common=file("effects/fx_common.body"),body=file("effects/fx"+(def.group<10?std::string("0"):std::string())+std::to_string(def.group)+".body"),footer=file("effects/fx_footer.body");
   // Specialize before D3D compilation: unused sibling branches must disappear.
@@ -77,13 +78,13 @@ struct FxRenderer::Impl {
 };
 FxRenderer::FxRenderer():impl(std::make_unique<Impl>()){}FxRenderer::~FxRenderer()=default;
 uint64_t FxRenderer::allocations()const{return impl->allocated;}uint64_t FxRenderer::passes()const{return impl->draws;}uint64_t FxRenderer::failures()const{return impl->errors;}
-void FxRenderer::beginFrame(const std::vector<Layer>&layers){auto&s=*impl;s.validIds.clear();s.needed.clear();s.instanceOrder.clear();for(auto&l:layers){s.instanceOrder.push_back(l.instanceId);bool pixel=false;for(auto&d:fxCatalog())if(!d.geometry&&!d.stage&&activeFx(l.fx,d)){pixel=true;s.needed.insert(d.id);if(denseBlur(d))s.needed.insert("dense-blur");}if(pixel)s.validIds.insert(l.instanceId);}
+void FxRenderer::beginFrame(const std::vector<Layer>&layers){auto&s=*impl;s.validIds.clear();s.needed.clear();s.instanceOrder.clear();for(auto&l:layers){s.instanceOrder.push_back(l.instanceId);bool pixel=false;for(auto&d:fxCatalog())if(!d.geometry&&!d.stage&&activeFx(l.fx,d)){pixel=true;s.needed.insert(d.id);if(denseBlur(d)||d.id=="FX04.0")s.needed.insert("dense-blur");}if(pixel)s.validIds.insert(l.instanceId);}
  for(auto it=s.layers.begin();it!=s.layers.end();)if(!s.validIds.count(it->first))it=s.layers.erase(it);else++it;
  for(auto it=s.effects.begin();it!=s.effects.end();)if(!s.needed.count(it->first)){gs_effect_destroy(it->second);s.attempted.erase(it->first);it=s.effects.erase(it);}else++it;
  if(!s.needed.count("FX02.2"))s.smaaTables.reset();
 }
 gs_texture_t*FxRenderer::process(const Layer&layer,gs_texture_t*original,const FxRenderContext&ctx,const std::vector<gs_texture_t*>&references){
- auto&s=*impl;if(!original||!s.validIds.count(layer.instanceId))return original;if(s.frameStamp!=ctx.frame){s.frameStamp=ctx.frame;++s.frameIndex;}auto&slot=s.layers[layer.instanceId];if(!slot)slot=std::make_unique<LayerResources>();auto&res=*slot;auto*current=original;size_t ping=0;std::set<std::string>historyActive,assetsActive;bool blurActive=false,aaActive=false;
+ auto&s=*impl;if(!original||!s.validIds.count(layer.instanceId))return original;if(s.frameStamp!=ctx.frame){s.frameStamp=ctx.frame;++s.frameIndex;}auto&slot=s.layers[layer.instanceId];if(!slot)slot=std::make_unique<LayerResources>();auto&res=*slot;auto*current=original;size_t ping=0;std::set<std::string>historyActive,assetsActive;bool blurActive=false,aaActive=false,glowActive=false;
  for(auto&def:fxCatalog()){
   auto*f=activeFx(layer.fx,def);if(!f||def.geometry||def.stage)continue;auto*e=s.effect(def);if(!e)continue;auto*auxiliary=ctx.auxiliary;bool auxValid=false;
   if(def.id=="FX02.2"){
@@ -98,6 +99,20 @@ gs_texture_t*FxRenderer::process(const Layer&layer,gs_texture_t*original,const F
   // OBS tracks texture dependencies before D3D removes sibling branches.
   // Bind a valid image even for children which do not use the dense blur path.
   texture(e,"blur_image",current);scalar(e,"blur_minimum_radius",1);
+  if(def.id=="FX04.0"){
+   auto*kernel=s.blurEffect();if(!kernel)continue;blurActive=true;glowActive=true;
+   if(!res.blur)res.blur=std::make_unique<FxBlur>();
+   // Extract before reduction: tiny highlights must survive area averaging.
+   // Both modes share a dense Gaussian field instead of isolated disk taps.
+   if(!res.glowExtract.begin(ctx.width,ctx.height,s.allocated)){++s.errors;continue;}
+   texture(kernel,"image",current);scalar(kernel,"threshold",f->values[2]);
+   gs_blend_state_push();gs_enable_blending(false);
+   while(gs_effect_loop(kernel,"ExtractGlow"))gs_draw_sprite(current,0,ctx.width,ctx.height);
+   gs_blend_state_pop();gs_texrender_end(res.glowExtract.value);++s.draws;
+   auto*bright=gs_texrender_get_texture(res.glowExtract.value);
+   auto*blurred=res.blur->render(kernel,bright,ctx.width,ctx.height,f->values[1],0,2,0,0,0,0,0,{},s.allocated,s.draws);
+   if(!blurred){++s.errors;continue;}texture(e,"blur_image",blurred);
+  }
   if(denseBlur(def)){
    auto*kernel=s.blurEffect();if(!kernel)continue;blurActive=true;if(!res.blur)res.blur=std::make_unique<FxBlur>();
    const int algorithm=def.shader==4?2:(def.shader==0?int(f->values[1]):0);
@@ -108,7 +123,7 @@ gs_texture_t*FxRenderer::process(const Layer&layer,gs_texture_t*original,const F
    scalar(e,"blur_minimum_radius",std::max(double(ctx.width)/gs_texture_get_width(blurred),double(ctx.height)/gs_texture_get_height(blurred)));
   }
   texture(e,"image",current);texture(e,"auxiliary",auxiliary?auxiliary:current);texture(e,"history_image",history&&history->valid?history->previous:current);texture(e,"effect_result",current);two(e,"pixel_size",1.0/ctx.width,1.0/ctx.height);two(e,"canvas_size",ctx.width,ctx.height);two(e,"motion_delta",ctx.motionX,ctx.motionY);scalar(e,"elapsed",ctx.elapsed);scalar(e,"frame_index",double(s.frameIndex%16777216));scalar(e,"history_valid",history&&history->valid?1:0);scalar(e,"history_time",history?history->time:ctx.elapsed);scalar(e,"frame_delta",history&&history->valid?std::max(0.0,ctx.elapsed-history->time):1.0/60);scalar(e,"auxiliary_valid",auxValid?1:0);scalar(e,"strength",f->strength);
-  const char*names[]={"p0","p1","p2","p3","p4","p5","p6","p7"};for(size_t j=0;j<8;++j)four(e,names[j],f->values[j*4],f->values[j*4+1],f->values[j*4+2],f->values[j*4+3]);four(e,"tint",f->color.x,f->color.y,f->color.z,1);four(e,"tint2",f->color2.x,f->color2.y,f->color2.z,1);const auto materialLight=resolveFxLighting(ctx.light.enabled,{ctx.light.position,ctx.light.color,ctx.light.intensity,ctx.light.range},ctx.position,ctx.right,ctx.down,ctx.normal);three(e,"lamp_position",materialLight.position);three(e,"lamp_color",materialLight.color);scalar(e,"lamp_intensity",materialLight.intensity);scalar(e,"lamp_range",materialLight.range);three(e,"layer_position",ctx.position);three(e,"camera_position",ctx.cameraPosition);three(e,"layer_right",ctx.right);three(e,"layer_down",ctx.down);three(e,"layer_normal",ctx.normal);two(e,"layer_uv_center",ctx.uvCenterX,ctx.uvCenterY);scalar(e,"lut_size",f->pixels?f->pixels->lutSize:0);three(e,"lut_min",f->pixels?f->pixels->minimum:Vec3{});three(e,"lut_max",f->pixels?f->pixels->maximum:Vec3{1,1,1});
+  const char*names[]={"p0","p1","p2","p3","p4","p5","p6","p7"};for(size_t j=0;j<8;++j)four(e,names[j],f->values[j*4],f->values[j*4+1],f->values[j*4+2],f->values[j*4+3]);four(e,"tint",f->color.x,f->color.y,f->color.z,1);four(e,"tint2",f->color2.x,f->color2.y,f->color2.z,1);const auto materialLight=localFxLighting(ctx.position,multiply(ctx.right,ctx.uvSpanX),multiply(ctx.down,ctx.uvSpanY),ctx.normal);three(e,"lamp_position",materialLight.position);three(e,"lamp_color",materialLight.color);scalar(e,"lamp_intensity",materialLight.intensity);scalar(e,"lamp_range",materialLight.range);three(e,"layer_position",ctx.position);three(e,"camera_position",ctx.cameraPosition);three(e,"layer_right",ctx.right);three(e,"layer_down",ctx.down);three(e,"layer_normal",ctx.normal);two(e,"layer_uv_center",ctx.uvCenterX,ctx.uvCenterY);scalar(e,"lut_size",f->pixels?f->pixels->lutSize:0);three(e,"lut_min",f->pixels?f->pixels->minimum:Vec3{});three(e,"lut_max",f->pixels?f->pixels->maximum:Vec3{1,1,1});
   if(history){
    // Keep raw temporal state separate from the display ping targets and amount.
    if(!res.temporalRaw.begin(ctx.width,ctx.height,s.allocated)){++s.errors;continue;}
@@ -125,6 +140,7 @@ gs_texture_t*FxRenderer::process(const Layer&layer,gs_texture_t*original,const F
  for(auto it=res.history.begin();it!=res.history.end();)if(!historyActive.count(it->first))it=res.history.erase(it);else++it;
  if(historyActive.empty())res.temporalRaw.release();
  if(!blurActive)res.blur.reset();
+ if(!glowActive)res.glowExtract.release();
  if(!aaActive)res.aa.reset();
  for(auto it=res.assets.begin();it!=res.assets.end();)if(!assetsActive.count(it->first))it=res.assets.erase(it);else++it;
  return current;

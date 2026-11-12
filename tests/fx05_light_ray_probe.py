@@ -60,7 +60,7 @@ int main(){
  check(near(underTest(uv,2,{0,0},1),fx05_ray(uv,2)),"rotated and cropped layers retain their original projected lamp center");
  check(near(underTest(uv,2,{.25f,-.5f},1)-fx05_ray(uv,2),{0,-360,320}),"signed UV offsets follow the rotated layer basis");
  layer_right={640,0,0};layer_down={0,360,0};layer_normal={0,0,-1};layer_uv_center={.5f,.5f};
- const auto local=spatial::resolveFxLighting(false,{}, {10,20,30},{640,0,0},{0,360,0},{0,0,-1});
+ const auto local=spatial::localFxLighting({10,20,30},{640,0,0},{0,360,0},{0,0,-1});
  lamp_position={float(local.position.x),float(local.position.y),float(local.position.z)};
  for(float scale:{.25f,1.f,2.f})for(float2 point:{float2{0,0},float2{.5f,.5f},float2{1,1}})
   check(near(underTest(point,scale,{0,0},1),fx05_ray(point,scale)),"new defaults preserve local-rig rays at every surface scale");

@@ -45,7 +45,7 @@ bool obs_module_load(void) {
     register_spatial_stage();
 #endif
     obs_frontend_add_event_callback(frontend_event, nullptr);
-    blog(LOG_INFO, "[SpatialFX] module 3.4.1 loaded, OBS=%s", obs_get_version_string());
+    blog(LOG_INFO, "[SpatialFX] module 3.4.2 loaded, OBS=%s", obs_get_version_string());
     return true;
 }
 void obs_module_unload(void) {
