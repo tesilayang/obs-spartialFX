@@ -6,6 +6,7 @@
 #include "editor.hpp"
 #include "fx_panel.hpp"
 #include "hover_help.hpp"
+#include "project/project_panel.hpp"
 #include <QSaveFile>
 #include <QFile>
 #include <QSlider>
@@ -41,7 +42,7 @@ QDoubleSpinBox *SpatialDock::number(QFormLayout *form,const char *label,const ch
 SpatialDock::SpatialDock(QWidget *parent):QWidget(parent){
     setObjectName("spatial.dock");setMinimumWidth(440);
     auto*column=new QVBoxLayout(this);column->setContentsMargins(12,10,12,10);column->setSpacing(8);
-    auto*title=new QLabel("SPATIAL FX  <span style='color:#8c9aad;font-size:10px'>3.4.2 · OBS NATIVE</span>");title->setObjectName("spatial.version");title->setStyleSheet("font-weight:700;font-size:16px;letter-spacing:2px;");column->addWidget(title);
+    auto*title=new QLabel("SPATIAL FX  <span style='color:#8c9aad;font-size:10px'>3.5.0 · OBS NATIVE</span>");title->setObjectName("spatial.version");title->setStyleSheet("font-weight:700;font-size:16px;letter-spacing:2px;");column->addWidget(title);
     sceneLabel=new QLabel;sceneLabel->setObjectName("spatial.scene");sceneLabel->setWordWrap(true);column->addWidget(sceneLabel);
     auto*stageRow=new QHBoxLayout;stageChoice=new QComboBox;stageChoice->setObjectName("spatial.stage-choice");stageRow->addWidget(stageChoice,1);
     auto*create=button(stageRow,"新建舞台","spatial.create-stage");column->addLayout(stageRow);
@@ -74,6 +75,7 @@ SpatialDock::SpatialDock(QWidget *parent):QWidget(parent){
     connect(apertureField,&QDoubleSpinBox::valueChanged,this,[this](double v){if(!loading){model.aperture=v;commit();}});
     auto*presetForm=page(tabs,"预设");presetChoice=new QComboBox;presetChoice->setObjectName("spatial.preset-choice");presetForm->addRow(text("预设"),presetChoice);auto*presetApply=new QPushButton(text("应用预设"));presetApply->setObjectName("spatial.apply-preset");presetForm->addRow(presetApply);presetName=new QLineEdit(text("我的空间预设"));presetName->setObjectName("spatial.preset-name");presetName->setMaxLength(80);presetForm->addRow(text("保存名称"),presetName);auto*presetSave=new QPushButton(text("保存当前预设"));presetSave->setObjectName("spatial.save-preset");presetForm->addRow(presetSave);
     presetSave->setToolTip(text("自动保存到 OBS 配置目录。预设包含摄像机、关键帧、灯光、FX 和图层布局；跨场景按现有图层顺序应用布局，保留 UUID 关联。"));
+    auto*projectPanel=new spatial::projects::ProjectPanel;tabs->addTab(projectPanel,text("工程管理"));projectPanel->changed=[this]{refreshScene(true);};
     status=new QLabel(text("新建舞台，或创建演示开始体验。"));status->setObjectName("spatial.status");status->setWordWrap(true);column->addWidget(status);performance=new QLabel;performance->setObjectName("spatial.performance");performance->setWordWrap(true);performance->setStyleSheet("color:#92a0b5;font-size:10px;");column->addWidget(performance);
     saveTimer=new QTimer(this);saveTimer->setSingleShot(true);saveTimer->setInterval(400);connect(saveTimer,&QTimer::timeout,this,[]{obs_frontend_save();});
     connect(create,&QPushButton::clicked,this,[this]{createStage();});connect(refresh,&QPushButton::clicked,this,[this]{refreshScene(true);});connect(demo,&QPushButton::clicked,this,[this]{createDemo();});connect(stageChoice,&QComboBox::currentIndexChanged,this,[this]{if(!loading){stageUuid=stageChoice->currentData().toString();loadStage();}});

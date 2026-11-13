@@ -1,6 +1,6 @@
 1 VERSIONINFO
-FILEVERSION 3,4,2,0
-PRODUCTVERSION 3,4,2,0
+FILEVERSION 3,5,0,0
+PRODUCTVERSION 3,5,0,0
 FILEOS 0x40004L
 FILETYPE 0x1L
 BEGIN
@@ -10,10 +10,10 @@ BEGIN
   BEGIN
    VALUE "CompanyName", "OBS Spatial FX contributors"
    VALUE "FileDescription", "OBS Spatial FX Setup"
-   VALUE "FileVersion", "3.4.2"
+   VALUE "FileVersion", "3.5.0"
    VALUE "ProductName", "OBS Spatial FX"
-   VALUE "ProductVersion", "3.4.2"
-   VALUE "OriginalFilename", "OBS_Spatial_FX_V3.4.2_Setup.exe"
+   VALUE "ProductVersion", "3.5.0"
+   VALUE "OriginalFilename", "OBS_Spatial_FX_V3.5.0_Setup.exe"
   END
  END
  BLOCK "VarFileInfo"
@@ -25,6 +25,7 @@ END
 102 RCDATA "@CMAKE_SOURCE_DIR@/data/effects/spatial.effect"
 103 RCDATA "@CMAKE_SOURCE_DIR@/README.md"
 104 RCDATA "@CMAKE_SOURCE_DIR@/LICENSE"
+105 RCDATA "@CMAKE_SOURCE_DIR@/data/PROJECT_NOTICES.txt"
 
 201 RCDATA "@CMAKE_SOURCE_DIR@/data/effects/fx_common.body"
 202 RCDATA "@CMAKE_SOURCE_DIR@/data/effects/fx_footer.body"

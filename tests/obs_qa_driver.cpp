@@ -39,6 +39,15 @@
 #include <QLayout>
 #include <QDialog>
 #include <QMenu>
+#include <QImage>
+#include <QFileDialog>
+#include <QDialogButtonBox>
+#include <QPointer>
+#include <QFileInfo>
+#include <QEvent>
+#include <QUuid>
+#include "project/project_obs.hpp"
+#include "project/project_archive.hpp"
 #include <QDateTime>
 OBS_DECLARE_MODULE()
 namespace {
@@ -71,7 +80,7 @@ void click(const char*name){auto*p=panel();auto*b=p?p->findChild<QPushButton*>(n
 void setNumber(const char*name,double v){auto*p=panel();auto*f=p?p->findChild<QDoubleSpinBox*>(name):nullptr;check(f!=nullptr,QString("field available: %1").arg(name));if(f)f->setValue(v);}
 void finish(){
     auto*main=mainWidget();auto*p=panel();auto*tabs=p?p->findChild<QTabWidget*>("spatial.tabs"):nullptr;
-    check(p!=nullptr,"native dock content exists");check(tabs&&tabs->count()==((scenario.startsWith("v33")||scenario.startsWith("v34"))?4:5),"expected native tabs exist");bool native=false;if(p)for(auto*w=p->parentWidget();w;w=w->parentWidget())if(qobject_cast<QDockWidget*>(w))native=true;check(native,"content is inside OBS QDockWidget");
+    check(p!=nullptr,"native dock content exists");check(tabs&&tabs->count()==5,"expected native tabs exist");bool native=false;if(p)for(auto*w=p->parentWidget();w;w=w->parentWidget())if(qobject_cast<QDockWidget*>(w))native=true;check(native,"content is inside OBS QDockWidget");
     QJsonArray labels;
     if(tabs)for(int i=0;i<tabs->count();++i){tabs->setCurrentIndex(i);labels.append(tabs->tabText(i));QApplication::processEvents(QEventLoop::ExcludeUserInputEvents);check(p->grab().save(output+QString("/dock-tab-%1.png").arg(i)),QString("real dock tab %1 screenshot").arg(i));}
     if(tabs)tabs->setCurrentIndex(0);if(main)check(main->grab().save(output+"/obs-main.png"),"real OBS main window screenshot");
@@ -120,7 +129,13 @@ void lifecycle(){
 #include "v341_qa.inc"
 #include "v342_qa.inc"
 #include "v342patch_qa.inc"
+#include "v35_qa.inc"
+#include "v35_ui_qa.inc"
 void exercise(){
+    if(scenario=="v35-baseline"){v35Baseline();return;}
+    if(scenario=="v35"){v35exercise();return;}
+    if(scenario=="v35-ui"){v35ui();return;}
+    if(scenario=="v35-persist"){v35persist();return;}
     auto*main=mainWidget();if(main)main->resize(1460,920);if(scenario=="baseline"){QTimer::singleShot(3000,qApp,[]{mainWidget()->close();});return;}auto*p=panel();if(!p){check(false,"dock found for scenario");finish();return;}
     if(scenario=="baseline"){QTimer::singleShot(3000,qApp,[]{mainWidget()->close();});return;}
     if(scenario=="phase1"){finish();return;}
@@ -214,6 +229,7 @@ void event(enum obs_frontend_event e,void*){if(e==OBS_FRONTEND_EVENT_FINISHED_LO
 }
 bool obs_module_load(void){output=qEnvironmentVariable("SPATIAL_QA_OUTPUT");scenario=qEnvironmentVariable("SPATIAL_QA_SCENARIO");if(output.isEmpty())return false;if(scenario.isEmpty())scenario="phase1";QDir().mkpath(output);obs_frontend_add_event_callback(event,nullptr);auto*bridgeTimer=new QTimer(qApp);bridgeTimer->setInterval(30);QObject::connect(bridgeTimer,&QTimer::timeout,qApp,bridge);bridgeTimer->start();return true;}
 void obs_module_unload(void){obs_frontend_remove_event_callback(event,nullptr);}
+
 
 
 
