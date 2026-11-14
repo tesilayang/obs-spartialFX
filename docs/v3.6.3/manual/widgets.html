@@ -1,0 +1,60 @@
+<!-- WIDGET PARALLAX -->
+<section class="demo" id="parallax-demo" aria-label="HTML 视差示意">
+ <div class="demo-head"><span>HTML 操作示意 / 01</span><strong>同样动镜头，近处动得更多</strong></div>
+ <p>拖镜头 X，再勾选“深度相同”比较。这里用简化投影讲解，不能用来校验插件像素。</p>
+ <div class="demo-controls"><label>镜头 X <output id="cam-out">0</output><input type="range" id="cam-x" min="-200" max="200" step="1" value="0"></label><label class="check-label"><input type="checkbox" id="same-depth">三个图层深度相同</label><button type="button" id="parallax-reset">复位示意</button></div>
+ <svg id="parallax-view" viewBox="0 0 700 310" role="img" aria-label="远景、中景、前景的投影移动示意"><rect width="700" height="310" fill="#e8eef7"/><path d="M0 255H700M350 0V310" stroke="#b9c4d6" stroke-dasharray="5 5"/><g id="far-layer"><rect x="155" y="55" width="390" height="180" fill="#c1d1f1"/><path d="M155 235L255 105L350 205L445 85L545 235Z" fill="#7c98c9"/><text x="350" y="80" text-anchor="middle">背景 · Z=700</text></g><g id="mid-layer"><rect x="310" y="123" width="80" height="135" fill="#1645f5"/><text x="350" y="151" fill="white" text-anchor="middle">人物</text></g><g id="near-layer"><rect x="55" y="225" width="145" height="65" fill="#ee7b32"/><text x="127" y="252" text-anchor="middle">前景 · Z=−300</text></g></svg>
+ <p class="demo-readout" id="parallax-readout" aria-live="polite"></p>
+</section>
+<!-- END WIDGET -->
+
+<!-- WIDGET KEYFRAMES -->
+<section class="demo" id="keyframe-demo" aria-label="HTML 关键帧与曲线示意">
+ <div class="demo-head"><span>HTML 操作示意 / 02</span><strong>两个点决定去哪，曲线决定怎么走</strong></div>
+ <p>固定示例：0 秒 X=0，3 秒 X=100。切换缓动，播放或拖动时间，看同一时间的位置如何变化。贝塞尔手柄 X 是区间百分比，Y 是本示例参数值。</p>
+ <div class="demo-controls"><label>插值<select id="ease-select"><option value="linear">线性</option><option value="in">缓入</option><option value="out">缓出</option><option value="inout">缓入缓出</option><option value="hold">保持</option><option value="bezier">贝塞尔</option></select></label><button type="button" id="key-play">播放示意</button><button type="button" id="key-reset">回到 0 秒</button><label>当前秒数 <output id="key-time-label">0.00</output><input type="range" min="0" max="3" step="0.01" value="0" id="key-time"></label></div>
+ <div id="bezier-controls" hidden class="demo-controls"><label>出点 X / %<input type="range" min="0" max="100" value="33" id="bez-x1"></label><label>出点 Y / X位置<input type="range" min="-30" max="130" value="0" id="bez-y1"></label><label>入点 X / %<input type="range" min="0" max="100" value="67" id="bez-x2"></label><label>入点 Y / X位置<input type="range" min="-30" max="130" value="100" id="bez-y2"></label></div>
+ <svg viewBox="0 0 700 340" id="curve-view" role="img" aria-label="时间与 X 位置曲线示意"><rect width="700" height="340" fill="#f3f6fc"/><path d="M70 35V255H640" fill="none" stroke="#596c8b"/><path d="M70 200H640M70 145H640M70 90H640" stroke="#d4ddec"/><text x="25" y="260">0</text><text x="12" y="95">100</text><text x="75" y="278">0秒 ◆</text><text x="590" y="278">◆ 3秒</text><text x="75" y="24">X 位置</text><path id="key-curve" fill="none" stroke="#1645f5" stroke-width="4"/><g id="bezier-handles" hidden><path id="handle-lines" fill="none" stroke="#ee7b32" stroke-dasharray="5 4"/><circle id="handle-one" r="7" fill="#ee7b32"/><circle id="handle-two" r="7" fill="#ee7b32"/></g><path id="time-line" stroke="#e45832" stroke-width="2"/><circle id="curve-dot" r="7" fill="#1645f5"/><path d="M70 313H640" stroke="#bbc6d9" stroke-width="2"/><rect id="moving-object" x="65" y="296" width="30" height="30" fill="#1645f5"/></svg>
+ <p class="demo-readout" id="key-readout" aria-live="polite">0.00 秒 → X=0.00</p>
+</section>
+<!-- END WIDGET -->
+
+<!-- WIDGET LIGHTBIND -->
+<section class="demo" id="light-demo" aria-label="HTML 灯光绑定示意">
+ <div class="demo-head"><span>HTML 操作示意 / 03</span><strong>绑定后，灯和对象一起走</strong></div>
+ <p>拖动图层 X，比较绑定与世界坐标。黄色线是位置关系，灰色是简化投影示意；不是插件真实阴影算法。</p>
+ <div class="demo-controls"><label>图层 X<input id="light-layer-x" type="range" min="-180" max="180" value="0"></label><label>灯的 X 偏移<input id="light-offset" type="range" min="-120" max="120" value="65"></label><label class="check-label"><input id="light-bound" type="checkbox" checked>绑定到此图层</label><button id="light-play" type="button">播放跟随示意</button></div>
+ <svg id="light-view" viewBox="0 0 700 300" role="img" aria-label="灯与图层的运动关系"><rect width="700" height="300" fill="#eef2fa"/><path d="M30 260H670" stroke="#8798b5" stroke-width="4"/><ellipse id="light-shadow" cx="380" cy="257" rx="60" ry="10" fill="#9eabc0"/><path id="light-ray" stroke="#c59b16" stroke-dasharray="5 4" fill="none"/><g id="bound-layer"><rect x="310" y="140" width="80" height="110" fill="#1645f5"/><text x="350" y="170" fill="white" text-anchor="middle">图层</text></g><g id="light-marker"><circle cx="415" cy="85" r="19" fill="#ffcf36" stroke="#9e7500"/><text x="415" y="52" text-anchor="middle">灯</text></g></svg><p class="demo-readout" id="light-readout" aria-live="polite"></p>
+</section>
+<!-- END WIDGET -->
+
+<!-- WIDGET FXGATES -->
+<section class="demo" id="fx-gates" aria-label="HTML FX 启用示意">
+ <div class="demo-head"><span>HTML 操作示意 / 04</span><strong>大组和子功能都开，效果才工作</strong></div>
+ <p>这个色块只示意开关关系，不模拟实际着色器。勾选后试试把大组关掉，再打开，参数仍在。</p>
+ <div class="demo-controls"><label class="check-label"><input id="gate-group" type="checkbox">大组开启</label><label class="check-label"><input id="gate-child" type="checkbox">子功能勾选</label><label>混合强度<input id="gate-strength" type="range" min="0" max="1" step="0.01" value="1"></label></div>
+ <div class="gate-stage"><div id="gate-swatch">原素材</div><strong id="gate-status" aria-live="polite">未处理</strong></div>
+</section>
+<!-- END WIDGET -->
+
+<!-- WIDGET BEATS -->
+<section class="demo" id="beat-demo" aria-label="HTML 节拍网格示意">
+ <div class="demo-head"><span>HTML 操作示意 / 05</span><strong>一拍多长，候选点就怎么排</strong></div>
+ <p>这里只按手工 BPM 画 4 秒网格，不分析音频。浅蓝是拍长比例候选，深蓝是经过最小秒间隔筛选后保留的点。</p>
+ <div class="demo-controls"><label>BPM<input type="number" id="demo-bpm" min="30" max="300" value="120"></label><label>拍长比例<select id="demo-ratio"><option value="0.25">1/4 拍</option><option value="0.5">1/2 拍</option><option value="1" selected>1 拍</option><option value="2">2 拍</option><option value="4">4 拍</option></select></label><label>最小秒间隔<input type="number" id="demo-minimum" min="0" max="4" step="0.05" value="0"></label><label>起点偏移 / 秒<input type="number" id="demo-offset" min="0" max="2" step="0.05" value="0"></label></div>
+ <svg id="beat-view" viewBox="0 0 700 160" role="img" aria-label="0 到 4 秒拍点网格"><rect width="700" height="160" fill="#eef2fa"/><path d="M50 115H650" stroke="#7789a9"/><g id="beat-lines"></g><text x="50" y="140">0秒</text><text x="195" y="140">1秒</text><text x="345" y="140">2秒</text><text x="495" y="140">3秒</text><text x="630" y="140">4秒</text></svg><p id="beat-readout" class="demo-readout" aria-live="polite"></p>
+</section>
+<!-- END WIDGET -->
+<!-- WIDGET PRESET_FLOW -->
+<section class="demo" id="preset-demo" aria-label="预设操作示意">
+<div class="demo-head"><span>HTML 操作示意 · 不连接 OBS</span><strong>先预览，再决定放哪里</strong></div>
+<div class="demo-controls"><label>风格<select id="preset-style"><option>温柔舒缓</option><option>简洁几何</option><option>活泼波普</option><option>纸片拼贴</option><option>科技界面</option><option>节奏快剪</option><option>朦胧梦幻</option><option>故障实验</option></select></label><label>已有动画末尾 / 秒<input id="preset-tail" type="number" min="0" max="3600" step="0.01" value="6"></label><label>新段时长 / 秒<input id="preset-duration" type="number" min="0.01" max="60" step="0.01" value="6"></label></div>
+<svg viewBox="0 0 720 190" role="img" aria-label="已有片段与补充片段位置"><path d="M40 145 H680" stroke="currentColor"/><g id="preset-actor"><rect x="300" y="14" width="120" height="65" rx="18" fill="var(--accent)"/><text x="360" y="52" text-anchor="middle" fill="#f5f7fc">所选人物</text></g><rect x="40" y="106" width="290" height="30" fill="#bec9dd"/><text x="70" y="127">已有动画</text><rect id="preset-block" x="340" y="106" width="290" height="30" fill="var(--accent)" opacity="0.25"/><text id="preset-block-label" x="350" y="127" fill="#f5f7fc">预览候选</text><text x="40" y="175">0 秒</text><text id="preset-end-label" x="340" y="175">6 秒后下一帧</text></svg>
+<div class="demo-controls"><button id="preset-generate" type="button">生成 / 换一套示意</button><button id="preset-append" type="button">补充至末尾示意</button><button id="preset-cancel" type="button">取消预览示意</button></div><p class="demo-readout" id="preset-readout" aria-live="polite">还没生成；先选风格。</p>
+</section>
+<!-- END WIDGET -->
+
+<!-- WIDGET PROJECT_FLOW -->
+<section class="demo" id="project-demo" aria-label="工程导入目标示意"><div class="demo-head"><span>HTML 操作示意 · 不读写真实文件</span><strong>存档叫 B，会改哪个场景？</strong></div>
+<div class="demo-controls"><label>导入模式<select id="project-mode"><option value="json">仅工程 JSON</option><option value="folder">完整包：已解压文件夹</option><option value="zip">完整包：ZIP ＋解压目录</option></select></label><label class="check-label"><input id="project-has-b" type="checkbox" checked>OBS 已有场景 B</label><button id="project-preview" type="button">查看导入去向</button></div><p class="demo-readout" id="project-readout" aria-live="polite"></p></section>
+<!-- END WIDGET -->

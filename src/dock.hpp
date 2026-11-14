@@ -5,12 +5,18 @@
 #include "widgets.hpp"
 #include <array>
 #include <QString>
+#include <QPointer>
+class QColorDialog;
 class FxPanel;class CameraEditor;class QCheckBox;class QComboBox;class QDoubleSpinBox;class QLabel;class QListWidget;class QLineEdit;class QTabWidget;class QTableWidget;class QTimer;class QFormLayout;
+namespace spatial::presets {class PresetPanel;}
 class SpatialDock final : public QWidget {
 public:
     explicit SpatialDock(QWidget *parent=nullptr);
+    ~SpatialDock() override;
     void refreshScene(bool force=false);
 private:
+    spatial::presets::PresetPanel *presetPanel=nullptr;
+    QString presetPreviewStage;
     CameraEditor *editor=nullptr;FxPanel *fxPanel=nullptr;
     spatial::StageModel model;
     QString editorStageUuid;
@@ -24,6 +30,8 @@ private:
     QLineEdit *presetName=nullptr;
     QLabel *sceneLabel=nullptr,*status=nullptr,*performance=nullptr,*lightColorPreview=nullptr,*shadowColorPreview=nullptr;
     QTimer *saveTimer=nullptr;
+    QPointer<QColorDialog> lightColorDialog;
+    void pickLightColor(bool shadow);
     QDoubleSpinBox *number(QFormLayout*,const char*,const char*,double,double,double=1);
     void commit();void loadStage();void syncControls();void syncLayers();void syncLayerFields();void syncKeys();
     void createStage(const spatial::StageModel *initial=nullptr);void importLayers(bool selected);void restoreLayer(const spatial::Layer&);void removeLayer();void confirmRemoveLayer();void restoreAll();void createDemo();
@@ -41,7 +49,7 @@ private:
     QCheckBox *fxEnabled=nullptr;SpatialTimeline *timeline=nullptr;StructurePreview *structure=nullptr;QComboBox *trackChoice=nullptr;
     std::array<QDoubleSpinBox*,2> rimFields{};
     void initV3(QFormLayout*,QFormLayout*,QFormLayout*);void syncTimeline();void scrub(int,double);
-    
+
     void syncEvaluatedFields();
     int selectedLayer() const;
 };

@@ -2,6 +2,7 @@
 #include "core.hpp"
 #include "animation.hpp"
 #include "fx_catalog.hpp"
+#include "presets/types.hpp"
 #include <obs.h>
 #include <cstdint>
 #include <string>
@@ -44,6 +45,9 @@ struct StageModel {
     std::vector<Light> extraLights;
     Fx fx{};
     std::vector<Layer> layers;
+    std::vector<presets::Geometry> geometries;
+    std::vector<presets::MotionBlock> motionBlocks;
+    std::vector<presets::PresetInstance> presetInstances;
     double timelinePosition=0;bool timelinePreview=false;
     bool playing=false,loop=false;
     uint64_t playToken=0;

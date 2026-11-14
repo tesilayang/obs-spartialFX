@@ -158,18 +158,18 @@ float4 fxApply(float2 uv)
         return float4(c.rgb + lamp_color * specular, c.a);
     }
     if (effect_id == 5) {
-        float3 ray = fx05_ray(uv, p1.x);
-        // Contact shadows use the lamp direction at the surface anchor. A
-        // radial direction evaluated per texel pulls every edge inward when
-        // the lamp projects inside the silhouette, erasing the inner shadow.
-        float2 displacement = -fx05_direction(layer_uv_center, p1.x) * p0.y * pixel_size;
-        float shadow_alpha = fx05_alpha(uv - displacement, p0.z);
-        float opacity = p0.w * saturate(fx05_attenuation(ray));
-        if (p0.x < 0.5) {
-            return over(c, float4(tint2.rgb, shadow_alpha * opacity));
+        // Layer-local 2D shadow, independent from every scene/world-space lamp.
+        float angle=p1.x*.01745329252;
+        float2 offset=float2(cos(angle),sin(angle))*p0.y*pixel_size;
+        float2 q=fxTextureUV(uv-offset);
+        float mask=p0.x>.5?1:0;
+        if(q.x>=0&&q.y>=0&&q.x<=1&&q.y<=1)mask=blur_image.Sample(fx_sampler,q).a;
+        float opacity=saturate(mask*p0.w);
+        if(p0.x<.5){
+         return over(c,float4(tint2.rgb,opacity));
         }
-        float inside = saturate(1.0 - shadow_alpha) * opacity;
-        return float4(lerp(c.rgb, tint2.rgb, inside), c.a);
+        float3 shaded=lerp(c.rgb,tint2.rgb,opacity);
+        return float4(shaded,c.a);
     }
     return c;
 }

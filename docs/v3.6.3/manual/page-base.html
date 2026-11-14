@@ -1,0 +1,2017 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-hf-style="swiss" data-family="swiss" data-medium="page" data-theme="ikb" data-scheme="light" style="color-scheme:light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OBS Spatial FX 使用说明书</title>
+<style>/* GZ:TOKENS:START · guizang-design v0.1.0 生成，不要手改；改设计请改 guizang-design 后运行 scripts/sync-skill.mjs */
+:root{
+  --font-display:'Inter','Noto Sans SC','PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,sans-serif;
+  --font-sans:'Inter','Noto Sans SC','PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,sans-serif;
+  --font-mono:'JetBrains Mono','Noto Sans SC',ui-monospace,'SF Mono',Menlo,monospace;
+  --sp-1:2px;
+  --sp-2:4px;
+  --sp-3:8px;
+  --sp-4:12px;
+  --sp-5:16px;
+  --sp-6:24px;
+  --sp-7:32px;
+  --sp-8:40px;
+  --sp-9:48px;
+  --sp-10:64px;
+  --sp-11:80px;
+  --sp-12:96px;
+  --sp-13:160px;
+  --radius-none:0px;
+  --radius-xs:0px;
+  --radius-sm:4px;
+  --radius-md:10px;
+  --radius-pill:999px;
+  --ease-standard:cubic-bezier(.2,0,.38,.9);
+  --ease-expressive:cubic-bezier(.4,.14,.3,1);
+  --ease-entrance:cubic-bezier(0,0,.3,1);
+  --ease-entrance-standard:cubic-bezier(0,0,.38,.9);
+  --ease-editorial:cubic-bezier(.22,1,.36,1);
+  --ease-page:cubic-bezier(.77,0,.175,1);
+  --dur-fast-1:70ms;
+  --dur-fast-2:110ms;
+  --dur-moderate-1:150ms;
+  --dur-moderate-2:240ms;
+  --dur-slow-1:400ms;
+  --dur-slow-2:700ms;
+  --dur-page:900ms;
+  --stagger-tight:70ms;
+  --stagger-base:100ms;
+  --stagger-loose:160ms;
+  --move-sm:8px;
+  --move-md:16px;
+  --move-lg:24px;
+  --paper:#fafaf8;
+  --paper-2:#f0f0ee;
+  --ink:#0a0a0a;
+  --muted:#737373;
+  --grey-1:#f0f0ee;
+  --grey-2:#d4d4d2;
+  --grey-3:#737373;
+  --accent:#002FA7;
+  --accent-on:#ffffff;
+  --accent-ink:#002FA7;
+  --accent-bright:#5B7BFF;
+  --accent-deep:#001d6b;
+  --accent-display:#002FA7;
+  --accent-ink-inverse:#96b0ff;
+  --accent-soft:#d5deef;
+  --text-primary:#0a0a0a;
+  --text-body:#252524;
+  --text-secondary:#525252;
+  --text-helper:#737373;
+  --text-placeholder:#a3a3a3;
+  --text-on-color:#ffffff;
+  --line-strong:#a3a3a3;
+  --line:#d4d4d2;
+  --line-subtle:#e0e0e0;
+  --ink-rgb:10,10,10;
+  --paper-rgb:250,250,248;
+  --accent-rgb:0,47,167;
+  --accent-on-rgb:255,255,255;
+  --accent-on-text:#ffffff;
+  --accent-on-text-rgb:255,255,255;
+  color-scheme:light;
+}
+[data-theme="ikb"]{
+  --paper:#fafaf8;
+  --paper-2:#f0f0ee;
+  --ink:#0a0a0a;
+  --muted:#737373;
+  --grey-1:#f0f0ee;
+  --grey-2:#d4d4d2;
+  --grey-3:#737373;
+  --accent:#002FA7;
+  --accent-on:#ffffff;
+  --accent-ink:#002FA7;
+  --accent-bright:#5B7BFF;
+  --accent-deep:#001d6b;
+  --accent-display:#002FA7;
+  --accent-ink-inverse:#96b0ff;
+  --accent-soft:#d5deef;
+  --text-primary:#0a0a0a;
+  --text-body:#252524;
+  --text-secondary:#525252;
+  --text-helper:#737373;
+  --text-placeholder:#a3a3a3;
+  --text-on-color:#ffffff;
+  --line-strong:#a3a3a3;
+  --line:#d4d4d2;
+  --line-subtle:#e0e0e0;
+  --ink-rgb:10,10,10;
+  --paper-rgb:250,250,248;
+  --accent-rgb:0,47,167;
+  --accent-on-rgb:255,255,255;
+  --accent-on-text:#ffffff;
+  --accent-on-text-rgb:255,255,255;
+  color-scheme:light;
+}
+[data-theme="lemon"]{
+  --paper:#fafaf8;
+  --paper-2:#f0f0ee;
+  --ink:#0a0a0a;
+  --muted:#737373;
+  --grey-1:#f0f0ee;
+  --grey-2:#d4d4d2;
+  --grey-3:#737373;
+  --accent:#FFD500;
+  --accent-on:#0a0a0a;
+  --accent-ink:#7a5f00;
+  --accent-bright:#FFE34D;
+  --accent-deep:#5e4900;
+  --accent-display:#7a5f00;
+  --accent-ink-inverse:#FFE34D;
+  --accent-soft:#fbf6e1;
+  --text-primary:#0a0a0a;
+  --text-body:#252524;
+  --text-secondary:#525252;
+  --text-helper:#737373;
+  --text-placeholder:#a3a3a3;
+  --text-on-color:#0a0a0a;
+  --line-strong:#a3a3a3;
+  --line:#d4d4d2;
+  --line-subtle:#e0e0e0;
+  --ink-rgb:10,10,10;
+  --paper-rgb:250,250,248;
+  --accent-rgb:255,213,0;
+  --accent-on-rgb:10,10,10;
+  --accent-on-text:#0a0a0a;
+  --accent-on-text-rgb:10,10,10;
+  color-scheme:light;
+}
+[data-theme="lemon-green"]{
+  --paper:#fafaf8;
+  --paper-2:#f0f0ee;
+  --ink:#0a0a0a;
+  --muted:#737373;
+  --grey-1:#f0f0ee;
+  --grey-2:#d4d4d2;
+  --grey-3:#737373;
+  --accent:#C5E803;
+  --accent-on:#0a0a0a;
+  --accent-ink:#4a6400;
+  --accent-bright:#D4F040;
+  --accent-deep:#3a5000;
+  --accent-display:#4a6400;
+  --accent-ink-inverse:#D4F040;
+  --accent-soft:#f2f8e1;
+  --text-primary:#0a0a0a;
+  --text-body:#252524;
+  --text-secondary:#525252;
+  --text-helper:#737373;
+  --text-placeholder:#a3a3a3;
+  --text-on-color:#0a0a0a;
+  --line-strong:#a3a3a3;
+  --line:#d4d4d2;
+  --line-subtle:#e0e0e0;
+  --ink-rgb:10,10,10;
+  --paper-rgb:250,250,248;
+  --accent-rgb:197,232,3;
+  --accent-on-rgb:10,10,10;
+  --accent-on-text:#0a0a0a;
+  --accent-on-text-rgb:10,10,10;
+  color-scheme:light;
+}
+[data-theme="safety-orange"]{
+  --paper:#fafaf8;
+  --paper-2:#f0f0ee;
+  --ink:#0a0a0a;
+  --muted:#737373;
+  --grey-1:#f0f0ee;
+  --grey-2:#d4d4d2;
+  --grey-3:#737373;
+  --accent:#FF6B35;
+  --accent-on:#ffffff;
+  --accent-ink:#c2410c;
+  --accent-bright:#FF9A6C;
+  --accent-deep:#9a3409;
+  --accent-display:#FF6B35;
+  --accent-ink-inverse:#FF9A6C;
+  --accent-soft:#fee8de;
+  --text-primary:#0a0a0a;
+  --text-body:#252524;
+  --text-secondary:#525252;
+  --text-helper:#737373;
+  --text-placeholder:#a3a3a3;
+  --text-on-color:#ffffff;
+  --line-strong:#a3a3a3;
+  --line:#d4d4d2;
+  --line-subtle:#e0e0e0;
+  --ink-rgb:10,10,10;
+  --paper-rgb:250,250,248;
+  --accent-rgb:255,107,53;
+  --accent-on-rgb:255,255,255;
+  --accent-on-text:#0a0a0a;
+  --accent-on-text-rgb:10,10,10;
+  color-scheme:light;
+}
+
+:root{
+  --fs-display:3.4rem;
+  --fw-display:200;
+  --lh-display:1.08;
+  --ls-display:-.03em;
+  --ff-display:var(--font-display);
+  --fst-display:normal;
+  --tt-display:none;
+  --fs-heading:1.8rem;
+  --fw-heading:200;
+  --lh-heading:1.2;
+  --ls-heading:-.015em;
+  --ff-heading:var(--font-sans);
+  --fst-heading:normal;
+  --tt-heading:none;
+  --fs-subhead:1.05rem;
+  --fw-subhead:500;
+  --lh-subhead:1.3;
+  --ls-subhead:0;
+  --ff-subhead:var(--font-sans);
+  --fst-subhead:normal;
+  --tt-subhead:none;
+  --fs-lead:1.05rem;
+  --fw-lead:400;
+  --lh-lead:1.6;
+  --ls-lead:0;
+  --ff-lead:var(--font-sans);
+  --fst-lead:normal;
+  --tt-lead:none;
+  --fs-body:1.0625rem;
+  --fw-body:400;
+  --lh-body:1.8;
+  --ls-body:0;
+  --ff-body:var(--font-sans);
+  --fst-body:normal;
+  --tt-body:none;
+  --fs-small:0.92rem;
+  --fw-small:400;
+  --lh-small:1.6;
+  --ls-small:0;
+  --ff-small:var(--font-sans);
+  --fst-small:normal;
+  --tt-small:none;
+  --fs-caption:0.75rem;
+  --fw-caption:400;
+  --lh-caption:1.55;
+  --ls-caption:0;
+  --ff-caption:var(--font-sans);
+  --fst-caption:normal;
+  --tt-caption:none;
+  --fs-label:0.875rem;
+  --fw-label:500;
+  --lh-label:1.3;
+  --ls-label:.14em;
+  --ff-label:var(--font-mono);
+  --fst-label:normal;
+  --tt-label:uppercase;
+  --fs-meta:0.75rem;
+  --fw-meta:500;
+  --lh-meta:1.3;
+  --ls-meta:.14em;
+  --ff-meta:var(--font-mono);
+  --fst-meta:normal;
+  --tt-meta:uppercase;
+  --fs-quote:2rem;
+  --fw-quote:300;
+  --lh-quote:1.45;
+  --ls-quote:-.02em;
+  --ff-quote:var(--font-sans);
+  --fst-quote:normal;
+  --tt-quote:none;
+  --fs-num-xl:3rem;
+  --fw-num-xl:800;
+  --lh-num-xl:0.88;
+  --ls-num-xl:-.04em;
+  --ff-num-xl:var(--font-display);
+  --fst-num-xl:normal;
+  --tt-num-xl:none;
+  --fs-display-zh:3.4rem;
+  --fw-display-zh:200;
+  --lh-display-zh:1.08;
+  --ls-display-zh:-.03em;
+  --ff-display-zh:var(--font-display);
+  --fst-display-zh:normal;
+  --tt-display-zh:none;
+  --fs-title:3.4rem;
+  --fw-title:200;
+  --lh-title:1.08;
+  --ls-title:-.03em;
+  --ff-title:var(--font-display);
+  --fst-title:normal;
+  --tt-title:none;
+  --fs-title-zh:3.4rem;
+  --fw-title-zh:200;
+  --lh-title-zh:1.08;
+  --ls-title-zh:-.03em;
+  --ff-title-zh:var(--font-display);
+  --fst-title-zh:normal;
+  --tt-title-zh:none;
+  --fs-num-l:3rem;
+  --fw-num-l:800;
+  --lh-num-l:0.88;
+  --ls-num-l:-.04em;
+  --ff-num-l:var(--font-display);
+  --fst-num-l:normal;
+  --tt-num-l:none;
+  --fs-num-m:3rem;
+  --fw-num-m:800;
+  --lh-num-m:0.88;
+  --ls-num-m:-.04em;
+  --ff-num-m:var(--font-display);
+  --fst-num-m:normal;
+  --tt-num-m:none;
+  --canvas-container:1200px;
+  --canvas-margin:80px;
+  --canvas-gutter:20px;
+  --canvas-measure:calc(32 * 1.0625rem);
+  --canvas-wide:800px;
+  --canvas-rail:200px;
+  --canvas-rail-gap:40px;
+}
+.gz-t-display{font-family:var(--ff-display);font-size:var(--fs-display);font-weight:var(--fw-display);line-height:var(--lh-display);letter-spacing:var(--ls-display);font-style:var(--fst-display);text-transform:var(--tt-display)}
+.gz-t-heading{font-family:var(--ff-heading);font-size:var(--fs-heading);font-weight:var(--fw-heading);line-height:var(--lh-heading);letter-spacing:var(--ls-heading);font-style:var(--fst-heading);text-transform:var(--tt-heading)}
+.gz-t-subhead{font-family:var(--ff-subhead);font-size:var(--fs-subhead);font-weight:var(--fw-subhead);line-height:var(--lh-subhead);letter-spacing:var(--ls-subhead);font-style:var(--fst-subhead);text-transform:var(--tt-subhead)}
+.gz-t-lead{font-family:var(--ff-lead);font-size:var(--fs-lead);font-weight:var(--fw-lead);line-height:var(--lh-lead);letter-spacing:var(--ls-lead);font-style:var(--fst-lead);text-transform:var(--tt-lead)}
+.gz-t-body{font-family:var(--ff-body);font-size:var(--fs-body);font-weight:var(--fw-body);line-height:var(--lh-body);letter-spacing:var(--ls-body);font-style:var(--fst-body);text-transform:var(--tt-body)}
+.gz-t-small{font-family:var(--ff-small);font-size:var(--fs-small);font-weight:var(--fw-small);line-height:var(--lh-small);letter-spacing:var(--ls-small);font-style:var(--fst-small);text-transform:var(--tt-small)}
+.gz-t-caption{font-family:var(--ff-caption);font-size:var(--fs-caption);font-weight:var(--fw-caption);line-height:var(--lh-caption);letter-spacing:var(--ls-caption);font-style:var(--fst-caption);text-transform:var(--tt-caption)}
+.gz-t-label{font-family:var(--ff-label);font-size:var(--fs-label);font-weight:var(--fw-label);line-height:var(--lh-label);letter-spacing:var(--ls-label);font-style:var(--fst-label);text-transform:var(--tt-label)}
+.gz-t-meta{font-family:var(--ff-meta);font-size:var(--fs-meta);font-weight:var(--fw-meta);line-height:var(--lh-meta);letter-spacing:var(--ls-meta);font-style:var(--fst-meta);text-transform:var(--tt-meta)}
+.gz-t-quote{font-family:var(--ff-quote);font-size:var(--fs-quote);font-weight:var(--fw-quote);line-height:var(--lh-quote);letter-spacing:var(--ls-quote);font-style:var(--fst-quote);text-transform:var(--tt-quote)}
+.gz-t-num-xl{font-family:var(--ff-num-xl);font-size:var(--fs-num-xl);font-weight:var(--fw-num-xl);line-height:var(--lh-num-xl);letter-spacing:var(--ls-num-xl);font-style:var(--fst-num-xl);text-transform:var(--tt-num-xl)}
+.gz-t-display-zh{font-family:var(--ff-display-zh);font-size:var(--fs-display-zh);font-weight:var(--fw-display-zh);line-height:var(--lh-display-zh);letter-spacing:var(--ls-display-zh);font-style:var(--fst-display-zh);text-transform:var(--tt-display-zh)}
+.gz-t-title{font-family:var(--ff-title);font-size:var(--fs-title);font-weight:var(--fw-title);line-height:var(--lh-title);letter-spacing:var(--ls-title);font-style:var(--fst-title);text-transform:var(--tt-title)}
+.gz-t-title-zh{font-family:var(--ff-title-zh);font-size:var(--fs-title-zh);font-weight:var(--fw-title-zh);line-height:var(--lh-title-zh);letter-spacing:var(--ls-title-zh);font-style:var(--fst-title-zh);text-transform:var(--tt-title-zh)}
+.gz-t-num-l{font-family:var(--ff-num-l);font-size:var(--fs-num-l);font-weight:var(--fw-num-l);line-height:var(--lh-num-l);letter-spacing:var(--ls-num-l);font-style:var(--fst-num-l);text-transform:var(--tt-num-l)}
+.gz-t-num-m{font-family:var(--ff-num-m);font-size:var(--fs-num-m);font-weight:var(--fw-num-m);line-height:var(--lh-num-m);letter-spacing:var(--ls-num-m);font-style:var(--fst-num-m);text-transform:var(--tt-num-m)}
+
+:lang(zh){line-break:strict;text-spacing-trim:normal;text-autospace:normal;overflow-wrap:break-word}
+:lang(zh) .gz-prose em:not(:lang(en)){font-style:normal;text-emphasis:filled dot;text-emphasis-position:under right}
+.gz-tnum{font-variant-numeric:tabular-nums}
+
+/* 歸藏设计系统 · 共享组件
+ *
+ * 一份结构，三种介质：根节点 <html data-family="magazine|swiss" data-medium="slide|card|page">。
+ * 这里只管布局、颜色和间距；字号、字重、行高一律由 gz-t-<角色> 类提供，
+ * 所以同一个组件放进 PPT、卡片、网页会自动换成各自的字号。
+ * 颜色只用语义 token（--text-* / --line-* / --accent*），换主题不需要改组件。
+ */
+
+/* ---------- 家族差异 ---------- */
+/* 单张卡片 / 单页换主题（[data-theme]）或反色（[data-surface]）时，线条变量要在那一层重新计算，否则沿用根节点的颜色 */
+[data-family="magazine"], [data-family="magazine"] [data-theme], [data-family="magazine"] [data-surface] { --img-pos: center top; --rule: 1px solid var(--line-strong); --rule-strong: 1px solid var(--line-strong) }
+[data-family="swiss"], [data-family="swiss"] [data-theme], [data-family="swiss"] [data-surface] { --img-pos: center center; --rule: 1px solid var(--line); --rule-strong: 2px solid var(--ink) }
+
+/* ---------- 表面：反色块里文字角色跟着换 ---------- */
+[data-surface="ink"] {
+  background: var(--ink); color: var(--paper);
+  --text-primary: var(--paper); --text-body: rgba(var(--paper-rgb), .86); --text-secondary: rgba(var(--paper-rgb), .72);
+  --text-helper: rgba(var(--paper-rgb), .62); --line: rgba(var(--paper-rgb), .22); --line-strong: rgba(var(--paper-rgb), .45);
+  --accent-ink: var(--accent-ink-inverse); --accent-display: var(--accent-ink-inverse); --rule-strong: 2px solid var(--paper);
+}
+[data-family="magazine"] [data-surface="ink"], [data-family="magazine"][data-surface="ink"] { --rule-strong: 1px solid rgba(var(--paper-rgb), .45) }
+[data-surface="accent"] {
+  background: var(--accent); color: var(--accent-on);
+  --text-primary: var(--accent-on); --text-body: rgba(var(--accent-on-rgb), .88); --text-secondary: rgba(var(--accent-on-rgb), .78);
+  --text-helper: rgba(var(--accent-on-rgb), .7); --line: rgba(var(--accent-on-rgb), .3); --line-strong: rgba(var(--accent-on-rgb), .55);
+  --accent-ink: var(--accent-on); --accent-display: var(--accent-on); --rule-strong: 2px solid var(--accent-on);
+}
+[data-surface="paper-2"] { background: var(--paper-2) }
+
+/* 强调色文字：小字用 accent-ink，大字 / 大数字用 accent-display（浅色强调色在纸上会自动加深；反色块里自动切换） */
+.gz-c-accent { color: var(--accent-ink) }
+.gz-c-accent-display { color: var(--accent-display) }
+
+/* ---------- 页眉页脚 chrome ---------- */
+.gz-chrome { display: flex; justify-content: space-between; align-items: baseline; gap: var(--sp-6); color: var(--text-helper); border-top: var(--rule); padding-top: var(--sp-4) }
+.gz-chrome[data-pos="top"] { border-top: 0; border-bottom: var(--rule); padding: 0 0 var(--sp-4) }
+.gz-chrome__group { display: flex; gap: var(--sp-5); min-width: 0 }
+.gz-chrome__accent { color: var(--accent-ink) }
+
+/* ---------- 封面 cover ---------- */
+.gz-cover { display: flex; flex-direction: column; gap: var(--sp-6); color: var(--text-primary) }
+.gz-cover__kicker { color: var(--text-helper) }
+[data-family="swiss"] .gz-cover__kicker { color: var(--accent-ink) }
+.gz-cover__body { width: 100%; container-type: inline-size }
+/* 标题按最长一行的字数自动收字号：--chars 由 components/render.mjs 算好写进 style；手写时填最长一行的字数（中文 1、西文约 0.56）。上限仍是 token 定的展示字号 */
+.gz-cover__title { margin: 0; font-size: min(var(--fs-display-zh), calc(100cqi / var(--chars, 1) * .94)) }
+.gz-cover__rule { width: 96px; height: 0; border-top: 2px solid var(--accent) }
+[data-family="swiss"] .gz-cover__rule { border-top-width: 3px }
+.gz-cover__sub { margin: 0; color: var(--text-body); max-width: 32em }
+.gz-cover__meta { margin-top: auto }
+/* 幻灯片、卡片：封面撑满画布，标题压在下半部 */
+[data-medium="slide"] .gz-cover, [data-medium="card"] .gz-cover { height: 100% }
+[data-medium="slide"] .gz-cover__body, [data-medium="card"] .gz-cover__body { margin-top: auto; display: flex; flex-direction: column; gap: var(--sp-7) }
+[data-medium="slide"] .gz-cover__meta, [data-medium="card"] .gz-cover__meta { margin-top: var(--sp-10) }
+/* 网页：杂志风居中，瑞士风左对齐 */
+[data-medium="page"] .gz-cover { padding: var(--sp-11) 0 var(--sp-9); border-bottom: var(--rule) }
+[data-medium="page"] .gz-cover__body { display: flex; flex-direction: column; gap: var(--sp-6) }
+[data-medium="page"][data-family="magazine"] .gz-cover { align-items: center; text-align: center }
+[data-medium="page"][data-family="magazine"] .gz-cover__body { align-items: center }
+[data-medium="page"] .gz-cover__meta { margin-top: var(--sp-6); border-top: 0; padding-top: 0; justify-content: center }
+[data-medium="page"][data-family="swiss"] .gz-cover__meta { justify-content: flex-start }
+
+/* ---------- 大数字 stat ---------- */
+.gz-stats { display: grid; grid-template-columns: repeat(var(--cols, 3), minmax(0, 1fr)); gap: var(--sp-9) var(--sp-7) }
+.gz-stats[data-count="1"] { --cols: 1 } .gz-stats[data-count="2"] { --cols: 2 } .gz-stats[data-count="4"] { --cols: 4 }
+[data-medium="card"] .gz-stats { --cols: 2 }
+[data-medium="card"] .gz-stats[data-count="1"], [data-medium="card"] .gz-stats[data-count="3"] { --cols: 1 }
+.gz-stat { display: flex; flex-direction: column; gap: var(--sp-4); border-top: var(--rule-strong); padding-top: var(--sp-5); min-width: 0 }
+.gz-stat__label { color: var(--text-helper) }
+.gz-stat__value { display: flex; align-items: baseline; gap: .06em; font-variant-numeric: tabular-nums lining-nums; white-space: nowrap }
+.gz-stat__unit { font-size: .4em; font-weight: 500; letter-spacing: 0; color: var(--text-secondary) }
+.gz-stat.is-accent .gz-stat__num { color: var(--accent-ink) }
+.gz-stat__note { margin: 0; color: var(--text-secondary); max-width: 24em }
+[data-medium="card"] .gz-stats[data-count="3"] .gz-stat { display: grid; grid-template-columns: auto 1fr; align-items: end; column-gap: var(--sp-7) }
+[data-medium="card"] .gz-stats[data-count="3"] .gz-stat__label { grid-column: 1 / -1 }
+[data-medium="card"] .gz-stats[data-count="3"] .gz-stat__note { padding-bottom: .6em }
+
+/* ---------- 引言 quote ---------- */
+.gz-quote { margin: 0; display: flex; flex-direction: column; gap: var(--sp-7) }
+.gz-quote__text { margin: 0; color: var(--text-primary); text-wrap: balance }
+.gz-quote__text p { margin: 0; text-wrap: balance }
+[data-family="magazine"] .gz-quote__text::before { content: "\201C"; display: block; font-family: var(--font-display); font-style: normal; color: var(--accent); font-size: 1.8em; line-height: 1; height: .55em }
+[data-family="swiss"] .gz-quote { border-top: var(--rule-strong); padding-top: var(--sp-7) }
+.gz-quote__source { color: var(--text-helper) }
+[data-medium="page"][data-family="magazine"] .gz-quote { align-items: center; text-align: center; padding: var(--sp-9) 0 }
+
+/* ---------- 流程 process：幻灯片 / 网页横排，卡片竖排 ---------- */
+.gz-process { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(var(--n, 4), minmax(0, 1fr)); gap: var(--sp-7) }
+.gz-process__step { display: flex; flex-direction: column; gap: var(--sp-4); border-top: var(--rule-strong); padding-top: var(--sp-5); min-width: 0 }
+.gz-process__nb { color: var(--accent-ink) }
+.gz-process__title { margin: 0 }
+.gz-process__desc { margin: 0; color: var(--text-secondary) }
+[data-medium="card"] .gz-process { grid-template-columns: 1fr; gap: 0; border-bottom: var(--rule) }
+[data-medium="card"] .gz-process__step { display: grid; grid-template-columns: 112px minmax(0, 1fr); column-gap: var(--sp-6); row-gap: var(--sp-3); padding: var(--sp-7) 0 }
+[data-medium="card"] .gz-process__step + .gz-process__step { border-top: var(--rule) }
+[data-medium="card"] .gz-process__nb { grid-row: span 2 }
+[data-medium="page"] .gz-process { --n: 2; row-gap: var(--sp-8) }
+
+/* ---------- 对比 compare：左右分栏，卡片上下叠 ---------- */
+.gz-compare { display: grid; grid-template-columns: minmax(0, 1fr) 1px minmax(0, 1fr); gap: 0 var(--sp-9) }
+.gz-compare__rule { background: var(--line-strong) }
+.gz-compare__side { display: flex; flex-direction: column; gap: var(--sp-5); min-width: 0 }
+.gz-compare__tag { color: var(--text-helper) }
+.gz-compare__side[data-side="after"] .gz-compare__tag { color: var(--accent-ink) }
+.gz-compare__title { margin: 0 }
+.gz-compare__side[data-side="before"] .gz-compare__title { color: var(--text-secondary) }
+.gz-compare__desc { margin: 0; color: var(--text-secondary) }
+.gz-compare__list { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: var(--sp-3); color: var(--text-body) }
+.gz-compare__list li { padding-left: 1.2em; position: relative }
+.gz-compare__list li::before { content: ""; position: absolute; left: 0; top: .72em; width: .5em; border-top: 1px solid currentColor }
+[data-family="swiss"] .gz-compare__side[data-side="after"][data-surface] { padding: var(--sp-8) }
+[data-medium="card"] .gz-compare { grid-template-columns: 1fr; gap: var(--sp-8) 0 }
+[data-medium="card"] .gz-compare__rule { height: 1px }
+
+/* ---------- 图框 figure：照片 cover 裁切，截图 contain 放在底台上 ---------- */
+.gz-figure { margin: 0; display: flex; flex-direction: column; gap: var(--sp-4); min-width: 0 }
+.gz-figure__well { position: relative; aspect-ratio: var(--ratio, 16 / 10); overflow: hidden; background: var(--paper-2) }
+.gz-figure__well > img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: var(--img-pos) }
+.gz-figure[data-ratio="16x9"] { --ratio: 16 / 9 } .gz-figure[data-ratio="16x10"] { --ratio: 16 / 10 } .gz-figure[data-ratio="4x3"] { --ratio: 4 / 3 }
+.gz-figure[data-ratio="3x2"] { --ratio: 3 / 2 } .gz-figure[data-ratio="1x1"] { --ratio: 1 } .gz-figure[data-ratio="3x4"] { --ratio: 3 / 4 } .gz-figure[data-ratio="21x9"] { --ratio: 21 / 9 }
+.gz-figure[data-kind="screenshot"] .gz-figure__well { display: flex; align-items: center; justify-content: center; padding: var(--inset, var(--sp-8)) }
+.gz-figure[data-kind="screenshot"] .gz-figure__well > img { width: auto; height: auto; max-width: 100%; max-height: 100%; object-fit: contain; border-radius: var(--radius-sm); box-shadow: 0 0 0 1px var(--line) }
+[data-family="magazine"] .gz-figure[data-kind="screenshot"] .gz-figure__well > img { box-shadow: 0 0 0 1px var(--line), 0 18px 40px -24px rgba(var(--ink-rgb), .45) }
+[data-family="swiss"] .gz-figure[data-kind="screenshot"] .gz-figure__well { background: var(--grey-1); border-top: 3px solid var(--accent) }
+[data-family="swiss"] .gz-figure[data-kind="screenshot"] .gz-figure__well > img { border-radius: 0 }
+.gz-figure__cap { color: var(--text-helper); display: flex; gap: var(--sp-4) }
+.gz-figure__idx { color: var(--accent-ink); flex: none }
+
+/* ---------- 图片网格 gallery ---------- */
+.gz-gallery { display: grid; grid-template-columns: repeat(var(--cols, 3), minmax(0, 1fr)); gap: var(--sp-7) var(--sp-6) }
+[data-medium="card"] .gz-gallery { --cols: 2 }
+[data-medium="card"] .gz-gallery[data-count="3"] > :first-child { grid-column: 1 / -1; --ratio: 16 / 9 }
+
+/* ---------- 条目清单 ledger ---------- */
+.gz-ledger { list-style: none; margin: 0; padding: 0; border-top: var(--rule-strong) }
+.gz-ledger__row { display: grid; grid-template-columns: var(--nb-w, 3.2em) minmax(0, 1fr) auto; column-gap: var(--sp-6); align-items: baseline; padding: var(--sp-6) 0; border-bottom: var(--rule) }
+.gz-ledger__nb { color: var(--accent-ink) }
+.gz-ledger__title { margin: 0 }
+.gz-ledger__note { margin: var(--sp-2) 0 0; color: var(--text-secondary) }
+.gz-ledger__value { color: var(--text-helper); text-align: right; white-space: nowrap }
+[data-medium="card"] .gz-ledger__row { --nb-w: 72px; padding: var(--sp-7) 0 }
+
+/* 歸藏设计系统 · 纹理与特效图层（纯 CSS，颜色全部来自 token）
+ * 来源：PPT 瑞士风 .dots / .dot-mat / .ring-mat / .cross-mat / .hatch，卡片杂志风 .grain / .paper-wash。
+ */
+
+/* 特效画布：铺满父容器、在内容下面、不挡点击。父容器需要 position: relative */
+.gz-effect { position: absolute; inset: 0; width: 100%; height: 100%; display: block; pointer-events: none; z-index: 0 }
+.gz-layer-content { position: relative; z-index: 1 }
+
+/* 点阵：前景色画点，跟随所在表面的文字色 */
+.gz-dots      { background-image: radial-gradient(currentColor 1px, transparent 1.2px); background-size: 12px 12px; opacity: .18 }
+.gz-dots-fine { background-image: radial-gradient(currentColor .8px, transparent 1px); background-size: 8px 8px; opacity: .14 }
+.gz-dots-bold { background-image: radial-gradient(currentColor 1.4px, transparent 1.6px); background-size: 18px 18px; opacity: .22 }
+
+.gz-dot-mat         { --mat: 14px; background-image: radial-gradient(currentColor 1.4px, transparent 1.6px); background-size: var(--mat) var(--mat); opacity: .5 }
+.gz-dot-mat.is-lg   { --mat: 22px } .gz-dot-mat.is-xl { --mat: 34px }
+.gz-dot-mat.is-dense{ --mat: 9px; opacity: .62 }
+.gz-ring-mat        { --mat: 18px; background-image: radial-gradient(circle, transparent 2px, currentColor 2px, currentColor 2.7px, transparent 2.9px); background-size: var(--mat) var(--mat); opacity: .55 }
+.gz-ring-mat.is-lg  { --mat: 28px }
+.gz-cross-mat       { --mat: 22px; background: currentColor; opacity: .42;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22'%3E%3Cpath d='M8 8l6 6M14 8l-6 6' stroke='%23000' stroke-width='1.4'/%3E%3C/svg%3E") 0 0 / var(--mat) var(--mat);
+          mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22'%3E%3Cpath d='M8 8l6 6M14 8l-6 6' stroke='%23000' stroke-width='1.4'/%3E%3C/svg%3E") 0 0 / var(--mat) var(--mat) }
+.gz-cross-mat.is-lg { --mat: 32px }
+.gz-hatch           { background-image: repeating-linear-gradient(135deg, currentColor 0 1px, transparent 1px 8px); opacity: .55 }
+
+/* 纸张颗粒与墨色晕染：杂志风卡片的「氛围层」，叠在特效画布上、内容下 */
+.gz-grain      { position: absolute; inset: 0; pointer-events: none; z-index: 0; mix-blend-mode: multiply; opacity: .35;
+                 background-image: radial-gradient(rgba(0,0,0,.045) 1px, transparent 1px); background-size: 3px 3px }
+[data-scheme="dark"] .gz-grain, .gz-grain.is-dark { mix-blend-mode: screen; opacity: .26; background-image: radial-gradient(rgba(255,244,214,.10) 1px, transparent 1px) }
+.gz-paper-wash { position: absolute; inset: 0; pointer-events: none; z-index: 0;
+                 background: linear-gradient(180deg, rgba(var(--ink-rgb), .02), rgba(var(--ink-rgb), .05) 60%, rgba(var(--ink-rgb), .08)) }
+.gz-ink-vignette { position: absolute; inset: 0; pointer-events: none; z-index: 0;
+                 background: radial-gradient(circle at 18% 12%, rgba(var(--ink-rgb), .10), transparent 34%), radial-gradient(circle at 82% 80%, rgba(var(--accent-rgb), .10), transparent 38%) }
+
+/* PPT 杂志风：WebGL 背景上的纸 / 墨蒙版，保证文字可读（原 .slide.light/.dark::before） */
+.gz-veil       { position: absolute; inset: 0; pointer-events: none; z-index: 0; backdrop-filter: blur(3px); background: rgba(var(--paper-rgb), .78) }
+.gz-veil.is-ink{ background: rgba(var(--ink-rgb), .78) }
+.gz-veil.is-hero { backdrop-filter: none; background: rgba(var(--paper-rgb), .16) }
+.gz-veil.is-hero.is-ink { background: rgba(var(--ink-rgb), .12) }
+
+@media (prefers-reduced-motion: reduce) { .gz-effect { animation: none } }
+
+/* GZ:TOKENS:END */
+</style>
+<style>  /* ══════════════════════════════════════
+     ROOT VARIABLES
+     ══════════════════════════════════════ */
+  /* Colours, fonts, type roles and the --sp-* spacing scale come from the design system
+     (assets/gz-swiss.css, inlined before this file; theme = <html data-theme>).
+     Paper and greys stay the same in every theme; only the accent changes.
+     The names below are this stylesheet's own vocabulary, mapped onto its roles. */
+  :root {
+    --fg: var(--text-primary);
+    --fg-secondary: var(--text-secondary);
+    --fg-tertiary: var(--text-helper);
+    --fg-placeholder: var(--text-placeholder);
+    --bg: var(--paper);
+    --bg-card: var(--grey-1);
+    --hl-bg: var(--accent); --hl-fg: var(--accent-on-text); --hl-label: rgba(var(--accent-on-text-rgb), .6);
+    --hc-mute: rgba(var(--ink-rgb), .2);
+    --num-grey: rgba(var(--ink-rgb), .2);
+    --measure: 1200px;
+    --gutter: 20px;
+    --columns: 12;
+    --margin: 80px;
+    /* CJK body text (references/design-rules.md §中文排版) */
+    --text-size: var(--fs-body);
+    --text-leading: var(--lh-body);
+    --para-gap: 1em;            /* 段间距：不缩进，靠段距分段 */
+    /* Grid: one centred reading column; the rail hangs to its left */
+    --col: calc(32 * 1.0625rem);
+    --media: 800px;             /* wide media/table/chart width, same centre line */
+    --rail: 200px; --rail-gap: 40px;
+  }
+
+  /* ══════════════════════════════════════
+     BASE
+     ══════════════════════════════════════ */
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html { font-size: 16px; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+  body { font-family: var(--font-sans); color: var(--fg); background: var(--bg); line-height: 1.6; }
+  ::selection { background: var(--hl-bg); color: var(--hl-fg); }
+
+  /* ══════════════════════════════════════
+     CJK TYPOGRAPHY — 中文排版规则
+     Rules + sources: references/design-rules.md §中文排版,
+     references/cjk-typography-research.md.
+     ══════════════════════════════════════ */
+  :lang(zh) body {
+    letter-spacing: 0;              /* 汉字默认密排，不额外加字距 */
+    line-break: strict;             /* 避头尾：句读、闭括号等不出现在行首 */
+    word-break: normal;
+    overflow-wrap: break-word;      /* 长 URL / 长英文词允许断开，避免撑破版心 */
+    text-spacing-trim: normal;      /* 相邻标点挤压（Chrome 123+，需字体带 chws/halt） */
+    hanging-punctuation: allow-end; /* 行尾点号悬挂（目前仅 Safari） */
+    font-kerning: normal;
+  }
+  :lang(zh) .section > p,
+  :lang(zh) .section li {
+    font-size: var(--text-size);
+    line-height: var(--text-leading);
+    font-weight: 400;
+  }
+  :lang(zh) .section > p {
+    margin-bottom: var(--para-gap);
+    text-align: justify;            /* clreq §6.2：中文正文原则上两端对齐 */
+    text-justify: inter-character;
+  }
+  :lang(zh) .section li { margin-bottom: 0.35em; }
+  :lang(zh) .section li > p { margin-bottom: 0.35em; text-align: start; }
+  /* 汉字没有真正的斜体：*强调* 用着重号（clreq §5.3.1：横排置于字下） */
+  :lang(zh) em {
+    font-style: normal;
+    -webkit-text-emphasis: filled dot; text-emphasis: filled dot;
+    -webkit-text-emphasis-position: under right; text-emphasis-position: under right;
+  }
+  :lang(zh) em:lang(en), :lang(zh) code em { font-style: italic; text-emphasis: none; -webkit-text-emphasis: none; }
+  /* 中西文间距：render.mjs 插入 .hf-sp；支持 text-autospace 的浏览器用原生间距 */
+  .hf-sp { white-space: normal; }
+  @supports (text-autospace: normal) {
+    :lang(zh) body { text-autospace: normal; }
+    .hf-sp { display: none; }
+  }
+  /* 标题：中文不加负字距，避免笔画粘连；行高收紧 */
+  :lang(zh) h1, :lang(zh) h2, :lang(zh) h3 { letter-spacing: 0; line-break: strict; }
+  :lang(zh) h2, :lang(zh) h3 { line-height: 1.4; }
+
+  /* ══════════════════════════════════════
+     LAYOUT
+     ══════════════════════════════════════ */
+  .container {
+    max-width: var(--measure);
+    margin: 0 auto;
+    padding: 0 var(--margin);
+  }
+
+  /* Section grid: centred reading column (--col) with equal side tracks.
+     Body blocks sit in the column; media / tables / charts break out to
+     --media on the same centre line; accent blocks span the full width. */
+  .section {
+    display: grid;
+    grid-template-columns: minmax(0,1fr) minmax(0, var(--col)) minmax(0,1fr);
+    padding: 28px 0 var(--sp-7);
+    margin-top: 56px;
+    border-top: 2px solid var(--fg);
+  }
+  .section > * { grid-column: 2 / 3; }
+  .section > .figure-card, .section > .img-row, .section > .img-strip-wrap,
+  .section > .table-wrap, .section > .hchart, .section > .gallery-grid {
+    grid-column: 1 / 4; justify-self: center; width: 100%; max-width: var(--media);
+  }
+  .section > .pullquote, .section > .highlight-card { grid-column: 1 / 4; }
+
+  /* ══════════════════════════════════════
+     CHROME — doc bar, tags left / meta right
+     ══════════════════════════════════════ */
+  .doc-chrome {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-areas: "bar bar" "tags meta";
+    gap: 22px var(--gutter);
+    align-items: center;
+    padding: 56px 0 14px;
+  }
+
+  .doc-chrome-bar {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: var(--fs-label); font-weight: 500;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--fg-tertiary);
+    background: var(--bg-card);
+    padding: var(--sp-5) var(--sp-6) 18px;
+    margin-bottom: var(--sp-5);
+  }
+  .doc-chrome > .doc-chrome-bar { grid-area: bar; }
+
+  .doc-chrome-bar .chrome-l, .doc-chrome-bar .chrome-r {
+    display: flex; gap: 1.8em; align-items: center;
+  }
+  .doc-chrome-bar .chrome-sep { width: 32px; height: 1px; background: currentColor; opacity: 0.3; }
+  .doc-chrome-bar .chrome-accent { color: var(--accent-ink, var(--accent)); font-weight: 600; }
+
+  .doc-chrome-rule { display: none; }
+
+  .doc-chrome-meta {
+    display: flex; gap: 2.4em; flex-wrap: wrap;
+    font-family: var(--font-mono);
+    font-size: var(--fs-meta); letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--fg-tertiary);
+  }
+  .doc-chrome > .doc-chrome-meta { grid-area: meta; justify-self: end; text-align: right; }
+  .doc-chrome-meta .cm-item { display: flex; gap: 0.5em; align-items: baseline; }
+  .doc-chrome-meta .cm-key { opacity: 0.5; }
+  .doc-chrome-meta .cm-val { color: var(--fg-secondary); font-weight: 500; }
+  .doc-chrome-meta .cm-dot { width: 2px; height: 2px; background: var(--fg-tertiary); border-radius: 50%; opacity: 0.4; align-self: center; }
+
+  .doc-chrome-tags {
+    display: flex; gap: var(--sp-3); flex-wrap: wrap;
+  }
+  .doc-chrome > .doc-chrome-tags { grid-area: tags; justify-self: start; }
+  .doc-chrome-tags .chrome-tag {
+    font-family: var(--font-mono);
+    font-size: var(--fs-meta); font-weight: 600;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    padding: 4px 14px;
+    background: var(--fg); color: var(--bg);
+  }
+
+  /* ══════════════════════════════════════
+     HERO — full-bleed image card with text overlay
+     ══════════════════════════════════════ */
+  .hero-cover {
+    position: relative;
+    margin: 8px 0 var(--sp-10);
+    overflow: hidden;
+    background: var(--fg);
+  }
+
+  /* Grid dot pattern over the image */
+  .hero-cover::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+      radial-gradient(circle, rgba(255,255,255,0.08) 1px, transparent 1px);
+    background-size: 24px 24px;
+    z-index: 1;
+  }
+
+  .hero-cover .hero-bg {
+    width: 100%; height: 480px;
+    object-fit: cover; object-position: center 40%;
+    display: block;
+    opacity: 0.25;
+    mix-blend-mode: luminosity;
+  }
+
+  .hero-cover .hero-overlay {
+    position: absolute;
+    inset: 0; z-index: 2;
+    display: flex; flex-direction: column;
+    justify-content: flex-end;
+    padding: var(--sp-9);
+    color: var(--bg);
+  }
+
+  .hero-cover .hero-kicker {
+    font-family: var(--font-mono);
+    font-size: var(--fs-meta); font-weight: 600;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--accent-ink-inverse);
+    margin-bottom: var(--sp-6);
+  }
+
+  .hero-cover h1 {
+    font-family: var(--font-sans);
+    font-size: var(--fs-display); font-weight: 200;
+    line-height: 1.08; letter-spacing: -0.03em;
+    color: var(--bg);
+    margin-bottom: var(--sp-6);
+    max-width: 960px;
+  }
+  :lang(zh) .hero-cover h1 { line-height: 1.2; letter-spacing: 0; }
+
+  .hero-cover .hero-subtitle {
+    font-size: var(--fs-lead); font-weight: 400;
+    color: rgba(var(--paper-rgb), .55);
+    line-height: 1.6;
+    max-width: 820px;
+    opacity: 0.86;
+  }
+
+  /* ══════════════════════════════════════
+     SECTION HEADER — number hangs in the rail left of the column
+     ══════════════════════════════════════ */
+  .section-header {
+    position: relative;
+    margin-bottom: 36px;
+  }
+
+  /* bare number (section without a title) */
+  .section-number {
+    font-family: var(--font-mono);
+    font-size: 56px; font-weight: 800;
+    letter-spacing: -0.04em;
+    color: var(--bg-card);
+    line-height: 0.85;
+    flex-shrink: 0;
+  }
+  /* The number sits in the rail, vertically centred on the title's first line
+     (box = one title line; the small lift puts the digits' ink centre on the CJK glyph centre) */
+  .section-header .section-number {
+    position: absolute; right: calc(100% + var(--rail-gap)); top: 0;
+    height: calc(var(--fs-heading) * 1.2);
+    display: flex; align-items: center;
+    width: var(--rail);
+    font-size: 44px; font-weight: 300; line-height: 1;
+    color: var(--num-grey);
+    transform: translateY(-0.035em);   /* measured: digits sit ~1.5px low at 44px */
+  }
+
+  h2 {
+    font-family: var(--font-sans);
+    font-size: var(--fs-heading); font-weight: 200;
+    line-height: 1.18; letter-spacing: -0.015em;
+    margin: 0;
+  }
+  .section-header h2 { line-height: 1.2; }   /* after :lang(zh) h2 — wins in zh too */
+
+  h3 {
+    font-family: var(--font-sans);
+    font-size: var(--fs-subhead); font-weight: 500;
+    line-height: 1.3; margin-top: var(--sp-9); margin-bottom: var(--sp-5);
+    border-top: 1px solid var(--fg); padding-top: 10px;
+  }
+
+  /* ══════════════════════════════════════
+     PROSE
+     ══════════════════════════════════════ */
+  p { margin-bottom: var(--sp-5); font-size: 1rem; line-height: 1.65; }
+  .section > p, .section li { line-height: 1.8; text-align: justify; }
+  .section p, .section li, .section td, blockquote p { font-weight: 400; }
+  .section p, .section li { overflow-wrap: break-word; }
+  /* 英文段落仍两端对齐，但开启连字符断词，减少长单词造成的大空隙 */
+  .section > p:lang(en) { hyphens: auto; -webkit-hyphens: auto; }
+  /* 链接/长串不两端对齐：含链接的段落、中文列表项、来源/参考节起始对齐；
+     长 URL / 代码可任意断行，避免 justify 把冒号前的字拉开。After the CJK rules. */
+  :lang(zh) .section li,
+  .section > p:has(a.url, a[href^="http"], code),
+  .section.refs p, .section.refs li { text-align: start; text-justify: auto; }
+  .section a.url { overflow-wrap: anywhere; word-break: break-word; }
+  .section code { overflow-wrap: anywhere; word-break: break-all; }
+
+  strong { font-weight: 600; }
+  code { font-family: var(--font-mono); font-size: 0.85em; background: var(--bg-card); padding: 2px 5px; }
+  a { color: var(--accent-ink, var(--accent)); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  .dash { white-space: nowrap; letter-spacing: 0; }
+  .dash-em { color: var(--fg); font-weight: 500; }
+
+  /* Thematic break (---): spacing, not a line */
+  .divider { border: none; height: 0; margin: var(--sp-8, 32px) 0; }
+
+  /* ══════════════════════════════════════
+     LISTS
+     ══════════════════════════════════════ */
+  ul, ol { margin: var(--sp-5) 0 var(--sp-7); padding-left: var(--sp-6); }
+  li { font-size: 1rem; line-height: 1.65; margin-bottom: var(--sp-3); }
+  li::marker { color: var(--accent-ink, var(--accent)); }
+
+  .checklist { list-style: none; padding-left: 0; }
+  .checklist li { padding-left: 28px; position: relative; }
+  .checklist li::before {
+    content: ''; position: absolute; left: 0; top: 7px;
+    width: 14px; height: 14px; background: var(--accent); opacity: 0.15;
+  }
+  .checklist li::after {
+    content: ''; position: absolute; left: 3px; top: 10px;
+    width: 8px; height: 4px;
+    border-left: 2px solid var(--accent-ink); border-bottom: 2px solid var(--accent-ink);
+    transform: rotate(-45deg);
+  }
+
+  /* Footnote section: .section.section-footnote matches :lang(zh) .section li and comes later */
+  .section.section-footnote li {
+    font-size: 0.8rem;
+    margin-bottom: var(--sp-5);
+    color: var(--fg-secondary);
+  }
+  .section-footnote li strong { color: var(--fg); }
+  .section-footnote h2 { font-size: 1rem; }
+
+  /* ══════════════════════════════════════
+     BLOCKQUOTE — column width, hairlines top/bottom, no fill
+     ══════════════════════════════════════ */
+  blockquote {
+    margin: var(--sp-6) 0;
+    padding: 16px 0;
+    border-top: 1px solid var(--fg);
+    border-bottom: 1px solid rgba(var(--ink-rgb), .15);
+    color: var(--fg);
+    font-size: var(--fs-body); line-height: 1.8;
+  }
+  blockquote p { font-size: 1rem; line-height: 1.75; color: var(--fg); margin-bottom: 0; }
+  blockquote > p + p { margin-top: 0.6em; }
+  /* nested quote: left rule; padding-left 1em = 17px from the container size */
+  blockquote .bq-nested {
+    margin: var(--sp-4) 0 var(--sp-3);
+    padding: var(--sp-4) var(--sp-5) var(--sp-4) 1em;
+    border: 0;
+    border-left: 2px solid var(--fg);
+  }
+  .bq-cite {
+    margin-top: 0.7em;
+    font-family: var(--font-mono); font-size: var(--fs-meta); letter-spacing: 0.06em;
+    color: var(--fg-secondary); text-align: right;
+  }
+  .bq-cite cite { font-style: normal; }
+
+  /* ══════════════════════════════════════
+     PULLQUOTE — 2px top rule, "QUOTE" label in the rail, big text
+     ══════════════════════════════════════ */
+  .pullquote-swiss {
+    margin: var(--sp-9) 0; padding: 24px 0 0;
+    display: grid; grid-template-columns: var(--rail) 1fr; gap: var(--sp-6) var(--rail-gap);
+    border-top: 2px solid var(--fg);
+  }
+  .pullquote-swiss .pq-bar::before { content: "QUOTE"; font-family: var(--font-mono); font-size: var(--fs-meta); letter-spacing: 0.12em; color: var(--fg-tertiary); }
+  .pullquote-swiss .pq-content p {
+    font-family: var(--font-sans);
+    font-size: var(--fs-quote); font-weight: 300;
+    line-height: 1.45; letter-spacing: -0.02em; margin-bottom: 0;
+    color: var(--fg);
+  }
+  .pullquote-swiss .accent-mark { color: var(--accent-ink); font-weight: 500; }
+  .pq-cite { margin-top: var(--sp-4); font-family: var(--font-mono); font-size: var(--fs-meta); letter-spacing: 0.08em; text-transform: uppercase; color: var(--fg-tertiary); }
+  .pq-cite::before { content: "— "; }
+
+  /* ══════════════════════════════════════
+     HIGHLIGHT — palette block, label in the rail
+     ══════════════════════════════════════ */
+  .highlight-swiss {
+    margin: var(--sp-5) 0;
+    padding: var(--sp-6) var(--sp-7);
+    background: var(--hl-bg);
+    display: grid; grid-template-columns: var(--rail) 1fr; column-gap: var(--rail-gap);
+  }
+  /* each palette sets its own fg/label colour (yellow/green use dark text) */
+  .highlight-swiss .hl-label {
+    font-family: var(--font-mono);
+    font-size: var(--fs-meta); font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--hl-label);
+  }
+  .highlight-swiss .hl-body p {
+    font-size: 1.15rem; font-weight: 400;
+    line-height: 1.55; margin-bottom: 0;
+    color: var(--hl-fg);
+  }
+  .highlight-swiss .hl-body strong,
+  .highlight-swiss .hl-body b,
+  .highlight-swiss .hl-body a {
+    color: var(--hl-fg);
+  }
+
+  /* ══════════════════════════════════════
+     DEF CARD — card with left/right split
+     ══════════════════════════════════════ */
+  .def-card-swiss {
+    margin: var(--sp-6) 0;
+    display: grid; grid-template-columns: 3fr 9fr; gap: var(--sp-7);
+    align-items: baseline;
+    background: var(--bg-card);
+    padding: var(--sp-5) var(--sp-6);
+  }
+  .def-card-swiss .dc-label {
+    display: block; font-family: var(--font-mono);
+    font-size: var(--fs-meta); font-weight: 600;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--accent-ink, var(--accent)); margin-bottom: 2px;
+  }
+  .def-card-swiss .dc-term { font-size: 1.05rem; font-weight: 600; }
+  .def-card-swiss .dc-body { font-size: var(--fs-small); line-height: 1.6; color: var(--fg-secondary); }
+
+  /* ══════════════════════════════════════
+     PROCESS — numbered cards
+     ══════════════════════════════════════ */
+  .process { margin: var(--sp-9) 0; display: flex; flex-direction: column; gap: var(--sp-3); }
+  .process-step {
+    display: flex; gap: var(--sp-6);
+    padding: var(--sp-5) var(--sp-6);
+    background: var(--bg-card);
+  }
+  .process-num {
+    font-family: var(--font-mono);
+    font-size: var(--fs-label); font-weight: 700;
+    color: var(--accent-ink, var(--accent)); flex: 0 0 32px;
+  }
+  .process-content { flex: 1; }
+  .process-title { font-weight: 600; font-size: 1rem; margin-bottom: 2px; }
+  .process-desc { font-size: 0.88rem; color: var(--fg-secondary); line-height: 1.55; }
+
+  /* ══════════════════════════════════════
+     ASIDE — contextual note card
+     ══════════════════════════════════════ */
+  .aside-card {
+    margin: var(--sp-6) 0;
+    padding: var(--sp-5) var(--sp-6);
+    background: var(--bg-card);
+    display: flex; gap: var(--sp-5);
+    align-items: flex-start;
+  }
+  .aside-icon {
+    flex-shrink: 0;
+    color: var(--accent-ink, var(--accent));
+    padding-top: 2px;
+  }
+  .aside-icon svg { display: block; }
+  .aside-title {
+    font-family: var(--font-mono);
+    font-size: var(--fs-meta); font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--accent-ink, var(--accent));
+    margin-bottom: var(--sp-3);
+  }
+  .aside-content p {
+    font-size: 0.88rem; line-height: 1.6;
+    color: var(--fg-secondary); margin-bottom: 0;
+  }
+
+  /* ══════════════════════════════════════
+     SUMMARY CARD — key takeaway grid
+     ══════════════════════════════════════ */
+  .summary-card { margin: var(--sp-9) 0; }
+  .summary-label {
+    font-family: var(--font-mono);
+    font-size: var(--fs-meta); font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--bg);
+    background: var(--fg);
+    display: inline-block;
+    padding: var(--sp-3) var(--sp-5);
+    margin-bottom: var(--sp-5);
+  }
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: var(--sp-4);
+  }
+  .summary-item {
+    background: var(--bg-card);
+    padding: var(--sp-5) var(--sp-6);
+  }
+  .summary-item-title {
+    font-weight: 600; font-size: 0.95rem;
+    margin-bottom: var(--sp-3);
+  }
+  .summary-item-desc {
+    font-size: 0.85rem; line-height: 1.55;
+    color: var(--fg-secondary);
+  }
+
+  /* ══════════════════════════════════════
+     EMBED CARD — AI-generated SVG/UI preview
+     ══════════════════════════════════════ */
+  .embed-card {
+    margin: var(--sp-9) 0;
+    background: var(--bg-card);
+    overflow: hidden;
+  }
+  .embed-label {
+    font-family: var(--font-mono);
+    font-size: var(--fs-meta); font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    padding: var(--sp-4) var(--sp-6);
+    background: var(--fg);
+    color: var(--bg);
+    display: inline-block;
+  }
+  .embed-body {
+    padding: var(--sp-7);
+    display: flex; align-items: center; justify-content: center;
+    min-height: 200px;
+  }
+  .embed-body svg { max-width: 100%; height: auto; }
+  .embed-caption {
+    font-family: var(--font-mono);
+    font-size: var(--fs-meta); font-weight: 500;
+    letter-spacing: 0.06em;
+    color: var(--fg-tertiary);
+    padding: 0 var(--sp-6) var(--sp-5);
+    text-transform: uppercase;
+  }
+
+  /* ══════════════════════════════════════
+     TABLE — top rule, ruled rows, light zebra
+     ══════════════════════════════════════ */
+  /* bare tables (only reachable through raw HTML inside an embed) */
+  table { width: 100%; border-collapse: collapse; font-size: var(--fs-small); }
+  th {
+    font-family: var(--font-mono);
+    font-size: var(--fs-meta); font-weight: 600;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    text-align: left; padding: var(--sp-3) var(--sp-5);
+    background: var(--fg); color: var(--bg);
+  }
+  td { padding: var(--sp-3) var(--sp-5); vertical-align: top; line-height: 1.55; }
+  tr:nth-child(even) td { background: var(--bg-card); }
+
+  .table-wrap { margin: 2em 0; overflow-x: auto; }
+  /* !important on min-width / margin: beats inline styles on tables pasted as raw HTML */
+  .table-wrap table { width: 100%; min-width: 0 !important; border-collapse: collapse; font-variant-numeric: tabular-nums; font-size: 0.9rem; table-layout: auto; }
+  .table-wrap > table { margin: 0 !important; }
+  .table-wrap th {
+    font-family: var(--font-sans); font-size: 0.78rem; font-weight: 600;
+    letter-spacing: 0; text-transform: none; text-align: left;
+    color: var(--fg); background: none;
+    padding: 10px 12px;
+    border-top: 2px solid var(--fg); border-bottom: 1.5px solid var(--fg);
+    vertical-align: bottom; line-height: 1.35;
+  }
+  .table-wrap td { padding: 9px 12px; color: var(--fg); border-bottom: 1px solid rgba(var(--ink-rgb), .09); vertical-align: top; line-height: 1.45; background: none; }
+  .table-wrap td:first-child { white-space: nowrap; }
+  .table-wrap tbody tr:nth-child(even) td { background: rgba(var(--ink-rgb), .025); }
+  .table-wrap .al-num, .table-wrap .al-right { text-align: right; }
+  .table-wrap td.al-num, .table-wrap td.al-right { white-space: nowrap; }
+  .table-wrap .al-center { text-align: center; }
+  .table-wrap td strong { color: var(--accent-ink, var(--accent)); font-weight: 700; }
+  .table-wrap td small, .table-wrap td .sub { color: var(--fg-tertiary); font-size: 0.78em; }
+  .table-caption { caption-side: top; margin-bottom: 10px; }
+
+  /* ══════════════════════════════════════
+     CHART — native bar chart (```chart → .hchart)
+     ══════════════════════════════════════ */
+  .hchart { margin-top: 2.2em; margin-bottom: 2.2em; padding: 30px 0; border-top: 2px solid var(--fg); }
+  .hc-title { font-family: var(--font-mono); font-weight: 600; font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--fg); margin-bottom: 22px; }
+  .hc-legend { display: flex; flex-wrap: wrap; gap: 8px 20px; margin-bottom: 22px; font-size: 0.78rem; color: var(--fg-secondary); }
+  .hc-key i { display: inline-block; width: 10px; height: 10px; margin-right: 6px; vertical-align: -1px; background: var(--hc-mute); }
+  .hc-row { display: grid; grid-template-columns: minmax(120px, 30%) 1fr; gap: 18px; align-items: center; padding: 7px 0; }
+  .hc-group { padding: 16px 0; border-top: 1px solid rgba(var(--ink-rgb), .08); }
+  .hc-label { font-size: 0.82rem; color: var(--fg); line-height: 1.35; }
+  .hc-bars { display: grid; gap: 6px; }
+  .hc-bar { position: relative; display: flex; align-items: center; gap: 8px; height: 20px; padding-right: 5em; }  /* room for the value after a 100% bar */
+  .hc-group .hc-bar { height: 14px; }
+  .hc-fill { display: block; height: 100%; background: var(--hc-mute); flex: none; }
+  .hc-val { font-size: var(--fs-meta); font-variant-numeric: tabular-nums; color: var(--fg-secondary); white-space: nowrap; }
+  .hc-group .hc-val { font-size: var(--fs-meta); }
+  .hc-hi .hc-fill, .hc-key.hc-hi i { background: var(--accent); }
+  .hc-hi .hc-val, .hc-row.hc-hi .hc-label { color: var(--fg); font-weight: 600; }
+  /* both series highlighted: the second one is lighter so the pair stays distinguishable */
+  .hc-s0.hc-hi ~ .hc-s1.hc-hi .hc-fill, .hc-key.hc-s0.hc-hi ~ .hc-key.hc-s1.hc-hi i { opacity: 0.6; }
+  .hc-na .hc-val { color: var(--fg-tertiary); font-style: italic; }
+  .hc-cap { margin-top: 20px; }
+
+  /* ══════════════════════════════════════
+     CODE BLOCK
+     ══════════════════════════════════════ */
+  pre {
+    margin: var(--sp-5) 0;
+    padding: var(--sp-5) var(--sp-6);
+    background: var(--fg);
+    color: var(--bg);
+    overflow-x: auto;
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    line-height: 1.7;
+  }
+  pre code {
+    background: none;
+    padding: 0;
+    font-size: inherit;
+    color: inherit;
+  }
+
+  /* ══════════════════════════════════════
+     FIGURES, IMAGE ROWS / STRIPS, MEDIA
+     ══════════════════════════════════════ */
+  figure img { width: 100%; height: auto; display: block; }
+  /* captions: first sentence bold as a label (.cap-lead) */
+  figcaption {
+    margin-top: var(--sp-3);
+    font-family: var(--font-sans); font-size: var(--fs-caption); font-weight: 500;
+    line-height: 1.55; letter-spacing: 0;
+    color: var(--fg-secondary, var(--fg));
+    text-align: left;
+  }
+  figcaption .cap-lead { display: block; font-weight: 600; color: var(--fg); margin-bottom: 2px; }
+  .img-row figcaption .cap-lead, .img-strip figcaption .cap-lead { display: inline; margin-right: .4em; }
+
+  .figure-card { grid-column: 1 / -1; margin: var(--sp-8) 0; }
+  .figure-card img { object-fit: cover; }
+  .figure-card figcaption { padding: 0 var(--sp-3); }
+  /* single figure: caption hangs in the left margin, bottom-aligned with the image */
+  .section > .figure-card { position: relative; }
+  .section > .figure-card > figcaption {
+    position: absolute; right: calc(100% + 24px); bottom: 0; width: 160px;
+    margin: 0 !important;           /* beats ui.css print .figure-card > figcaption margin-top */
+    padding: 8px 0 2px;
+    border-top: 1px solid var(--fg);
+  }
+
+  .img-row { display: grid; gap: 12px; margin-top: 2.2em; margin-bottom: 2.2em; }
+  .img-row-2 { grid-template-columns: 1fr 1fr; }
+  .img-row-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .img-row .figure-card { margin: 0; }
+  .img-row > .figure-card { min-width: 0; grid-column: auto; }  /* side by side, not one full-width card per row */
+  .img-row .figure-card img { aspect-ratio: 4 / 3; object-fit: cover; }
+
+  .img-strip-wrap { margin-top: 2.2em; margin-bottom: 2.2em; }
+  .img-strip { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 8px; }
+  .img-strip .figure-card { flex: 0 0 62%; margin: 0; scroll-snap-align: start; }
+  .img-strip-hint { font-family: var(--font-mono); font-size: var(--fs-meta); color: var(--fg-tertiary); text-align: right; margin-top: 6px; }
+
+  .media-embed video, .media-embed iframe { width: 100%; aspect-ratio: 16 / 9; height: auto; display: block; border: 0; background: #000; }
+
+  /* ══════════════════════════════════════
+     GALLERY — placeholder grid
+     ══════════════════════════════════════ */
+  .gallery-grid {
+    margin: var(--sp-9) 0;
+    display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-5);
+  }
+  .gallery-grid-item .img-placeholder { aspect-ratio: 16/10; }
+  .gallery-grid-item .gallery-cap {
+    font-family: var(--font-mono); font-size: var(--fs-meta); font-weight: 500;
+    letter-spacing: 0.06em; color: var(--fg-tertiary);
+    margin-top: var(--sp-3); text-transform: uppercase;
+  }
+
+  .img-placeholder {
+    width: 100%; aspect-ratio: 16/9;
+    background: var(--bg-card);
+    display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+  }
+  .img-placeholder::before {
+    content: ''; position: absolute; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg width='8' height='8' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='4' cy='4' r='.8' fill='%23d4d4d2'/%3E%3C/svg%3E");
+    opacity: 0.6;
+  }
+  .img-placeholder span {
+    font-family: var(--font-mono); font-size: var(--fs-meta); font-weight: 600;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--fg-tertiary); position: relative; z-index: 1;
+    background: var(--bg-card); padding: 2px 10px;
+  }
+
+  /* ══════════════════════════════════════
+     TOC SIDEBAR (open/push behaviour lives in ui.css)
+     ══════════════════════════════════════ */
+  .toc {
+    position: fixed;
+    left: 0; top: 0;
+    z-index: 100;
+  }
+
+  .toc-toggle {
+    position: fixed;
+    left: var(--sp-6); top: var(--sp-6);
+    width: 40px; height: 40px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--bg-card);
+    border: none; cursor: pointer;
+    color: var(--fg-tertiary);
+    transition: background 0.15s, color 0.15s;
+    z-index: 102;
+  }
+  .toc-toggle:hover { background: var(--fg); color: var(--bg); }
+
+  .toc-panel {
+    position: fixed;
+    left: 0; top: 0; bottom: 0;
+    width: 320px !important;          /* beats ui.css narrow-screen drawer width min(300px, 86vw) */
+    background: var(--bg-card);
+    border-right: 1px solid rgba(var(--ink-rgb), .07);
+    padding: var(--sp-12) var(--sp-6) var(--sp-7);
+    overflow-y: auto;
+    transform: translateX(-100%);
+    scrollbar-width: thin;
+    scrollbar-color: var(--fg-placeholder) transparent;
+    z-index: 101;
+  }
+
+  .toc-open .toc-panel { transform: translateX(0); }
+  .toc-open .toc-toggle { background: var(--fg); color: var(--bg); }
+
+  .toc-header {
+    font-family: var(--font-mono);
+    font-size: 13px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--fg-tertiary);
+    margin-bottom: 18px;
+  }
+
+  /* TOC text ≥ body size; narrow tabular number column */
+  .toc-item {
+    display: grid; grid-template-columns: 2.4em 1fr; align-items: baseline; gap: 0 10px;
+    padding: 9px 0;
+    font-size: var(--fs-body); font-weight: 400;
+    color: var(--fg-secondary);
+    text-decoration: none;
+    line-height: 1.55;
+    transition: color 0.15s;
+  }
+  .toc-item:hover { color: var(--fg); }
+  .toc-item.toc-active { color: var(--accent-ink, var(--accent)); font-weight: 600; }
+
+  .toc-num {
+    font-family: var(--font-mono);
+    font-size: 0.8rem; font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--fg-placeholder);
+    flex-shrink: 0; width: 24px;
+  }
+  .toc-active .toc-num { color: var(--accent-ink, var(--accent)); }
+
+  /* ══════════════════════════════════════
+     FOOTER
+     ══════════════════════════════════════ */
+  /* scoped to the page footer so it doesn't leak into blockquote footer.bq-cite */
+  .container > footer, .divider-dot {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    column-gap: var(--gutter);
+  }
+  .divider-dot { display: block; margin: var(--sp-10) auto; text-align: center; color: var(--fg-placeholder); font-size: 14px; letter-spacing: 10px; }
+  .container > footer { padding: var(--sp-10) 0 var(--sp-12); text-align: center; }
+  .container > footer > * { grid-column: 1 / -1; }
+  .container > footer p { font-family: var(--font-mono); font-size: var(--fs-meta); font-weight: 500; letter-spacing: 0.14em; color: var(--fg-tertiary); text-transform: uppercase; }
+
+  /* ══════════════════════════════════════
+     RESPONSIVE
+     ══════════════════════════════════════ */
+  @media (max-width: 1100px) {
+    /* single flowing column; the rail content moves back above the text */
+    .section { display: block; }
+    .section > p, .section > ul, .section > ol, .section > blockquote,
+    .section > h3, .section > .section-header { max-width: var(--col); margin-left: auto; margin-right: auto; }
+    .section-header .section-number { position: static; width: auto; margin-bottom: 8px; font-size: 28px; }
+    .section > .figure-card > figcaption { position: static; width: auto; margin-top: 8px !important; /* beats ui.css print */ }
+  }
+
+  @media (max-width: 1024px) {
+    .container { padding: 0 var(--sp-9); }
+    .doc-chrome { padding-top: 76px; }  /* the fixed TOC button (24 + 40px) sits over the left margin */
+    .section-number { font-size: 14px; font-weight: 500; color: var(--accent-ink, var(--accent)); letter-spacing: 0.14em; }
+    .hero-cover .hero-bg { height: 360px; }
+    .hero-cover h1 { font-size: 2.4rem; }
+    .def-card-swiss { grid-template-columns: 1fr; gap: var(--sp-3); }
+    .gallery-grid { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 1000px) {
+    .doc-chrome { grid-template-columns: 1fr; grid-template-areas: "bar" "tags" "meta"; }
+    .doc-chrome > .doc-chrome-meta { justify-self: start; }
+    .pullquote-swiss, .highlight-swiss { grid-template-columns: minmax(0,1fr); }
+  }
+
+  @media (max-width: 760px) {
+    .img-row-3 { grid-template-columns: 1fr 1fr; }
+    .img-strip .figure-card { flex-basis: 85%; }
+  }
+
+  @media (max-width: 640px) {
+    html, body { overflow-x: hidden; }
+    .container { padding: 0 var(--sp-6); }
+    /* chrome: wraps instead of overflowing; top padding clears the fixed TOC button */
+    .doc-chrome { padding-top: 72px; row-gap: 14px; }
+    .doc-chrome > .doc-chrome-bar { flex-wrap: wrap; gap: 6px 12px; padding: 12px 14px; font-size: var(--fs-meta); letter-spacing: .1em; margin-bottom: 0; }
+    .doc-chrome-bar .chrome-l, .doc-chrome-bar .chrome-r { gap: .8em; flex-wrap: wrap; min-width: 0; }
+    .doc-chrome-bar .chrome-sep { width: 14px; }
+    .doc-chrome-meta { gap: 6px 1.2em; font-size: var(--fs-meta); letter-spacing: .08em; }
+    .doc-chrome-meta .cm-dot { display: none; }
+    .doc-chrome-meta .cm-item { min-width: 0; flex-wrap: wrap; }
+    .doc-chrome-tags { gap: 6px; }
+    .doc-chrome-tags .chrome-tag { padding: 3px 10px; font-size: var(--fs-meta); }
+    /* hero: image on top, text below on the dark block (no overlay clipping) */
+    .hero-cover { display: flex; flex-direction: column; overflow: visible; }
+    .hero-cover::before { bottom: auto; height: 220px; }
+    .hero-cover .hero-bg { height: 220px; opacity: .55; }
+    .hero-cover .hero-overlay { position: relative; inset: auto; padding: 22px 20px 26px; }
+    .hero-cover h1, :lang(zh) .hero-cover h1 { font-size: 1.75rem; line-height: 1.28; letter-spacing: -0.01em; margin-bottom: 14px; overflow-wrap: anywhere; }
+    .hero-cover .hero-subtitle { font-size: .95rem; line-height: 1.7; color: rgba(var(--paper-rgb), .78); }
+    .hero-cover .hero-kicker { margin-bottom: 12px; }
+    .section-header .section-number { font-size: 24px; }
+    .pullquote-swiss .pq-content p { font-size: 1.2rem; }
+    .hc-row { grid-template-columns: 1fr; }
+  }
+
+  /* ══════════════════════════════════════
+     PRINT (shared pagination rules live in ui.css)
+     ══════════════════════════════════════ */
+  @media print {
+    .hero-cover .hero-bg { filter: brightness(0.4); }
+    .def-card-swiss, .aside-card, .process-step { background: var(--grey-1); }
+    .gallery-grid { grid-template-columns: 1fr 1fr; }
+    a { color: inherit; }
+    /* ui.css print forces img width:auto; stretch keeps the cover image full-bleed */
+    .hero-cover .hero-bg { justify-self: stretch; }
+    /* the rail grid doesn't fit the page: single flow, rail content inline */
+    .pullquote-swiss, .highlight-swiss { display: block; }
+    .pullquote-swiss .pq-bar { display: none; }
+    .section > .figure-card > figcaption { border-top: 0; padding-top: 6px; }
+    .img-strip { overflow: visible; }
+    .img-strip-hint { display: none; }
+  }
+
+  /* ========================================
+     FOOTNOTES — [^n] references and the list at the end
+     ======================================== */
+  sup.fn-ref { font-size: .72em; line-height: 0; margin-left: 1px; }
+  sup.fn-ref a, .fn-back { color: var(--accent-ink); text-decoration: none; }
+  .footnotes li { scroll-margin-top: 80px; }
+
+  /* Phones: diagrams keep a readable size and scroll sideways; table headers don't break inside a word */
+  .table-wrap th { word-break: keep-all; }
+  @media (max-width: 640px) {
+    .embed-body { overflow-x: auto; }
+    .embed-body > svg { min-width: 520px; }
+  }
+</style>
+<style>  /* ══════════════════════════════════════
+     UI OVERLAY — Settings, Share, Edit
+     Shared across all themes
+     ══════════════════════════════════════ */
+
+  /* ── Editable text ── */
+  [contenteditable] {
+    outline: none;
+    cursor: text;
+    transition: background 0.15s;
+    border-radius: 2px;
+  }
+  [contenteditable]:hover {
+    background: rgba(0,0,0,0.03);
+  }
+  [contenteditable]:focus {
+    background: rgba(0,0,0,0.05);
+    box-shadow: 0 0 0 2px var(--accent, #002FA7);
+  }
+
+  /* ── FAB container (bottom-right) ── */
+  .hf-fab {
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-end;
+  }
+
+  .hf-fab-btn {
+    width: 44px; height: 44px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--fg, #0a0a0a);
+    color: var(--bg, #fafaf8);
+    border: none; border-radius: 0; cursor: pointer;
+    transition: opacity 0.15s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+  .hf-fab-btn:hover { opacity: 0.85; }
+  .hf-fab-btn svg { width: 20px; height: 20px; }
+
+  /* ── Dropdown menu (share + settings) ── */
+  .hf-dropdown {
+    position: absolute;
+    background: var(--fg, #0a0a0a);
+    color: var(--bg, #fafaf8);
+    min-width: 220px;
+    padding: 8px 0;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.2);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(4px);
+    transition: opacity 0.15s, transform 0.15s;
+    z-index: 210;
+  }
+  .hf-dropdown.open {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+  .hf-fab .hf-dropdown { right: 0; bottom: calc(100% + 6px); }
+
+  .hf-dropdown-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 16px;
+    font-family: var(--font-sans, sans-serif);
+    font-size: 13px; font-weight: 400;
+    cursor: pointer;
+    transition: background 0.1s;
+    border: none; background: none; color: inherit;
+    width: 100%; text-align: left;
+  }
+  .hf-dropdown-item:hover { background: rgba(255,255,255,0.08); }
+  .hf-dropdown-item svg { width: 16px; height: 16px; opacity: 0.5; }
+
+  .hf-dropdown-divider {
+    height: 1px;
+    background: rgba(255,255,255,0.1);
+    margin: 6px 0;
+  }
+
+  .hf-dropdown-label {
+    padding: 8px 16px 4px;
+    font-family: var(--font-mono, monospace);
+    font-size: 9px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    opacity: 0.35;
+  }
+
+  /* ── Color swatches ── */
+  .hf-swatches {
+    display: flex; gap: 6px;
+    padding: 6px 16px 10px;
+  }
+  .hf-swatch {
+    -webkit-appearance: none; appearance: none; padding: 0;
+    width: 28px; height: 28px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: border-color 0.15s;
+    position: relative;
+  }
+  .hf-swatch:hover { border-color: rgba(255,255,255,0.3); }
+  .hf-swatch.active { border-color: var(--bg, #fff); }
+  .hf-swatch.active::after {
+    content: '✓';
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; color: #fff;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+  }
+
+  /* ── Font options ── */
+  .hf-font-options {
+    display: flex; flex-direction: column; gap: 2px;
+    padding: 4px 16px 8px;
+  }
+  .hf-font-option {
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 8px;
+    font-size: 13px;
+    cursor: pointer;
+    border: none; background: none; color: inherit;
+    width: 100%; text-align: left;
+    transition: background 0.1s;
+  }
+  .hf-font-option:hover { background: rgba(255,255,255,0.08); }
+  .hf-font-option.active { background: rgba(255,255,255,0.12); }
+  .hf-font-option .font-preview {
+    font-size: 15px; font-weight: 300;
+    opacity: 0.7;
+  }
+  .hf-font-option .font-name {
+    font-family: var(--font-mono, monospace);
+    font-size: 10px; letter-spacing: 0.08em;
+    text-transform: uppercase; opacity: 0.4;
+  }
+
+  /* ── Print hide UI ── */
+  @media print {
+    .hf-fab,.toc,.toc-scrim { display: none !important; }
+    [contenteditable] { box-shadow: none !important; background: none !important; }
+  }
+
+  /* ── TOC layout behaviour (shared) ──
+     Root cause of the old "TOC covers half the article" bug: the panel is a
+     280px fixed overlay, while the article container starts ~120px from the
+     left edge on a 1440px screen, so opening it always covered the text.
+     Fix: on wide screens opening the TOC pushes the page (body padding-left),
+     so nothing is covered; on narrow screens it is a drawer with a scrim and
+     closes on outside click / Esc. */
+  .toc { width: 0; height: 0; overflow: visible; pointer-events: none; }
+  .toc-toggle, .toc-panel { pointer-events: auto; }
+  .toc-panel { visibility: hidden; transition: transform 0.25s cubic-bezier(.2,0,.38,.9), visibility 0s linear 0.25s; }
+  .toc-open .toc-panel { visibility: visible; transition: transform 0.25s cubic-bezier(.2,0,.38,.9); }
+  body { transition: padding-left 0.25s cubic-bezier(.2,0,.38,.9); }
+  .toc-scrim { display: none; }
+  @media (min-width: 1025px) {
+    html.toc-is-open body { padding-left: 300px; }
+  }
+  @media (max-width: 1024px) {
+    .toc-scrim {
+      position: fixed; inset: 0; z-index: 99;
+      background: rgba(0,0,0,0.28);
+    }
+    html.toc-is-open .toc-scrim { display: block; }
+    .toc-panel { width: min(300px, 86vw); }
+  }
+
+  /* ══════════════════════════════════════
+     PRINT / PDF — pagination (shared by both styles)
+     Root cause of the "half-empty page" bug: style-magazine.css had
+     `.hero, .section { break-inside: avoid }`, and both themes lay sections
+     out as CSS grids; any chapter taller than the remaining space jumped to
+     the next page whole. Rules now: only small atomic blocks avoid breaking,
+     long containers flow across pages, headings stick to what follows.
+     ══════════════════════════════════════ */
+  /* Page margins live inside the page (container padding repeated on every page via
+     box-decoration-break), so the theme's paper colour fills the whole sheet — Chrome
+     doesn't paint @page margins, which left a white frame around dark themes. */
+  @page { size: A4; margin: 0; }
+  @media print {
+    html, body, body * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    html { background: var(--bg); }
+    html.toc-is-open body, body { padding-left: 0 !important; }
+    .container { max-width: none !important; padding: 14mm 12mm 16mm !important; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+    .embed-label, .summary-label, .aside-title { break-after: avoid; }
+    /* grid fragmentation is fragile — flow sections as blocks on paper */
+    .section, .hero, footer, .container > .pullquote { display: block !important; }
+    .section-header { display: block !important; }
+    .section, .hero, .process, .gallery, .gallery-grid, .summary-card,
+    .summary-grid, .table-wrap, table, ul, ol, pre, .chart-row,
+    .embed-card, .data-figure { break-inside: auto !important; }
+
+    /* headings never end a page */
+    h1, h2, h3, h4, h5, .section-number, .section-header, .hero-kicker,
+    .def-card-label, .hl-label, .toc-header { break-after: avoid; break-inside: avoid; }
+    p { orphans: 3; widows: 3; }
+
+    /* small atomic blocks: keep whole */
+    blockquote, .def-card, .def-card-swiss, .highlight-card, .highlight-swiss,
+    .pullquote, .pullquote-swiss, .aside-card, .process-step, .big-number,
+    .summary-item, .gallery-item, li, tr, .callout { break-inside: avoid; }
+
+    /* image + caption travel together; cap height (120mm ≈ 45% of an A4 text area). Residual gap: a heading kept with a big figure can still leave up to ~half a page — intended (no orphan heading). so a figure never strands more than ~half a page */
+    figure, .figure-card { break-inside: avoid; }
+    figure img, .figure-card img, img { max-height: 120mm; width: auto; max-width: 100%; object-fit: contain; }
+    figcaption, .figure-caption, .caption { break-before: avoid; }
+    pre { white-space: pre-wrap; word-break: break-all; }
+    .section { padding-top: 12mm !important; padding-bottom: 4mm !important; }
+    a { text-decoration: none; }
+  }
+
+  /* ══════════════════════════════════════
+     PRINT v0.14 — blank-space budget (≤25% per page)
+     A block that can't split leaves at most its own height as a gap, so every
+     unsplittable block is capped well under a quarter page; everything tall
+     (tables, charts, quotes) is allowed to split. Screen layout untouched.
+     ══════════════════════════════════════ */
+  @media print {
+    .section { padding-top: 5mm !important; padding-bottom: 2mm !important; margin-top: 0 !important; border: 0 !important; }
+    .section::before { content: none !important; }
+    .section > .section-number { margin-bottom: 2mm !important; }
+    .section h2, .section-header { margin-bottom: 4mm !important; }
+    .hero { padding-top: 0 !important; padding-bottom: 4mm !important; }
+    .hero::after { margin-top: 3mm !important; }
+    .doc-chrome { padding-top: 0 !important; padding-bottom: 4mm !important; }
+    .hero-cover, .hero-cover .hero-bg { min-height: 0 !important; height: 60mm !important; }
+
+    /* media: shrink to fit instead of jumping */
+    figure img, .figure-card img, .img-row img, .img-strip img, img { max-height: 58mm !important; width: auto !important; max-width: 100% !important; object-fit: contain !important; margin-left: auto; margin-right: auto; }
+    .img-row img { max-height: 42mm !important; }
+    .media-embed video, .media-embed iframe { max-height: 58mm !important; }
+    figure, .figure-card { margin-top: 3mm !important; margin-bottom: 3mm !important; }
+    .figure-card > figcaption { margin-top: 1.5mm !important; text-align: center; }  /* images shrink and centre on paper */
+
+    /* headings stay with the next *line*, not with a whole big block */
+    h2, h3, .section-header, .section-number { break-after: avoid; }
+    .section-header + .figure-card, h2 + .figure-card, .section-number + h2 + .figure-card,
+    h2 + .table-wrap, h2 + .hchart, .section-header + .hchart, .section-header + .table-wrap { break-before: auto !important; }
+
+    /* tables: split across pages, header row repeats */
+    .table-wrap, .table-wrap table { break-inside: auto !important; overflow: visible !important; }
+    .table-wrap thead { display: table-header-group; }
+    .table-wrap tr { break-inside: avoid; }
+    .table-caption { break-after: avoid; }
+
+    /* charts: allowed to split between rows/groups */
+    .hchart { break-inside: auto !important; padding-top: 4mm !important; padding-bottom: 4mm !important; margin-top: 4mm !important; margin-bottom: 4mm !important; }
+    .hc-row, .hc-group, .hc-legend { break-inside: avoid; }
+    .hc-title, .hc-legend { break-after: avoid; }
+
+    /* quotes / cards may split when long; small ones still stay whole via orphans/widows */
+    blockquote, .pullquote, .pullquote-swiss, .highlight-card, .highlight-swiss { break-inside: auto !important; }
+    .pullquote, .pullquote-swiss { padding-top: 5mm !important; padding-bottom: 5mm !important; margin-top: 4mm !important; margin-bottom: 4mm !important; }
+    .img-row, .img-strip-wrap { margin-top: 3mm !important; margin-bottom: 3mm !important; }
+    p { orphans: 2; widows: 2; }
+  }
+  @media print {
+    figure img, .figure-card img, img { max-height: 54mm !important; }
+    .img-strip { display: grid !important; grid-template-columns: repeat(3, 1fr); gap: 3mm; }
+    .img-strip .figure-card { flex: none !important; }
+    .img-strip img, .img-row img { max-height: 34mm !important; }
+  }
+  @media print {
+    /* heading followed directly by an unsplittable media block: don't drag the heading along */
+    .section-header:has(+ .figure-card), .section-header:has(+ .img-row), .section-header:has(+ .media-embed),
+    h2:has(+ .figure-card), h2:has(+ .img-row), h2:has(+ .media-embed),
+    .section-number:has(+ h2 + .figure-card) { break-after: auto !important; }
+  }
+  @media print { figure img, .figure-card img, img { max-height: 50mm !important; } .section-header .section-number { font-size: 20px !important; } }
+  @media print { .section-header + .figure-card img, h2 + .figure-card img { max-height: 38mm !important; } }
+  @media print { .section-header .section-number { display: inline-block !important; margin: 0 4mm 0 0 !important; } .section-header h2 { display: inline !important; } .section-header { margin-bottom: 3mm !important; } .figure-card { margin-top: 2mm !important; } }
+  @media print { h3 + .figure-card img { max-height: 38mm !important; } .hc-group { padding: 2mm 0 !important; } .hc-group .hc-bar { height: 10px !important; } .hc-bars { gap: 3px !important; } .hc-legend { margin-bottom: 3mm !important; } .hc-title { margin-bottom: 3mm !important; } .hc-row { padding: 1mm 0 !important; } .hc-bar { height: 13px !important; } }
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" data-gz-fonts="inter noto-sans-sc jetbrains-mono" href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Noto+Sans+SC:wght@100..900&family=JetBrains+Mono:wght@100..800&display=swap">
+</head>
+<body>
+
+<div class="toc-scrim" id="toc-scrim"></div>
+<nav class="toc" id="toc">
+  <button class="toc-toggle" id="toc-toggle" aria-label="Toggle table of contents">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M2 4h14M2 9h10M2 14h14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+  </button>
+  <div class="toc-panel" id="toc-panel">
+    <div class="toc-header">目录</div>
+    <a class="toc-item" href="#s-01"><span class="toc-num">01</span>01 · 这是什么，哪些图是真截图</a>
+<a class="toc-item" href="#s-02"><span class="toc-num">02</span>02 · 安装、打开、升级与卸载</a>
+<a class="toc-item" href="#s-03"><span class="toc-num">03</span>03 · 十分钟做出第一个镜头</a>
+<a class="toc-item" href="#s-04"><span class="toc-num">04</span>04 · 导入素材、选对象与整理图层</a>
+<a class="toc-item" href="#s-05"><span class="toc-num">05</span>05 · 空间位置、镜头和图层属性</a>
+<a class="toc-item" href="#s-06"><span class="toc-num">06</span>06 · 时间轴：先选对象，再选时间</a>
+<a class="toc-item" href="#s-07"><span class="toc-num">07</span>07 · 参数编辑与关键帧曲线</a>
+<a class="toc-item" href="#s-08"><span class="toc-num">08</span>08 · 灯光：照谁、放哪、跟谁走</a>
+<a class="toc-item" href="#s-09"><span class="toc-num">09</span>09 · FX：先加素材，再开大组和子功能</a>
+<a class="toc-item" href="#s-10"><span class="toc-num">10</span>10 · 抗锯齿、清晰化与几种常用效果</a>
+<a class="toc-item" href="#s-11"><span class="toc-num">11</span>11 · 95 项 FX 与全部参数速查</a>
+<a class="toc-item" href="#s-12"><span class="toc-num">12</span>12 · 节拍：先有运动，再按音乐加点</a>
+<a class="toc-item" href="#s-13"><span class="toc-num">13</span>13 · 预设：选素材、点风格、生成、应用</a>
+<a class="toc-item" href="#s-14"><span class="toc-num">14</span>14 · 工程管理：四个按钮保存与换电脑</a>
+<a class="toc-item" href="#s-15"><span class="toc-num">15</span>15 · 常见问题：按这张表检查</a>
+<a class="toc-item" href="#s-16"><span class="toc-num">16</span>16 · 实际环境、性能边界与证据</a>
+  </div>
+</nav>
+<div class="container">
+
+<div class="doc-chrome">
+  <div class="doc-chrome-bar">
+    <div class="chrome-l">
+      <span class="chrome-accent">USER-GUIDE</span>
+      <span class="chrome-sep"></span>
+      <span>V3.6.3</span>
+    </div>
+    <div class="chrome-r">
+      <span>归藏 Page</span>
+      <span class="chrome-sep"></span>
+      <span>2026.11.14</span>
+    </div>
+  </div>
+  <div class="doc-chrome-rule"></div>
+  <div class="doc-chrome-meta">
+    <div class="cm-item"><span class="cm-key">author</span> <span class="cm-val">OBS Spatial FX</span></div><div class="cm-dot"></div><div class="cm-item"><span class="cm-key">date</span> <span class="cm-val">2026.11.14</span></div><div class="cm-dot"></div><div class="cm-item"><span class="cm-key">reading</span> <span class="cm-val">按章节查阅</span></div>
+  </div>
+  <div class="doc-chrome-tags"><span class="chrome-tag">操作说明</span><span class="chrome-tag">离线可读</span><span class="chrome-tag">真实截图</span></div>
+</div>
+
+<header class="hero hero-cover">
+  <img class="hero-bg" src="https://images.unsplash.com/photo-1509023464722-18d996393ca8?w=1400&h=600&fit=crop" alt="" />
+  <div class="hero-overlay">
+    <div class="hero-kicker">USER-GUIDE — 2026.11.14</div>
+    <h1>OBS Spatial FX 使用说明书</h1>
+    <p class="hero-subtitle">v3.6.3 固定版 · 从第一帧到风格预设、工程打包与 95 项 FX</p>
+  </div>
+</header>
+<section class="section" id="s-0"><p>固定版本 v3.6.3 · 中文 · 2026 年 11 月 14 日</p>
+<p>把 OBS 的素材分成前景、人物和背景，再让镜头动起来。本说明从“第一次打开”讲起，最后列出全部 13 组、95 个 FX 子功能与参数。</p>
+<p><strong>先记住四件事：选对对象 → 选对时间 → 改数值 → 记录关键帧。</strong> 没有开启的特效不会自动参与处理；一开始不需要把每个开关都打开。</p>
+<p>@@QUICKNAV@@</p></section><section class="section" id="s-01"><div class="section-header"><div class="section-number">01</div><h2>01 · 这是什么，哪些图是真截图</h2></div><p>这是嵌入 OBS 的 Windows x64 插件。主要工作区有“镜头与动画”“灯光”“FX 特效”“预设”“工程管理”五页。它处理二维素材在三维空间中的平面关系，常称为 2.5D：有远近、有遮挡、有运镜，但不会把一张照片变成完整三维模型。</p>
+<p>“舞台”是插件创建的 OBS 来源，负责合成导入的图层。OBS 场景还可以有未导入的其他来源；它们不属于此舞台的动画和 FX 管理范围。</p>
+<p>本书标有“真实截图”的图片来自已留存的 OBS 33.0.1 界面与 GPU 测试。总览、五页界面、局部阴影、辉光和星芒来自 v3.6.3；部分未变功能沿用 v3.4.1 的历史示例，图注会明确标注，不能视为 v3.6.3 重新验收。测试图使用有意设计的色块、斜线和透明区域，便于观察变化，不代表成品直播场景。界面截图中的数值是当时测试状态，<strong>不是全部参数的默认值</strong>。</p>
+<p>标有“HTML 操作示意”的交互动画只帮助理解关系，不是插件运行截图，也不是 OBS 的性能测试。颜色、阴影和运动比例为讲解简化，最终效果以自己的 OBS 预览为准。点击真实截图可放大，按 Esc 关闭。</p>
+<p>@@SHOT_OVERVIEW@@</p></section><section class="section" id="s-02"><div class="section-header"><div class="section-number">02</div><h2>02 · 安装、打开、升级与卸载</h2></div><ol><li>下载 <code>OBS_Spatial_FX_V3.6.3_Setup.exe</code>。关闭所有 OBS 窗口，包括便携版和后台残留的 OBS 进程。</li><li>双击安装器，按提示安装。系统插件目录为 <code>C:\ProgramData\obs-studio\plugins\obs-spatial-fx</code>。安装器不把插件写入 Program Files，也不打包 OBS 自带 Qt DLL。</li><li>常规版按平时方式启动 OBS。便携版使用安装器创建的便携启动入口；仅双击原来的 obs64.exe 不一定采用相同的插件搜索设置。</li><li>在 OBS 的“停靠窗口”菜单打开“OBS Spatial FX”。若菜单没出现，先查 OBS 日志中的插件加载信息，确认 OBS 与插件都是 x64。</li><li>选中要编辑的 OBS 场景，在 Dock 顶部选择已有舞台，或点“新建舞台”。切换舞台会切换其独立配置。</li></ol>
+<p>覆盖升级也要先关闭 OBS。个人场景与预设不是通过重新安装来清空的。建议在升级前导出自己的 OBS 场景集合，另存个人预设和外部媒体。</p>
+<p>卸载可从 Windows 控制面板“程序和功能”找到 OBS Spatial FX。<strong>卸载前先在插件中“还原全部”导入图层，再保存场景。</strong> 否则原素材可能仍被隐藏，而舞台来源在卸载后无法加载。安装/卸载不是撤销工程编辑的办法。</p>
+<p>目标环境为 Windows 10 1909+ / Windows 11 x64、OBS 33.0.1 为当前兼容性验收版本。实际验证范围与性能限制在本书末尾列明，后续 OBS 版本仍需回归验证。</p></section><section class="section" id="s-03"><div class="section-header"><div class="section-number">03</div><h2>03 · 十分钟做出第一个镜头</h2></div><ol><li>在普通 OBS 场景中放好两三项素材，例如背景图片、透明人物 PNG、前景。窗口捕捉也可以，只要它在 OBS 中已经能正常显示。</li><li>新建 Spatial FX 舞台，进入“镜头与动画”，展开“导入 OBS 图层”。在场景素材列表选择一项，点“导入选中”。多项可按 Ctrl 或 Shift 选择。</li><li>导入会暂停并回到 0 秒。先选中人物图层，调整 X、Y 和缩放，使它在画面中摆好。选背景时把 Z 设得比人物大一些，选前景时把 Z 设得小一些。数值只是起点，结合 OBS 预览调整。</li><li>在对象下拉框选择“摄像机”。确保处于动画预览状态，0 秒时点击“记录”，留下起点。</li><li>把播放头秒数输入为 3，开启“◆+ 自动关键帧”，再把摄像机 X 从 0 调到 100。也可以先在 3 秒记录，再改数值。</li><li>点回到开头，再点播放。看前景与背景在镜头横移时是否移动得不同；若所有素材都在同一个 Z，远近差就不明显。</li><li>只想加一个特效时，去 FX 页点“＋”，选已导入的人物实例，点击大组图标，再勾选一个子功能。从低强度试起。</li><li>完成后正常保存 OBS 场景。插件更改会应用到舞台来源设置，并触发 OBS 配置保存；媒体文件本身不会被打包进场景。</li></ol>
+<p>别先批量打开全部灯光和 FX。先完成一个能播放的简单镜头，再增加效果，这样更容易知道哪一步改变了画面。</p></section><section class="section" id="s-04"><div class="section-header"><div class="section-number">04</div><h2>04 · 导入素材、选对象与整理图层</h2></div><p>@@SHOT_IMPORT@@</p>
+<figure class="table-wrap"><table><thead><tr><th>控件</th><th>怎么用</th><th>对工程的影响</th></tr></thead><tbody><tr><td>导入 OBS 图层折叠按钮</td><td>点箭头收起或展开选择区</td><td>只改变界面占用，不关闭图层或动画</td></tr><tr><td>当前场景、素材列表</td><td>选择当前 OBS 场景中的已有来源项</td><td>不是从磁盘创建新媒体；素材内容仍由 OBS 来源提供</td></tr><tr><td>导入选中</td><td>选好一项或多项后点击，也可双击素材</td><td>创建可独立编辑的时间轴实例，并隐藏原项以免重叠</td></tr><tr><td>导入场景</td><td>导入当前场景的可用视频素材</td><td>导入后到 0 秒，便于直接布置初始位置</td></tr><tr><td>移除实例</td><td>在时间轴选一个已导入图层再点</td><td>删除该实例及其动画；最后一个同源实例移除时恢复原项可见性</td></tr><tr><td>还原全部</td><td>结束舞台对这些素材的管理</td><td>全部导入实例及对应动画移出管理，恢复原项导入前可见性</td></tr><tr><td>对象下拉框</td><td>选择摄像机、全画面合成或某图层</td><td>只切换编辑目标，不跳时间</td></tr><tr><td>时间轴图层名称拖动</td><td>拖到其他图层前后</td><td>改管理与同深度顺序，不替代 Z 的空间深度</td></tr></tbody></table></figure>
+<p>同一个素材可以反复导入。比如同一张星星图导入三次，就能让三颗星各自运动、各自加 FX。它们共享 OBS 原始来源画面，因此更改原图片路径或窗口捕捉目标会同时改变这些实例的素材内容；位置、动画、透明度和 FX 则分开保存。</p>
+<p>图层按独立实例身份关联。改名或拖顺序不会让灯光绑定到同源的另一项。最多 32 个导入图层。窗口捕捉能否读取最小化窗口、受保护窗口或高权限程序，仍取决于 OBS 捕捉方式和 Windows 权限。</p>
+<p>“移除对象”位于复位与撤销附近，作用也是移除当前图层实例，会先要求确认。它不能通过运动撤销恢复；误删后可以重新导入。摄像机、全画面合成不能移除。导入区的“移除实例”是另一处入口，不要把它与“删除帧”混淆。</p></section><section class="section" id="s-05"><div class="section-header"><div class="section-number">05</div><h2>05 · 空间位置、镜头和图层属性</h2></div><p>画布中心对应世界参考原点；X 正数向右，Y 正数向下。默认摄像机在 <code>(0, 0, -1500)</code>，朝 +Z 看，所以默认镜头下 Z 越大通常越远。镜头旋转后，要按镜头与对象的实际关系判断远近，不能永远把屏幕左右理解成世界左右。</p>
+<p>所有输入框编辑的是同一套空间数值。灯光绑定、结构图与动画共用空间求值规则。世界单位在任意镜头下并不总等于一个屏幕像素。</p>
+<figure class="table-wrap"><table><thead><tr><th>参数</th><th>直白解释</th><th>范围或注意点</th></tr></thead><tbody><tr><td>位置 X / Y / Z</td><td>把对象往左右、上下、远近移动</td><td>滑条 −2000～2000；框内可输入 −100000～100000；步进 0.01</td></tr><tr><td>旋转 X / Y / Z</td><td>翻仰、左右转、画面内转动</td><td>滑条 −360°～360°；框可输入更大圈数；三轴顺序为 Rz × Ry × Rx</td></tr><tr><td>水平 / 垂直缩放</td><td>1 是原大小，0.5 是一半，2 是两倍</td><td>负值可镜像；缩放不是空间 Z 距离</td></tr><tr><td>等比缩放</td><td>改一轴时同时改另一轴</td><td>两轴都要满足解锁和当前关键帧编辑条件</td></tr><tr><td>不透明度</td><td>1 完全不透明，0 完全透明</td><td>图层与全画面合成可用；摄像机没有透明度</td></tr><tr><td>摄像机垂直视野角</td><td>大角度看得更广，小角度画面更紧</td><td>10°～140°；改变它不是把镜头物理位置前移</td></tr><tr><td>目标 X / Y / Z</td><td>摄像机要对准或环绕的点</td><td>需要相应约束开关才会驱动镜头</td></tr><tr><td>相机看向目标</td><td>自动转向目标点</td><td>俯仰和偏航由计算得出，滚转仍可编辑；不会自动移动位置</td></tr><tr><td>围绕目标移动中心</td><td>用半径与两个角度控制摄像机位置</td><td>勾选后 XYZ 只读；未勾选时环绕参数不起作用</td></tr><tr><td>环绕半径 / 水平角 / 俯仰角</td><td>离目标多远、绕到哪一侧、从多高看</td><td>仅摄像机有此组；第一次切换按现位置反算，避免立即跳动</td></tr><tr><td>全画面合成</td><td>最后整体缩放与淡入淡出</td><td>不改变世界距离、灯光锚点或焦平面</td></tr></tbody></table></figure>
+<p>自由位置与环绕是两种位置控制方式。已有运镜后切换模式不是无损转换；旧模式曲线会保留并停用。先在副本场景试切换，再继续编排。</p>
+<h3>图层的额外属性</h3>
+<figure class="table-wrap"><table><thead><tr><th>控件</th><th>实际用途</th></tr></thead><tbody><tr><td>显示此空间图层</td><td>控制本实例是否显示，不等于删除原 OBS 来源</td></tr><tr><td>启用此素材</td><td>控制该管理项是否参与舞台处理；区别于删除实例</td></tr><tr><td>深度顺序</td><td>同一空间深度下解决谁在前；深度不同仍优先受实际 Z 关系影响</td></tr><tr><td>透视 / 视差倍率</td><td>0 减弱为参考平面关系，1 正常，接近 2 加强远近差；默认视角有大小补偿，静止时未必明显</td></tr><tr><td>景深模糊倍率</td><td>0 本层不模糊，1 正常，最大 4；只在离焦且舞台景深启用时明显</td></tr><tr><td>焦平面距离</td><td>哪个距离保持清晰；这是舞台共用设置，不是每层独立焦平面</td></tr><tr><td>景深强度 / 像素</td><td>0 不虚化，最大 20；配合层景深倍率、离焦距离和舞台灯光开关</td></tr><tr><td>受光</td><td>允许舞台灯光改变本层亮度与颜色</td></tr><tr><td>投影</td><td>允许本层 Alpha 轮廓向其他层投出简化阴影</td></tr><tr><td>接收阴影</td><td>允许本层作为阴影接收面，还需灯光接收层选择匹配</td></tr><tr><td>轮廓光</td><td>允许舞台灯光作用于本层透明边缘</td></tr><tr><td>一键恢复选中素材默认状态</td><td>进入确认复位，恢复导入时的运动状态并清除本层动画</td></tr></tbody></table></figure>
+<p>同一 Z 的素材一起移动，看起来就像一张平面图。想要视差，先分远近，再动镜头。给背景加 Z 后画面初始大小可能因导入补偿而相近，这不代表 Z 没生效。</p>
+<h3>结构预览与浮动</h3>
+<p>斜向结构预览用于看摄像机和图层的相对关系，不是视频播放器。展开、折叠只改变界面。可浮动的结构/编辑区域能单独展开；关闭浮窗后返回原 Dock 区域，不会删除对象或配置。Dock 本身也可使用 OBS 的停靠与浮动机制。空间最终画面请看 OBS 主预览。</p>
+<p>@@PARALLAX@@</p></section><section class="section" id="s-06"><div class="section-header"><div class="section-number">06</div><h2>06 · 时间轴：先选对象，再选时间</h2></div><p>时间轴横向是秒，纵向是对象与参数。默认显示 0～6 秒，<strong>这不代表动画只能做 6 秒</strong>。最晚关键帧或预设循环块结束时间决定播放终点；缩放视窗不会改动画长度。</p>
+<figure class="table-wrap"><table><thead><tr><th>操作</th><th>结果</th></tr></thead><tbody><tr><td>点对象名称或参数行</td><td>激活编辑目标；不会改变播放头</td></tr><tr><td>点对象左侧三角形</td><td>展开或折叠参数轨</td></tr><tr><td>点菱形</td><td>选择关键帧；汇总菱形对应同对象同时间的多项参数</td></tr><tr><td>Ctrl / Shift 点帧、空白框选</td><td>多选关键帧</td></tr><tr><td>拖选中关键帧</td><td>整批改时间；发生已有帧冲突时整次取消</td></tr><tr><td>双击轨道空白</td><td>在该时间记录关键帧</td></tr><tr><td>Ctrl+C / Ctrl+V</td><td>复制选帧；以播放头为起点粘贴，冲突或锁定时拒绝</td></tr><tr><td>Delete / 删除帧</td><td>删除选帧；没有选区则删当前对象或参数在播放头上的帧</td></tr><tr><td>Ctrl+滚轮</td><td>缩放时间轴</td></tr><tr><td>中键拖动 / Shift+滚轮</td><td>水平平移时间视窗</td></tr><tr><td>普通滚轮</td><td>上下看对象与参数轨</td></tr><tr><td>适配内容</td><td>把已有关键帧放进可见时间范围</td></tr><tr><td>显示当前时间</td><td>把播放头带回可见范围</td></tr></tbody></table></figure>
+<p>时间输入框以秒为单位，可直接输入 2.5。帧吸附按 OBS 实际帧率计算；音频预打点可以保留子帧时间。动画没有预设的剪辑片段长度，但仍受计算机内存、配置大小和内部数值范围约束。</p>
+<h3>时间轴下方按钮</h3>
+<figure class="table-wrap"><table><thead><tr><th>按钮或开关</th><th>你需要知道的事</th></tr></thead><tbody><tr><td>记录</td><td>选参数行只记该参数；选对象行记录可用位置、旋转、缩放、透明度等。已有同时间帧会更新</td></tr><tr><td>删除帧</td><td>删除运动记录，不删除素材；可运动撤销</td></tr><tr><td>上一关键帧 / 下一关键帧</td><td>选参数时只查它；否则查当前对象所有曲线</td></tr><tr><td>锁定关键帧位置</td><td>禁止已有帧改时间；仍可改值、改缓动、新增或删除</td></tr><tr><td>◆+ 自动关键帧</td><td>默认关闭。开启后在非 0 秒改值会自动记录，并保留 0 秒初值</td></tr><tr><td>播放 / 暂停 / 回到开头</td><td>播放所有对象；暂停留当前画面；回到开头定位 0 秒但不删数据</td></tr><tr><td>编辑基础布局</td><td>看和改静态基础值；取消后按当前时间预览曲线。不会把插值结果偷偷覆盖成基础值</td></tr><tr><td>锁定对象</td><td>保护当前对象运动参数和曲线；继续显示和播放，不会把灯光与 FX 一起锁住</td></tr><tr><td>循环</td><td>到最晚关键帧或预设块终点回 0 秒再播；关闭时到终点停止</td></tr><tr><td>速度倍率</td><td>同时改变各对象动画预览速度，不改已保存关键帧秒数；媒体联动时以媒体 100% 时间为准</td></tr><tr><td>复位当前图层</td><td>确认后恢复导入默认运动状态并清除本层动画；保留素材关联、顺序、灯光绑定</td></tr><tr><td>复位所有图层</td><td>确认后处理所有未锁定图层；不重置摄像机与全画面合成</td></tr><tr><td>移除对象</td><td>确认后移除实例及动画；运动撤销不能恢复它</td></tr><tr><td>撤销 / 重做</td><td>恢复运动编辑，包括整次拖帧、曲线修改、复位或节拍写入；不覆盖后改的灯光与 FX</td></tr></tbody></table></figure>
+<p>所有图标都可悬停约 1 秒看功能气泡。对象锁与位置锁不同：前者阻止该对象的运动编辑，后者只防止关键帧时间被误拖。</p></section><section class="section" id="s-07"><div class="section-header"><div class="section-number">07</div><h2>07 · 参数编辑与关键帧曲线</h2></div><p>每一行参数旁的动画开关，控制该参数是否按曲线播放。◇ / ◆ 表示当前时间没有 / 已有帧，点击可记录。左右小箭头跳到该参数前后帧。关闭某参数动画时用静态基础值，已保存的关键帧仍保留。</p>
+<p>自动关键帧关闭时，已启用动画的参数在非 0 秒、又没有关键帧的位置，通常不能直接改值。先点菱形记录，或打开 ◆+。未动画参数仍可改基础值。正在播放时编辑参数会暂停。</p>
+<p>最稳的第一次练习：0 秒选摄像机 X，记录数值 0；3 秒记录后改为 100；回 0 秒播放。成功后才添加其他参数。若从对象汇总行记录，会一次记录更多参数，不要把这些重叠菱形当成重复错误。</p>
+<h3>曲线怎样才会出现</h3>
+<ol><li>选对对象，进入“关键帧 / 曲线”。</li><li>在“参数”下拉选择一个确实有关键帧的参数，名字旁的 ◆ 可以帮助辨认。</li><li>至少需要两个不同时间点，才有两点之间的可调区间。只有一个点没有运动区间。</li><li>选区间或关键帧。选最后一个关键帧时可编辑前一区间。</li><li>修改插值类型。需要自己拉速度变化时选“贝塞尔”，再拖圆形手柄或展开手柄数值。</li></ol>
+<figure class="table-wrap"><table><thead><tr><th>插值</th><th>通俗效果</th></tr></thead><tbody><tr><td>线性</td><td>匀速从前一个值走到后一个值</td></tr><tr><td>缓入</td><td>从前一帧慢慢起步</td></tr><tr><td>缓出</td><td>接近后一帧时逐渐减速</td></tr><tr><td>缓入缓出</td><td>起步慢，中间快，结束再慢</td></tr><tr><td>保持</td><td>维持前值，到了后一帧才突然切换</td></tr><tr><td>贝塞尔</td><td>自己控制离开前帧与接近后帧的速度，也可做有限超越</td></tr></tbody></table></figure>
+<p>曲线横轴是秒，纵轴是所选参数的真实单位。选中关键帧后，“秒数”改时间，“数值”改位置或角度等；不是统一的 0～1 强度。位置锁开启时仍能上下改值，不能横向改时间。</p>
+<p>出点 X 与入点 X 用区间时间百分比表示，0% 是前帧，100% 是后帧；出点不能晚于入点，避免时间倒流。出点 Y 和入点 Y 是参数实际值，不是倍率。拖动时按 Esc 可取消，松开后整次可撤销。</p>
+<p>旋转“保留圈数”时，0°→360° 是一整圈；“最短路径”会选较短转向，例如 350°→10° 只转约 20°。想要持续转圈时用保留圈数，不要只比较最后画面角度。</p>
+<p>@@KEYFRAMES@@</p></section><section class="section" id="s-08"><div class="section-header"><div class="section-number">08</div><h2>08 · 灯光：照谁、放哪、跟谁走</h2></div><p>@@SHOT_LIGHTS@@</p>
+<p>舞台顶部“启用舞台灯光”默认关闭，它管理灯光页的舞台光照、空间阴影与轮廓光。<strong>FX 页“受光与阴影”组的独立附加光源不需要依赖它。</strong> 摄像机和图层几何动画也不依赖这个开关。</p>
+<ol><li>打开舞台灯光，选择或添加一盏灯。新灯放在导入素材整体前方的中间，方便寻找；之后可自行移动。最多 4 盏；点光源与简化面光源共用数量限制。</li><li>勾选“启用所选灯光”，先调位置、范围和强度，确认本层“受光”已打开。</li><li>想看阴影时，前景开启“投影”，背景开启“接收阴影”，灯光开启 Alpha 软阴影，并选对接收层。</li><li>想让灯跟人物走，选择“灯光绑定素材”。绑定后 XYZ 表示相对该实例的局部偏移，动画、旋转和缩放都会带动灯。</li></ol>
+<figure class="table-wrap"><table><thead><tr><th>控件</th><th>用途与调节办法</th></tr></thead><tbody><tr><td>添加点光源 / 添加面光源</td><td>点光从一个位置发光；面光用尺寸近似扩展，不是完整三维实体灯具</td></tr><tr><td>所选灯光 / 删除选中灯光</td><td>先确认下拉选中哪盏，删除只影响这盏灯；添加和删除按钮同一行</td></tr><tr><td>启用所选灯光</td><td>控制是否照明；不等于灯光实体可见</td></tr><tr><td>光源在画面可见</td><td>显示灯光可视标记/光斑；关掉仍可继续照明</td></tr><tr><td>XYZ / 深度</td><td>灯的位置；未绑定是世界坐标，绑定后是局部偏移</td></tr><tr><td>灯光颜色与色块</td><td>选择照明颜色，旁边显示当前颜色；整行底色与十六进制色值预览；选色时实时反馈，取消恢复原色</td></tr><tr><td>强度</td><td>0 没有直接照明；最大 10；先从小值增加，避免画面过曝</td></tr><tr><td>范围</td><td>光能影响多远；10～100000，太小可能根本照不到图层</td></tr><tr><td>环境光</td><td>给整体最低亮度补光，0～2；过高会让阴影不明显</td></tr><tr><td>灯光尺寸</td><td>0～2000，改变面积/半影近似；不是素材缩放</td></tr><tr><td>距离衰减指数</td><td>0.1～8；越大通常随距离变化越快</td></tr><tr><td>Alpha 软阴影</td><td>按投影素材透明轮廓求遮挡，需要可接收阴影的另一层</td></tr><tr><td>阴影不透明度 / 阴影颜色</td><td>0～1 调遮光强度；黑色普通遮挡，彩色为有色透射近似</td></tr><tr><td>软阴影半径</td><td>0～300，柔化阴影边缘；太大可能失去轮廓</td></tr><tr><td>轮廓光强度</td><td>0～5，配合图层轮廓光开关</td></tr><tr><td>轮廓光宽度 / 柔和度</td><td>宽度按源像素，柔和度 0～1；需要有透明轮廓才容易看到</td></tr><tr><td>底层受光 / 阴影接收层</td><td>选择指定实例，或全部已开启接收阴影的层；不是按素材名字模糊匹配</td></tr></tbody></table></figure>
+<p>绑定跟随的是动画求值后的图层空间姿态。XY 局部偏移随图层缩放，Z 偏移保持局部世界单位；全画面合成缩放不会反向改变灯光世界位置。移除绑定目标后应重新选择，不能指望自动绑到同名素材。</p>
+<p>软阴影现在先生成 Alpha 遮挡再作连续模糊，增大半径应柔化边缘，不应变成几层清晰轮廓。</p>
+<p>阴影是按平面深度和 Alpha 简化计算的，不知道人物脸的真实三维法线。完全不透明的矩形只有矩形外轮廓；透明人物、镂空前景和有间距的背景更容易看出效果。不要把平面近似当作真实光线追踪。</p>
+<p>@@LIGHTBIND@@</p></section><section class="section" id="s-09"><div class="section-header"><div class="section-number">09</div><h2>09 · FX：先加素材，再开大组和子功能</h2></div><p>@@SHOT_FX@@</p>
+<p>FX 初始是空白的。点“＋”，选择已经在当前舞台时间轴中的图层。每张素材卡片有 13 个大组图标，悬停看名字和说明。</p>
+<ol><li>点大组图标：图标变色，该组开启并展开。</li><li>点亮其他组时，之前点亮的组仍在下方依次保留；只是展开顺序变化，不改变固定渲染顺序。勾选子功能：参数展开，开始处理。只打开组、不勾子功能不会得到效果。</li><li>先调一个参数，看 OBS 主预览，再调另一个。共同的“混合强度”在 0～1 之间，0 保留原画，1 完整使用效果。</li><li>再点组图标会暂停这一组，参数保留；取消子功能勾选会停用它。画质页的“抗锯齿/清晰化”小折叠标题只收界面，<strong>不会停用已经勾选的子功能</strong>。</li><li>素材卡片右上 × 会确认移除该实例全部 FX，保留时间轴素材与运动关键帧。</li></ol>
+<p>多个效果按插件内部顺序处理，不是可任意拖动的滤镜栈。素材上的某个效果可能改变后续效果输入；排查时一次只启用一个，再逐个叠加。自动运动组作用于图层空间，与像素滤镜和最终舞台裁切的处理阶段有区别。</p>
+<p>“受光与阴影”特效组效果独立，子功能需要的附加光源会独立于灯光页主灯单独生效。此组始终使用自己的附加光源，不借用舞台灯的角度；开关舞台灯不应让局部 FX 卡死或失效。看到效果太弱先检查图层 Alpha、中心位置、尺寸、强度和混合强度，不要只反复切舞台主灯。</p>
+<h3>颜色、辅助素材和外部文件</h3>
+<p>有颜色功能的 FX 提供色块/色值与编辑入口。调色对话框改变颜色时会实时反馈到舞台，取消会恢复打开前颜色；确认后保存。双色效果各有起始/终端或主/副颜色，具体用途见功能定义。</p>
+<p>辅助素材从当前时间轴实例选取，读取的是其原始素材，避免递归叠 FX。图片纹理可读 PNG、JPG、JPEG、BMP、WebP；LUT 可选 .cube 或对应 PNG。选择后如果报错先检查格式、尺寸与路径，不能把无效文件的无变化误当成算法故障。预设不会自动复制这些文件。</p>
+<p>部分参数只在相应模式显示，例如渐变叠加的角度用于线性，XY 比例用于径向。目录会列出这些参数的模式条件；切换模式后原参数可能保留但暂不参与。</p>
+<p>@@FXGATES@@</p></section><section class="section" id="s-10"><div class="section-header"><div class="section-number">10</div><h2>10 · 抗锯齿、清晰化与几种常用效果</h2></div><p>@@SHOT_QUALITY@@</p>
+<p>SMAA、FXAA 位于“画质修正 → 抗锯齿”，RCAS 位于独立“清晰化”，都不塞在锐化入口。SMAA 与 FXAA 二选一；切换算法会避免两个同时执行，RCAS 可在其后恢复一点锐度。</p>
+<p>资源紧张先试 FXAA，再用约 0.25 的 RCAS。FXAA 可能让细字柔一些；SMAA 依赖额外两个中间图像，1080p 单活动层约增加 19.8 MiB 专用空间。RCAS 不放大分辨率、不凭空生成细节；噪点保护也不是独立降噪。AMD Native AA 因缺少所需完整渲染数据，本版不显示。</p>
+<p>抗锯齿处理导入素材当时的像素，无法保证修复之后空间透视变换新产生的锯齿。要比较细字和斜线，先在相同 OBS 输出尺寸看原图与处理后，再看实际渲染丢帧。</p>
+<p>@@QUALITY_COMPARE@@</p>
+<p>基础模糊的高斯是中心重、边缘轻的柔化；方框是均匀矩形扩散。镜像是边界采样方式，不是第三种模糊算法。“磨砂玻璃”才额外加入折射与颗粒；“镜头散景”按圆盘或多边形光圈扩散高光。请在斜线、高反差小点或文字上比较，纯色块本来就看不出模糊差异。</p>
+<p>@@BLUR_COMPARE@@</p>
+<p>渐变叠加位于“裁切、遮罩与合成”。纯色用一个颜色，线性用两端颜色、中心与角度，径向用中心、比例和 X/Y 比例形成圆或椭圆；反向交换渐变方向。混合强度决定覆盖原图多少，不会把透明区域凭空变为完整新背景。</p>
+<p>LED 演出舞台按灯珠/子像素排列采样原画；间距决定颗粒，填充率决定珠间黑缝，亮度与柔光决定发亮感。它不是随便盖一层网格。21:9 宽银幕作用在舞台最终画布：黑边模式上下不透明黑，透明裁切模式上下透明，保留中间 21:9；<strong>不会修改 OBS 全局输出分辨率</strong>。宽画布无需上下裁切时不会强行制造负边框。</p>
+<p>@@STAGE_COMPARE@@</p>
+<h3>调色、局部阴影、辉光与星芒的当前规则</h3>
+<figure class="table-wrap"><table><thead><tr><th>功能</th><th>怎么调</th><th>注意什么</th></tr></thead><tbody><tr><td>基础颜色：曝光</td><td>RGB 乘以 2 的 EV 次方</td><td>曝光不是纯色覆盖；最大不保证全白，最小不保证全黑</td></tr><tr><td>基础颜色：Gamma</td><td>RGB 的 1/Gamma 次方</td><td>改中间调；黑与白端点仍可保持</td></tr><tr><td>调色曲线（五参数）</td><td>输入黑、输入白重新映射输入，Gamma 改中间调，输出黑/白控制两端</td><td>想把整层变成同一灰度，可让输出黑和输出白相等；分别都设 0 或 1 得黑或白</td></tr><tr><td>环境色受光</td><td>选辅助素材，调环境染色与采样范围</td><td>对原层作色调调整，不是把它变半透明后叠辅助画面</td></tr><tr><td>背后柔光</td><td>光色、半径、XYZ 背光位置</td><td>用柔化 Alpha 形成边缘漫反射；半径增大应连续柔化</td></tr><tr><td>烛光 / 聚光灯</td><td>独立光色、中心 XY、尺寸等</td><td>与灯光页主灯分开；先调中心和尺寸再加强度</td></tr><tr><td>内外阴影</td><td>类型、角度、距离、模糊、扩散、阴影强度、混合强度与阴影颜色</td><td>在本层模拟独立阴影，不参与全局投影；辅助强度/辅助颜色已经移除</td></tr><tr><td>辉光</td><td>模式、阈值、半径、强度与光效颜色</td><td>扩散可以超出原矩形；过高阈值没有高亮像素就不会发光</td></tr><tr><td>星芒</td><td>选目标颜色与容差、阈值，再调长度、角度、强度和光效颜色</td><td>只有符合目标色容差与高亮条件的像素生效；射线 2、4、5、6 档</td></tr></tbody></table></figure>
+<p>舞台轮廓光只识别原素材经裁切和遮罩后的轮廓，排除 FX 新增阴影、辉光和星芒的透明边缘。局部阴影应保持阴影色，不应被再加上一圈异常亮边。</p>
+<p>@@OPTICS_COMPARE@@</p>
+<p>@@SHADOW_COMPARE@@</p></section><section class="section" id="s-11"><div class="section-header"><div class="section-number">11</div><h2>11 · 95 项 FX 与全部参数速查</h2></div><p>搜索中文名字、说明或参数，例如“中心”“阈值”“烛光”。可选一组减少清单；展开某项查看真实测试图、工作定义、默认值、合法范围、模式选项和所需资源。参数表的“默认”是源码初始化值，和界面截图中的测试值分开。</p>
+<p>共同的混合强度及颜色控件在上一章说明；每项下也会列出是否使用主/副颜色、辅助素材、外部文件或历史帧。目录截图逐项标注来源版本，是单项测试的一个时刻，运动、拖尾、绑定与最终舞台效果还需结合对应说明理解。</p>
+<p>@@CATALOG@@</p></section><section class="section" id="s-12"><div class="section-header"><div class="section-number">12</div><h2>12 · 节拍：先有运动，再按音乐加点</h2></div><p>节拍功能在“镜头与动画 → 额外功能”内。它帮助按音乐放置时间点，<strong>不会自动设计推镜、摇镜或舞蹈</strong>。一条完全不动的 X 曲线，即使写入一百个节拍关键帧也还是不动。</p>
+<ol><li>先给一个参数做出两帧以上的基础运动，例如 0～8 秒摄像机 X 缓慢横移。</li><li>刷新已有音频来源，选择 OBS 中含音频的素材。可读取的本地媒体点后台分析；不读取文件时可显式采集接下来 15 秒正在输出的音频。</li><li>看检测 BPM 和置信度。与音乐不符时可手工输入 BPM，用半频/倍频修正“把一拍识别成两拍”等情况。安静片段、自由节拍与变化速度音乐可能不准。</li><li>选拍长比例，例如 1 拍、1/2 拍、1/4 拍、2 拍、4 拍或自定义，并设置范围、起点偏移与最小秒间隔。</li><li>先“预览”：只在时间轴画参考线，不加关键帧、不延长动画。</li><li>选择一个具体参数，再执行批量写入，确认后按已有曲线采样。相同时间已有帧保留；可以取消未提交批次，完成后整批一次撤销。</li></ol>
+<p>120 BPM 时，一拍 0.5 秒，1/2 拍为 0.25 秒，1/4 拍为 0.125 秒。最小秒间隔会进一步筛掉太密的候选。细分网格是时间参考，不表示每条线都检测到了新的鼓点。</p>
+<p>离线分析不播放或重启原素材。实时分析需要来源在输出音频，只观察接下来实际采到的一段。单次分析最长 6 小时，候选最多 100 万，是资源保护，不是普通时间轴上限。大批次保存仍可能花时间。</p>
+<p>“联动所选本地媒体预览”默认关闭。打开后，播放、暂停和定位动画会实际控制所选媒体的状态和播放位置；仅支持本地 ffmpeg 媒体、100% 速度，偏移表示媒体在时间轴起点。网络、VLC 或变速源不要依赖它精确定位。先做短片检查首拍与镜头是否对齐。</p>
+<p>@@BEATS@@</p></section><section class="section" id="s-13"><div class="section-header"><div class="section-number">13</div><h2>13 · 预设：选素材、点风格、生成、应用</h2></div><p>这页用程序给已有图层安排运动，也能直接绘制装饰，不需要另外制作透明 WebM。最简单的用法只要五步：</p>
+<ol><li>先在“镜头与动画”导入背景、人物等素材，并在 0 秒摆好构图。</li><li>到“预设”，在“让哪些素材动起来”勾选人物或前景。不想动的背景就不勾。</li><li>点一张风格卡，例如“温柔舒缓”；动感先用“适中”，装饰先用“少量装饰”。</li><li>设置时长，点“生成一套”，到 OBS 预览看运动。不满意点“换一套”。生成只是预览，未正式写入。</li><li>满意后点“应用到时间轴”；已有一段动画、想接着做下一段时，点“补充至时间轴”。不要的时候点“取消预览”。</li></ol>
+<p>@@SHOT_PRESETS@@</p>
+<p>@@DECOR_COMPARE@@</p>
+<h3>三个按钮怎么选</h3>
+<figure class="table-wrap"><table><thead><tr><th>按钮</th><th>结果</th><th>哪种时候用</th></tr></thead><tbody><tr><td>应用到时间轴</td><td>将当前候选放到详细控制的“开始 / 秒”；默认阻止覆盖已有动画</td><td>从零做，或明确选定插入位置</td></tr><tr><td>补充至时间轴</td><td>将同一候选放到现有最晚结束点的下一实际 OBS 视频帧；空时间轴从 0 开始</td><td>做完一段，再接一段；保留已有动画和舞台循环设置</td></tr><tr><td>取消预览</td><td>撤掉未应用候选，回到预览前画面</td><td>换想法了；不会删除已应用内容</td></tr></tbody></table></figure>
+<p>例如 60 fps 时原段恰好在 6 秒结束，补充从约 6.016667 秒开始。不是再随机一次，也不是覆盖前 6 秒。时间轴的结束点包括关键帧和有限循环块。若生成后又改了原工程，程序会阻止旧预览覆盖新编辑，重新生成即可。补充整次可以运动撤销。</p>
+<p>@@PRESET_FLOW@@</p>
+<h3>风格卡和常用控制</h3>
+<figure class="table-wrap"><table><thead><tr><th>选项</th><th>直白说明</th></tr></thead><tbody><tr><td>温柔舒缓</td><td>缓慢呼吸、柔和圆形，适合安静画面</td></tr><tr><td>简洁几何</td><td>克制滑移、边框、斜带，构图干净</td></tr><tr><td>活泼波普</td><td>弹性动作、星星和网点，颜色活泼</td></tr><tr><td>纸片拼贴</td><td>卡片轻摇、纸条和角贴</td></tr><tr><td>科技界面</td><td>轨道、角标、细线和阶梯推进</td></tr><tr><td>节奏快剪</td><td>短促推进、宽色带，动作之间有稳定展示</td></tr><tr><td>朦胧梦幻</td><td>漂浮椭圆、柔波和色团</td></tr><tr><td>故障实验</td><td>阶梯动作和几何图块，不默认加入强闪光</td></tr><tr><td>动感</td><td>0～2；轻柔 0.3、适中 0.6、强烈 1.2。改变幅度，不替你重新摆基础构图</td></tr><tr><td>画面装饰</td><td>不加、少量、丰富；控制程序图形数量与层次，丰富会增加绘制成本</td></tr><tr><td>时长 / 秒</td><td>默认每周期 6 秒，滑条到 30 秒，框内可输入更长时间</td></tr><tr><td>循环播放</td><td>生成有界周期动作；应用时打开全场循环。补充时保留全场原循环设置</td></tr></tbody></table></figure>
+<p>同一套运动不保证适合所有人物尺寸。先调好素材的基础位置，再逐步增加动感；出现遮脸或出画面时，减少动感、换装饰，或在详细控制调整图形位置。</p>
+<h3>详细控制：满意的部分留住，其余再换</h3>
+<figure class="table-wrap"><table><thead><tr><th>控件</th><th>用途</th></tr></thead><tbody><tr><td>素材运动 / 露出遮罩 / 装饰色块</td><td>可自动按风格挑选，也可手选脚本或关闭这一部分。露出遮罩默认关闭</td></tr><tr><td>固定运动</td><td>换一套时保留运动种类、方向与相位；手动改动感与时长仍有效</td></tr><tr><td>固定装饰</td><td>保留图形种类、布局与相位；手动改颜色、数量或空间位置仍有效</td></tr><tr><td>固定配色</td><td>保留 A/B 色；手选颜色后自动固定。取消固定允许换风格色板</td></tr><tr><td>只换运动 / 只换装饰 / 只换配色</td><td>只重新生成你想改的那一部分</td></tr><tr><td>开始 / 秒</td><td>应用候选的起点；补充按钮会按当前时间轴末尾重新计算</td></tr><tr><td>同时移动镜头</td><td>给整体镜头加小幅横移。关闭则只动所选素材；镜头锁和已有轨道冲突会阻止写入</td></tr><tr><td>替换已有关键帧冲突区间</td><td>默认关闭。打开后只替换所用参数的相交区间，区间外保留；不能绕过对象锁或循环块冲突</td></tr><tr><td>随机种子</td><td>决定随机组合。同样工程、参数和种子可重放同一配方</td></tr><tr><td>配色 A / B</td><td>图形配色，整条底色预览；选择中实时看画面，取消恢复</td></tr><tr><td>放在哪里</td><td>素材前方、两层之间、跟随素材或自定义世界 XYZ</td></tr><tr><td>参考 A / B、跟随素材</td><td>层间需要两个参考层；跟随需要指定独立实例</td></tr><tr><td>位置、旋转、缩放</td><td>调生成图形；前方/层间模式为附加偏移，跟随模式为局部偏移，自定义为绝对世界坐标</td></tr><tr><td>遮罩跟随各素材局部坐标</td><td>用素材自己的坐标裁可见区域；不是增加一张彩色图形</td></tr><tr><td>图形固定在屏幕坐标</td><td>镜头运动时保持屏幕位置，用于边框等。它与世界深度表现不同</td></tr><tr><td>段内重复次数</td><td>整段结束=开始+每周期时长×次数。一次性关键帧最多 64 次，循环块可更多</td></tr><tr><td>按拍长确定每周期时长</td><td>用 BPM 和 1/4～8 拍控制周期；可沿用镜头页 BPM 与拍点</td></tr><tr><td>已应用预设</td><td>选择已写入的预设，按需移除；这不是已删除的“我的整套预设”收藏页</td></tr><tr><td>转换选定区间为关键帧</td><td>指定开始、结束和采样步长后确认烘焙，便于逐帧细修；步长越小，帧数越多</td></tr></tbody></table></figure>
+<p>循环块按公式求值，不需要无限追加关键帧。想手改一个循环块，先在有限区间转换为关键帧。对象锁、参数锁、循环块重叠或停用旧轨可能阻止应用；按提示核对目标和区间，避免覆盖原动画。</p>
+<h3>脚本库完整目录</h3>
+<p>“运动”改变素材；“露出遮罩”改变它哪里可见；“装饰”增加看得见的图形。遮罩不是两段独立视频的 A/B 转场，这里仍读取当前实时来源。</p>
+<p>@@PRESET_CATALOG@@</p></section><section class="section" id="s-14"><div class="section-header"><div class="section-number">14</div><h2>14 · 工程管理：四个按钮保存与换电脑</h2></div><p>正常保存 OBS 场景会保留舞台设置。想另存一个工程或搬到其他电脑，使用“工程管理”。预设配方和媒体打包是两件事。</p>
+<p>@@SHOT_PROJECT@@</p>
+<figure class="table-wrap"><table><thead><tr><th>按钮</th><th>保存什么 / 导入到哪里</th><th>最适合</th></tr></thead><tbody><tr><td>导出工程 JSON</td><td>当前场景、依赖来源、布局、动画、预设、灯光、FX、滤镜与原素材路径；不复制原媒体</td><td>本机留版本、备份编辑</td></tr><tr><td>导出完整工程包 ZIP</td><td>工程信息＋可识别本地原媒体副本＋相对路径与校验信息</td><td>搬到其他电脑，或集中归档</td></tr><tr><td>导入工程 JSON</td><td>按 JSON 内原场景名找同名场景；有则确认后覆盖，无则新建</td><td>用现有本地素材恢复工程</td></tr><tr><td>导入完整工程包</td><td>选择已解压文件夹，或选择 ZIP 和解压父目录；校验后总是新建场景</td><td>搬工程并重建素材引用</td></tr></tbody></table></figure>
+<h3>仅 JSON：按名字找，先看清再确认</h3>
+<ol><li>选择 JSON，查看工程检查信息。存档场景叫 B，就只找 B。</li><li>OBS 已有 B：显示覆盖提示，二次确认后先保存恢复 JSON，再恢复 B。其他场景不会因为正处于激活状态而被替换。</li><li>OBS 只有 A、C、D：新建 B，不覆盖当前 A。</li><li>出现“重新链接缺失素材”，逐项选正确文件或文件夹。取消会停止导入；界面也允许“继续导入”保留未修复路径，素材会继续缺失，之后需要自己修复。</li></ol>
+<p>同名覆盖前的恢复 JSON 放在插件配置目录的 <code>project-recovery</code> 中。共享来源会复制并重新关联，以免改坏其他场景。同名目标存在不能通过 OBS 公共接口清除的自定义尺寸时，按提示重命名目标再导入。</p>
+<h3>完整包：不是让 OBS 直接读取 ZIP</h3>
+<ol><li>导出时检查素材清单。网页或脚本间接引用的文件可手动补充本地文件/文件夹；不要漏掉它们。</li><li>导入已解压包时，选含 <code>project.json</code> 的工程文件夹。程序按这个目录内的新位置重建素材链接。</li><li>导入 ZIP 时，选择 ZIP，再选一个准备长期保存素材的父目录；程序在其中新建带唯一后缀的子目录，解压、校验并重建场景。</li><li>完成后保留这个素材目录，不能当临时缓存删除。OBS 引用的是其中真实文件，不是 ZIP 中的虚拟路径。</li><li>缺包内文件或校验失败时停止并查看报错。目标电脑仍需安装对应第三方来源/滤镜，准备字体、设备与联网权限。</li></ol>
+<p>窗口捕捉的目标程序、摄像头、声卡、网页服务不是能复制成视频文件的本地素材。完整包可以保留设置，不能替目标电脑安装所有外部环境。分享前检查素材授权和私人信息。</p>
+<p>@@PROJECT_FLOW@@</p></section><section class="section" id="s-15"><div class="section-header"><div class="section-number">15</div><h2>15 · 常见问题：按这张表检查</h2></div><figure class="table-wrap"><table><thead><tr><th>现象</th><th>先检查什么</th></tr></thead><tbody><tr><td>没有 Dock 菜单</td><td>OBS x64、安装路径、是否由正确启动入口启动、OBS 日志加载错误</td></tr><tr><td>看不到新导入素材</td><td>当前场景与舞台是否选对；舞台来源是否可见；层显示/启用；素材在原 OBS 是否有画面</td></tr><tr><td>一张素材显示两份</td><td>原 OBS 项是否仍可见；是否有意重复导入了多个实例</td></tr><tr><td>改滑条没有反应</td><td>当前对象、播放头、对象锁、参数轨锁、是否为派生 XYZ、当前是否缺关键帧</td></tr><tr><td>0～6 秒外找不到帧</td><td>放大到内容或平移时间窗；6 秒只是默认显示范围</td></tr><tr><td>有两帧却看不到曲线</td><td>在正确对象和参数下拉选有 ◆ 的参数；确认两帧时间不同，选中正确区间</td></tr><tr><td>旋转 360° 没转圈</td><td>选择保留圈数，不用最短路径；检查是否实际记录了起终点</td></tr><tr><td>镜头移动没有视差</td><td>图层 Z 是否不同、是否选摄像机、视差倍率是否非零、是否在播放正确曲线</td></tr><tr><td>景深没有变化</td><td>舞台灯光、景深强度、层模糊倍率、是否离焦；焦平面上的层本应清晰</td></tr><tr><td>舞台灯不照明</td><td>主开关、所选灯启用、范围与位置、图层受光；灯可见不等于启用照明</td></tr><tr><td>没有阴影或边缘光</td><td>投影/接收/轮廓开关、接收层、深度关系、Alpha 轮廓、阴影透明度与柔化半径</td></tr><tr><td>FX 什么都没变</td><td>已添加正确实例、大组启用、子项勾选、强度非零、所需辅助素材/文件有效</td></tr><tr><td>收起小面板后还在耗资源</td><td>小折叠只收 UI；取消子项或关闭大组才停用效果</td></tr><tr><td>颜色点取消却与预期不同</td><td>FX 调色取消恢复打开前色；所有选色均实时预览且取消恢复；也检查其他叠加效果</td></tr><tr><td>BPM 不准 / 打点后不动</td><td>手工校正节奏；打点是采样原曲线，先建立有变化的运动</td></tr><tr><td>窗口捕捉黑屏</td><td>先脱离插件检查 OBS 本身能否捕捉；目标窗口最小化、权限和捕捉方法</td></tr><tr><td>渲染丢帧增加</td><td>从少量效果开始，关重复模糊/历史/高分辨率多层；查看 OBS 统计而不是只看平均值</td></tr></tbody></table></figure>
+<p>报告问题请附插件/OBS 版本、系统、显卡与驱动、复现步骤和去除私人信息后的日志。不要公开令牌、私人场景内容或未授权媒体。</p></section><section class="section" id="s-16"><div class="section-header"><div class="section-number">16</div><h2>16 · 实际环境、性能边界与证据</h2></div><figure class="table-wrap"><table><thead><tr><th>项目</th><th>实际开发与测试环境</th></tr></thead><tbody><tr><td>系统</td><td>Windows 10 22H2 x64，build 19045</td></tr><tr><td>CPU / GPU</td><td>AMD Ryzen 7 5800X / Radeon RX 6900 XT</td></tr><tr><td>显卡驱动</td><td>32.0.21045.20006</td></tr><tr><td>OBS</td><td>当前只验收 33.0.1，隔离便携环境</td></tr><tr><td>编译</td><td>VS2022，MSVC 19.44.35229.0，C++17，<code>/utf-8</code></td></tr><tr><td>界面 / 构建</td><td>Qt6，实测运行时 6.11.1；CMake 4.4.5、Ninja、Python 3.12+</td></tr><tr><td>渲染</td><td>OBS 图形 API / D3D11，无 CUDA 专用依赖</td></tr></tbody></table></figure>
+<p>v3.6.3 的预设、光影修复和最终轮廓隔离分别执行了对应专项，记录见 <code>docs/v3.6/</code> 的交付报告；不是对全部历史功能重新执行一次全量测试。最新阴影隔离包包含真实编译、OBS 33.0.1 加载、画面、保存重启和关联性能检查。</p>
+<p>最新两组 1080p60、各约 30 秒的测试中，舞台轮廓光平均渲染耗时约 0.286 ms，叠加外阴影约 0.362 ms，缓存分配数分别保持 70 和 78，采样期间无新增渲染丢帧。这些数字只对应测试场景，不是任意图层组合的性能承诺。</p>
+<p><strong>没有测量瓦数或整机电功耗。帧耗时不是能耗，不能承诺其他电脑和开发机 100% 相同的资源占用、帧率或能耗表现。</strong> 无独显/集显、NVIDIA 实机、Windows 11、互联网推流、数小时长测均为 NOT RUN。</p>
+<p>最多 32 个导入层、4 个舞台灯；素材捕获最长边限制 2048，舞台空间投影使用低分辨率遮挡缓存。当前辉光、星芒和局部外阴影会按需扩展透明边界；几何遮罩和裁切仍然有效，不应误判成发光截断。高分辨率多层、多次模糊、历史拖尾和 SMAA 中间缓冲会增加成本。</p>
+<p>本次更新说明书及发布材料，不改产品算法。真实界面/输出来自留存验收，版本逐图标明；HTML 动画仅为讲解。浏览器离线阅读、搜索、目录、放大、交互动画和窄屏布局另作本轮文档验证。</p>
+<p>算法来源见 <code>ALGORITHM_PROVENANCE.md</code>。截图来源及 SHA256 见同目录 <code>SCREENSHOT_PROVENANCE.json</code>，当前 95 项 FX 参数从 C++ 目录抽取；脚本目录从预设源码抽取。最新修复与证据见 <code>docs/v3.6/V363_SHADOW_ISOLATION_REPORT.md</code>，本轮文档与发布核验见 <code>docs/v3.6.3/PUBLISH_REPORT.md</code>。</p>
+<p>@@FOOTER@@</p></section>
+<div class="divider-dot">· · ·</div>
+<footer><p>归藏 Page · Built with constrained HTML</p></footer>
+
+</div>
+
+<script>
+(function(){
+  const toggle = document.getElementById('toc-toggle');
+  const panel = document.getElementById('toc-panel');
+  const toc = document.getElementById('toc');
+  const scrim = document.getElementById('toc-scrim');
+  const narrow = window.matchMedia('(max-width: 1024px)');
+  let open = false;
+  function setOpen(v) {
+    open = v;
+    toc.classList.toggle('toc-open', v);
+    document.documentElement.classList.toggle('toc-is-open', v);
+    toggle.setAttribute('aria-expanded', String(v));
+  }
+  toggle.addEventListener('click', (e) => { e.stopPropagation(); setOpen(!open); });
+  if (scrim) scrim.addEventListener('click', () => setOpen(false));
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && open) setOpen(false); });
+  panel.addEventListener('click', (e) => {
+    // On narrow screens the drawer covers the text, so close it after jumping;
+    // on wide screens it sits beside the text and can stay open.
+    if (e.target.closest('.toc-item') && narrow.matches) setOpen(false);
+  });
+  // Scroll spy
+  const sections = document.querySelectorAll('.section[id]');
+  const links = document.querySelectorAll('.toc-item');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        links.forEach(l => l.classList.remove('toc-active'));
+        const active = panel.querySelector('a[href="#'+entry.target.id+'"]');
+        if (active) active.classList.add('toc-active');
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  sections.forEach(s => observer.observe(s));
+})();
+</script>
+
+<div class="hf-fab">
+  <button class="hf-fab-btn" id="hf-settings-toggle" type="button" title="设置" aria-haspopup="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg></button>
+  <div class="hf-dropdown" id="hf-settings-dropdown">
+    <div class="hf-dropdown-label">配色</div>
+    <div class="hf-swatches"><button type="button" class="hf-swatch active" data-theme-id="ikb" data-scheme="light" style="background:linear-gradient(135deg,#fafaf8 0 50%,#002FA7 50% 100%)" title="克莱因蓝 IKB" aria-label="克莱因蓝"></button><button type="button" class="hf-swatch" data-theme-id="lemon" data-scheme="light" style="background:linear-gradient(135deg,#fafaf8 0 50%,#FFD500 50% 100%)" title="柠檬黄 Lemon" aria-label="柠檬黄"></button><button type="button" class="hf-swatch" data-theme-id="lemon-green" data-scheme="light" style="background:linear-gradient(135deg,#fafaf8 0 50%,#C5E803 50% 100%)" title="柠檬绿 Lemon Green" aria-label="柠檬绿"></button><button type="button" class="hf-swatch" data-theme-id="safety-orange" data-scheme="light" style="background:linear-gradient(135deg,#fafaf8 0 50%,#FF6B35 50% 100%)" title="安全橙 Safety Orange" aria-label="安全橙"></button></div>
+    <div class="hf-dropdown-divider"></div>
+    <div class="hf-dropdown-label">字体</div>
+    <div class="hf-font-options"><button type="button" class="hf-font-option active" data-vars="--font-sans --font-display" data-family="'Inter','Noto Sans SC','PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,sans-serif" data-href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap"><span class="font-preview" style="font-family:'Inter','Noto Sans SC','PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,sans-serif">黑体 Aa</span><span class="font-name">Inter</span></button><button type="button" class="hf-font-option" data-vars="--font-sans --font-display" data-family="'DM Sans','Noto Sans SC','PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,sans-serif" data-href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@100..1000&amp;display=swap"><span class="font-preview" style="font-family:'DM Sans','Noto Sans SC','PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,sans-serif">黑体 Aa</span><span class="font-name">DM Sans</span></button><button type="button" class="hf-font-option" data-vars="--font-sans --font-display" data-family="'Space Grotesk','Noto Sans SC','PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,sans-serif" data-href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&amp;display=swap"><span class="font-preview" style="font-family:'Space Grotesk','Noto Sans SC','PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,sans-serif">黑体 Aa</span><span class="font-name">Space Grotesk</span></button></div>
+  </div>
+</div>
+<script>(function () {
+  'use strict';
+
+  // Theme options live in assets/themes.json; render.mjs writes the controls
+  // into the HTML statically, so this file only wires up behaviour.
+  const style = document.documentElement.dataset.hfStyle || 'swiss';
+  const $ = (id) => document.getElementById(id);
+  // Per page: a reader's choice on one page (or a brand page's palette) doesn't leak into other pages
+  const STORE = 'hf-page-prefs:' + style + ':' + location.pathname;
+
+  // ── Helpers ──
+  function closeAllDropdowns() {
+    document.querySelectorAll('.hf-dropdown.open').forEach(d => d.classList.remove('open'));
+  }
+
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.hf-dropdown') && !e.target.closest('.hf-fab-btn')) {
+      closeAllDropdowns();
+    }
+  });
+
+  // PDF / long-image export is no longer in the page: the model runs scripts/export.mjs.
+
+  document.getElementById('hf-settings-toggle').addEventListener('click', (e) => {
+    e.stopPropagation();
+    const dd = document.getElementById('hf-settings-dropdown');
+    const wasOpen = dd.classList.contains('open');
+    closeAllDropdowns();
+    if (!wasOpen) dd.classList.add('open');
+  });
+
+  // ── Theme switching ──
+  // Every palette is a [data-theme] block in the inlined design-system CSS; a swatch only
+  // switches <html data-theme>. Text, rule and accent-text colours come with the theme,
+  // contrast-checked, so nothing is set inline.
+  function applyTheme(sw) {
+    document.querySelectorAll('.hf-swatch').forEach(s => s.classList.toggle('active', s === sw));
+    const root = document.documentElement;
+    root.dataset.theme = sw.dataset.themeId;
+    root.dataset.scheme = sw.dataset.scheme || 'light';
+    root.style.colorScheme = root.dataset.scheme;
+  }
+  // ── Font switching ──
+  // An option swaps the Latin face of the body stack (the CJK face stays); its stylesheet
+  // is loaded on first use.
+  function applyFont(opt) {
+    document.querySelectorAll('.hf-font-option').forEach(o => o.classList.toggle('active', o === opt));
+    (opt.dataset.vars || '--font-sans').split(' ').forEach(v => document.documentElement.style.setProperty(v, opt.dataset.family));
+    const href = opt.dataset.href;
+    if (href && !document.querySelector(`link[data-hf-font="${href}"]`)) {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.dataset.hfFont = href;
+      link.href = href;
+      document.head.appendChild(link);
+    }
+  }
+  function save() {
+    try {
+      const sw = document.querySelector('.hf-swatch.active');
+      const fo = document.querySelector('.hf-font-option.active');
+      localStorage.setItem(STORE, JSON.stringify({ theme: sw && sw.dataset.themeId, font: fo && fo.dataset.family }));
+    } catch (e) {}
+  }
+  document.querySelectorAll('.hf-swatch').forEach(sw => sw.addEventListener('click', (e) => { e.stopPropagation(); applyTheme(sw); save(); }));
+  document.querySelectorAll('.hf-font-option').forEach(opt => opt.addEventListener('click', (e) => { e.stopPropagation(); applyFont(opt); save(); }));
+  try {
+    const prefs = JSON.parse(localStorage.getItem(STORE) || 'null');
+    if (prefs) {
+      const sw = [...document.querySelectorAll('.hf-swatch')].find(s => s.dataset.themeId === prefs.theme);
+      if (sw && !sw.classList.contains('active')) applyTheme(sw);
+      const fo = [...document.querySelectorAll('.hf-font-option')].find(o => o.dataset.family === prefs.font);
+      if (fo && !fo.classList.contains('active')) applyFont(fo);
+    }
+  } catch (e) {}
+
+  // ── Make lazy images print/export-safe ──
+  // loading="lazy" images below the fold are blank in PDF/long-image exports.
+  function eagerImages() { document.querySelectorAll('img[loading="lazy"]').forEach(i => { i.loading = 'eager'; }); }
+  window.addEventListener('beforeprint', eagerImages);
+  if (document.readyState === 'complete') setTimeout(eagerImages, 800);
+  else window.addEventListener('load', () => setTimeout(eagerImages, 800));
+
+  // ── Editable text ──
+  const editableSelectors = [
+    '.hero h1',
+    '.hero-subtitle',
+    '.hero-cover h1',
+    '.hero-cover .hero-subtitle',
+    '.section h2',
+    '.section h3',
+    '.section p',
+    '.section li',
+    '.pullquote p',
+    '.pullquote-swiss .pq-content p',
+    '.highlight-card p',
+    '.highlight-swiss .hl-body p',
+    '.def-card-body',
+    '.def-card-swiss .dc-body',
+    '.process-title',
+    '.process-desc',
+    '.aside-content p',
+    '.summary-item-title',
+    '.summary-item-desc',
+    'blockquote p',
+    'td',
+  ];
+  editableSelectors.forEach(sel => {
+    document.querySelectorAll(sel).forEach(el => {
+      el.setAttribute('contenteditable', 'true');
+      el.setAttribute('spellcheck', 'false');
+    });
+  });
+})();
+</script>
+</body>
+</html>

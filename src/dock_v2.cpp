@@ -1,10 +1,13 @@
 #include "dock.hpp"
 #include "editor.hpp"
+#include "scene_evaluator.hpp"
+#include "stage.hpp"
 #if SPATIAL_PHASE >= 2
 #include <obs-frontend-api.h>
 #include <QCheckBox>
 #include <QComboBox>
 #include <QColor>
+#include <QColorDialog>
 #include <QDoubleSpinBox>
 #include <QFormLayout>
 #include <QHBoxLayout>
@@ -45,7 +48,7 @@ void SpatialDock::initV2(QFormLayout*imports,QFormLayout*layers,QFormLayout*ligh
     for(size_t i=0;i<3;++i)connect(layerExtra[i],&QDoubleSpinBox::valueChanged,this,[this,i](double v){int r=selectedLayer();if(loading||r<0||size_t(r)>=model.layers.size())return;auto&l=model.layers[size_t(r)];if(i==0)l.depthOrder=int(v);else if(i==1)l.perspective=v;else l.focusBlur=v;commit();});
     auto*reset=new QPushButton(u("一键恢复选中素材默认状态"));reset->setObjectName("spatial.reset-layer");layers->addRow(reset);
     connect(reset,&QPushButton::clicked,this,[this]{if(editor){editor->selectLayer(selectedLayer());editor->reset(false);}});
-    lightChoice=new QComboBox;lightChoice->setObjectName("spatial.light-choice");lights->insertRow(0,u("灯光列表"),lightChoice);connect(lightChoice,&QComboBox::currentIndexChanged,this,[this]{if(!loading)syncLight();});
+    lightChoice=new QComboBox;lightChoice->setObjectName("spatial.light-choice");lights->insertRow(0,u("灯光列表"),lightChoice);connect(lightChoice,&QComboBox::currentIndexChanged,this,[this]{if(lightColorDialog)lightColorDialog->reject();if(!loading)syncLight();});
     auto*addRow=new QHBoxLayout;for(int i=0;i<2;++i){auto*b=new QPushButton(u(i?"添加面光源":"添加点光源"));b->setObjectName(i?"spatial.add-area-light":"spatial.add-point-light");addRow->addWidget(b);connect(b,&QPushButton::clicked,this,[this,i]{addLight(i);});}lights->insertRow(1,addRow);
     auto*removeLight=new QPushButton(u("删除选中灯光"));removeLight->setObjectName("spatial.remove-light");addRow->addWidget(removeLight);addRow->setSpacing(4);for(int i=0;i<addRow->count();++i)addRow->itemAt(i)->widget()->setStyleSheet("QPushButton { padding: 2px 4px; min-height: 24px; }");
     connect(removeLight,&QPushButton::clicked,this,[this]{int i=lightChoice->currentIndex();if(i>0&&size_t(i)<=model.extraLights.size())model.extraLights.erase(model.extraLights.begin()+i-1);else if(!model.extraLights.empty()){model.light=model.extraLights.front();model.extraLights.erase(model.extraLights.begin());}else model.light={};syncV2();commit();});
@@ -64,8 +67,8 @@ void SpatialDock::syncLayerV2(){
 }
 void SpatialDock::syncLight(){
     if(!lightChoice)return;const bool was=loading;loading=true;const auto&l=selectedLight();
-    if(lightColorPreview){const auto color=QColor::fromRgbF(float(l.color.x),float(l.color.y),float(l.color.z));lightColorPreview->setProperty("color",color);lightColorPreview->setStyleSheet(QString("background-color: %1; border: 1px solid #8893a2; border-radius: 3px;").arg(color.name()));lightColorPreview->setToolTip(u("所选灯光颜色：")+color.name().toUpper());lightColorPreview->setAccessibleName(lightColorPreview->toolTip());}
-    if(shadowColorPreview){const auto color=QColor::fromRgbF(float(l.shadowColor.x),float(l.shadowColor.y),float(l.shadowColor.z));shadowColorPreview->setStyleSheet(QString("background-color:%1; border:1px solid #8893a2; border-radius:3px;").arg(color.name()));shadowColorPreview->setToolTip(u("所选阴影颜色：")+color.name().toUpper());}
+    if(lightColorPreview){const auto color=QColor::fromRgbF(float(l.color.x),float(l.color.y),float(l.color.z));setColorValuePreview(lightColorPreview,color);lightColorPreview->setToolTip(u("所选灯光颜色：")+color.name().toUpper());}
+    if(shadowColorPreview){const auto color=QColor::fromRgbF(float(l.shadowColor.x),float(l.shadowColor.y),float(l.shadowColor.z));setColorValuePreview(shadowColorPreview,color);shadowColorPreview->setToolTip(u("所选阴影颜色：")+color.name().toUpper());}
     const double values[]={l.position.x,l.position.y,l.position.z,l.intensity,l.range,l.ambient,l.shadowOpacity,l.receiverZ};for(size_t i=0;i<8;++i)set(lightFields[i],values[i]);
     set(lightEnabled,l.enabled);set(shadows,l.shadows);set(lightVisible,l.visible);set(lightExtra[0],l.size);set(lightExtra[1],l.falloff);set(lightExtra[2],l.softness);set(lightExtra[3],l.rim);if(rimFields[0]){set(rimFields[0],l.rimWidth);set(rimFields[1],l.rimSoftness);}
     for(auto*combo:{lightBind,receiverChoice}){QSignalBlocker b(combo);combo->clear();combo->addItem(u(combo==lightBind?"不绑定（世界坐标）":"全部开启接收阴影的层"),"");for(const auto&layer:model.layers){combo->addItem(QString::fromStdString(layerDisplayName(layer))+QString(" [#%1]").arg(layer.itemId),QString::fromStdString(layer.sourceUuid));combo->setItemData(combo->count()-1,qlonglong(layer.itemId),Qt::UserRole+1);combo->setItemData(combo->count()-1,QString::fromStdString(layer.sceneUuid),Qt::UserRole+2);combo->setItemData(combo->count()-1,QString::fromStdString(layer.instanceId),Qt::UserRole+3);}const auto&uuid=combo==lightBind?l.bindUuid:l.receiverUuid;int selected=0;bool found=uuid.empty();for(size_t i=0;i<model.layers.size();++i)if(lightMatchesLayer(l,model.layers[i],combo==receiverChoice)){selected=int(i)+1;found=true;break;}if(!found){combo->addItem(u("[关联图层已移除，重新选择]。"),QString::fromStdString(uuid));selected=combo->count()-1;combo->setItemData(selected,qlonglong(combo==lightBind?l.bindItemId:l.receiverItemId),Qt::UserRole+1);combo->setItemData(selected,QString::fromStdString(combo==lightBind?l.bindSceneUuid:l.receiverSceneUuid),Qt::UserRole+2);combo->setItemData(combo->count()-1,QString::fromStdString(combo==lightBind?l.bindInstanceId:l.receiverInstanceId),Qt::UserRole+3);}combo->setCurrentIndex(selected);}
@@ -85,5 +88,15 @@ void SpatialDock::refreshSources(){
     if(changed){QSignalBlocker b(sourceList);sourceList->clear();for(const auto&e:entries){auto*i=new QListWidgetItem(e.name,sourceList);i->setData(Qt::UserRole,e.id);}}
     obs_source_release(sceneSource);loading=was;
 }
-void SpatialDock::addLight(int type){if(model.extraLights.size()>=3){message(u("最多支持 4 个灯光。"),true);return;}Light light;light.enabled=true;light.type=type;light.ambient=0;light.label=std::string(type?"面光源 ":"点光源 ")+std::to_string(model.extraLights.size()+2);model.extraLights.push_back(light);syncV2();lightChoice->setCurrentIndex(int(model.extraLights.size()));syncLight();commit();}
+void SpatialDock::addLight(int type){
+    if(model.extraLights.size()>=3){message(u("最多支持 4 个灯光。"),true);return;}
+    std::vector<SourceSize> sizes;sizes.reserve(model.layers.size());
+    for(const auto&layer:model.layers){auto*s=obs_get_source_by_uuid(layer.sourceUuid.c_str());sizes.push_back(s&&!obs_source_removed(s)?SourceSize{double(obs_source_get_width(s)),double(obs_source_get_height(s))}:SourceSize{});obs_source_release(s);}
+    double time=model.timelinePosition,fxSeconds=-1;
+    auto*stage=obs_get_source_by_uuid(stageUuid.toUtf8().constData());if(stage){const auto stats=stageStats(stage);if(model.playing)time=stats.timeline;fxSeconds=stats.fxSeconds;obs_source_release(stage);}
+    Light light;light.enabled=true;light.type=type;light.ambient=0;
+    light.position=newLightPosition(model,toTime(time),sizes,model.playing||model.timelinePreview,fxSeconds);
+    light.label=std::string(type?"面光源 ":"点光源 ")+std::to_string(model.extraLights.size()+2);
+    model.extraLights.push_back(light);syncV2();lightChoice->setCurrentIndex(int(model.extraLights.size()));syncLight();commit();
+}
 #endif

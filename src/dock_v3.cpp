@@ -31,7 +31,7 @@ void SpatialDock::initV3(QFormLayout*,QFormLayout*,QFormLayout*lights){
     rimFields[0]=number(lights,"轮廓光宽度 / 源像素","spatial.light-rim-width",.01,100,.01);
     rimFields[1]=number(lights,"轮廓光柔和度","spatial.light-rim-softness",0,1,.01);
     for(size_t i=0;i<2;++i)connect(rimFields[i],&QDoubleSpinBox::valueChanged,this,[this,i](double v){if(loading)return;if(i==0)selectedLight().rimWidth=v;else selectedLight().rimSoftness=v;commit();});
-    auto*timer=new QTimer(this);timer->setInterval(50);connect(timer,&QTimer::timeout,this,[this]{if(!editor||!model.playing||stageUuid.isEmpty())return;auto*s=obs_get_source_by_uuid(stageUuid.toUtf8().constData());if(!s)return;double time=stageStats(s).timeline;obs_source_release(s);editor->tick(time);syncEvaluatedFields();});timer->start();
+    auto*timer=new QTimer(this);timer->setInterval(50);connect(timer,&QTimer::timeout,this,[this]{if(!editor||!model.playing||stageUuid.isEmpty()||!presetPreviewStage.isEmpty())return;auto*s=obs_get_source_by_uuid(stageUuid.toUtf8().constData());if(!s)return;double time=stageStats(s).timeline;obs_source_release(s);editor->tick(time);syncEvaluatedFields();});timer->start();
 }
 void SpatialDock::syncTimeline(){if(editor)editor->refresh();}
 void SpatialDock::scrub(int row,double time){if(editor){if(row>0)editor->selectLayer(row-1);editor->seek(toTime(time));}}

@@ -2,6 +2,10 @@ uniform float4x4 ViewProj;
 uniform texture2d image;
 uniform texture2d shadow_map;
 uniform texture2d caster_image;
+uniform texture2d rim_image;
+uniform float4 rim_rect;
+uniform float4 rim_crop;
+uniform float2 rim_texel_size;
 uniform float4 depths;
 uniform int pass_mode;
 uniform float opacity;
@@ -26,6 +30,7 @@ uniform float3 caster_normal;
 uniform float caster_opacity;
 uniform float4 uv_rect;
 uniform float4 caster_crop;
+uniform float4 receiver_shadow_rect;
 uniform float2 texel_size;
 uniform float rim_strength;
 uniform float rim_width;
@@ -66,7 +71,21 @@ float directAmount(float3 world,float2 offset) {
     float distance=max(length(ray),.001);
     return pow(saturate(1.0-distance/max(light_range,1.0)),light_falloff)*max(dot(normalize(plane_normal),ray/distance),0.0);
 }
+float receiverShadow(float2 uv){
+ float2 q=(uv-receiver_shadow_rect.xy)/receiver_shadow_rect.zw;
+ if(q.x<0||q.y<0||q.x>1||q.y>1)return 0;
+ return shadow_map.Sample(linear_sampler,q).a;
+}
+float4 rimSurface(float2 uv){
+    if(uv.x<rim_crop.x||uv.y<rim_crop.y||uv.x>rim_crop.x+rim_crop.z||uv.y>rim_crop.y+rim_crop.w)return float4(0,0,0,0);
+    return rim_image.Sample(linear_sampler,uv);
+}
 float4 PSDefault(VertData v) : TARGET {
+    if(pass_mode==5){
+        // Copy the center of a padded, continuously blurred receiver mask.
+        float2 uv=(v.uv-.5)*uv_rect.zw+.5;
+        return float4(0,0,0,image.Sample(linear_sampler,uv).a);
+    }
     if(pass_mode==4){
         float2 scale=output_transform.xy;
         float2 safeScale=float2(abs(scale.x)>.00001?scale.x:.00001,abs(scale.y)>.00001?scale.y:.00001);
@@ -84,11 +103,7 @@ float4 PSDefault(VertData v) : TARGET {
     }
     float3 world=plane_center+(v.uv.x-.5)*plane_right+(v.uv.y-.5)*plane_down;
     if(pass_mode==1) {
-        float a=casterAlpha(world,float2(0,0));
-        a+=casterAlpha(world,float2(-.8,-.8));a+=casterAlpha(world,float2(0,-.8));a+=casterAlpha(world,float2(.8,-.8));
-        a+=casterAlpha(world,float2(-.8,0));a+=casterAlpha(world,float2(.8,0));
-        a+=casterAlpha(world,float2(-.8,.8));a+=casterAlpha(world,float2(0,.8));a+=casterAlpha(world,float2(.8,.8));
-        return float4(0,0,0,saturate(a/9.0));
+        return float4(0,0,0,saturate(casterAlpha(world,float2(0,0))));
     }
     float2 uv=uv_rect.xy+v.uv*uv_rect.zw;
     float2 blur=texel_size*dof_radius;
@@ -99,23 +114,31 @@ float4 PSDefault(VertData v) : TARGET {
     if(pass_mode==0)return float4(colorFX(rgb*ambient,v.uv)*alpha,alpha);
     float3 ray=light_position-world;float distance=max(length(ray),.001);
     float attenuation=pow(saturate(1.0-distance/max(light_range,1.0)),light_falloff);
-    float3 visibility=lerp(float3(1,1,1),shadow_color,saturate(shadow_map.Sample(linear_sampler,v.uv).a*shadow_opacity));
-    // Original soft inner-alpha contour; no external implementation is used.
-    float2 edgeStep=texel_size*rim_width;
-    float left=image.Sample(linear_sampler,uv-float2(edgeStep.x,0)).a;
-    float right=image.Sample(linear_sampler,uv+float2(edgeStep.x,0)).a;
-    float up=image.Sample(linear_sampler,uv-float2(0,edgeStep.y)).a;
-    float down=image.Sample(linear_sampler,uv+float2(0,edgeStep.y)).a;
+    float3 visibility=lerp(float3(1,1,1),shadow_color,saturate(receiverShadow(v.uv)*shadow_opacity));
+    // Detect the pre-optics surface only. Local shadows/glows add alpha but
+    // are never a surface contour for the stage rim light.
+    float2 rimUV=(uv-rim_rect.xy)/rim_rect.zw;
+    float4 surface=rimSurface(rimUV);
+    float2 edgeStep=rim_texel_size*rim_width;
+    float left=rimSurface(rimUV-float2(edgeStep.x,0)).a;
+    float right=rimSurface(rimUV+float2(edgeStep.x,0)).a;
+    float up=rimSurface(rimUV-float2(0,edgeStep.y)).a;
+    float down=rimSurface(rimUV+float2(0,edgeStep.y)).a;
     float erosion=min(min(left,right),min(up,down));
-    float nearEdge=min(min(image.Sample(linear_sampler,uv-float2(edgeStep.x*.35,0)).a,image.Sample(linear_sampler,uv+float2(edgeStep.x*.35,0)).a),min(image.Sample(linear_sampler,uv-float2(0,edgeStep.y*.35)).a,image.Sample(linear_sampler,uv+float2(0,edgeStep.y*.35)).a));
-    float band=lerp(saturate(tex.a-nearEdge),saturate(tex.a-erosion),rim_softness);
+    float nearEdge=min(min(rimSurface(rimUV-float2(edgeStep.x*.35,0)).a,rimSurface(rimUV+float2(edgeStep.x*.35,0)).a),min(rimSurface(rimUV-float2(0,edgeStep.y*.35)).a,rimSurface(rimUV+float2(0,edgeStep.y*.35)).a));
+    float band=lerp(saturate(surface.a-nearEdge),saturate(surface.a-erosion),rim_softness);
     float2 gradient=float2(left-right,up-down);
     float2 toward=float2(dot(ray,normalize(plane_right)),dot(ray,normalize(plane_down)));
     float direction=saturate(dot(gradient/max(length(gradient),.0001),toward/max(length(toward),.001)));
     float rim=band*lerp(direction*direction,direction,rim_softness)*rim_strength;
     float amount=directAmount(world,float2(0,0));
     if(light_extent>.01)amount=(amount+directAmount(world,float2(-.8,-.8))+directAmount(world,float2(.8,-.8))+directAmount(world,float2(-.8,.8))+directAmount(world,float2(.8,.8)))/5.0;
-    float3 lit=(rgb*amount+sqrt(max(rgb,.02))*rim*attenuation)*light_color*light_intensity*visibility;
-    return float4(colorFX(lit,v.uv)*alpha,0.0);
+    // Occlusion affects this emitter's neutral fill as well as its direct/rim light.
+    // Other emitters contribute independently in their own additive pass.
+    float3 surfaceRGB=surface.rgb/max(surface.a,.00001);
+    float3 lit=(rgb*amount+sqrt(max(surfaceRGB,.02))*rim*attenuation)*light_color*light_intensity*visibility;
+    float3 fill=rgb*ambient*visibility;
+    // Keep fill/direct grading separate: colorFX clamps negative oversaturated channels.
+    return float4((colorFX(fill,v.uv)+colorFX(lit,v.uv))*alpha,0.0);
 }
 technique Draw { pass { vertex_shader=VSDefault(v); pixel_shader=PSDefault(v); } }

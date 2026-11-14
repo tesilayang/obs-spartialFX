@@ -1,6 +1,7 @@
 #if SPATIAL_PHASE >= 2
 #include "dock.hpp"
 #include "editor.hpp"
+#include "presets/panel.hpp"
 #include "scene_evaluator.hpp"
 #include <obs-module.h>
 #include <obs-frontend-api.h>
@@ -33,6 +34,7 @@ using namespace spatial;
 namespace {
 QString tr8(const char*s){return QString::fromUtf8(s);}
 std::string uniqueName(const QString &base){QString name=base;for(int n=2;;++n){auto*s=obs_get_source_by_name(name.toUtf8().constData());if(!s)return name.toUtf8().toStdString();obs_source_release(s);name=base+QString(" %1").arg(n);}}
+QJsonValue remapPresetIds(QJsonValue v,const QMap<QString,QString>& ids){if(v.isString())return ids.value(v.toString(),v.toString());if(v.isArray()){QJsonArray a;for(auto e:v.toArray())a.append(remapPresetIds(e,ids));return a;}if(v.isObject()){auto o=v.toObject();for(auto it=o.begin();it!=o.end();++it)it.value()=remapPresetIds(it.value(),ids);return o;}return v;}
 }
 void SpatialDock::refreshScene(bool force){
     auto*sceneSource=obs_frontend_get_current_scene();if(!sceneSource)return;
@@ -131,11 +133,13 @@ void SpatialDock::createDemo(){
     obs_frontend_set_current_scene(obs_scene_get_source(scene));createStage(&demo);obs_scene_release(scene);message(tr8("三层演示已建立；调整摄像机 X / Z 观察视差。"));
 }
 void SpatialDock::loadPresets(){
+    if(!presetChoice)return;
     QString previous=presetChoice->currentText();presetChoice->clear();presetChoice->addItem(tr8("默认空间"),"builtin-default");presetChoice->addItem(tr8("平滑推镜"),"builtin-push");presetChoice->addItem(tr8("环绕视差"),"builtin-orbit");
     QFile file(configFile("presets.json"));if(file.open(QIODevice::ReadOnly)){auto root=QJsonDocument::fromJson(file.readAll()).object();for(const auto&entry:root.value("presets").toArray()){auto obj=entry.toObject();const QString name=obj.value("name").toString();if(!name.isEmpty())presetChoice->addItem(name,obj.value("settings").toObject());}}
     int index=presetChoice->findText(previous);if(index>=0)presetChoice->setCurrentIndex(index);
 }
 void SpatialDock::savePreset(){
+    if(!presetChoice||!presetName)return;
     if(stageUuid.isEmpty()){message(tr8("请先创建舞台。"),true);return;}const QString name=presetName->text().trimmed();if(name.isEmpty()){message(tr8("请输入预设名称。"),true);return;}
     auto*settingsData=modelData(model);auto settings=QJsonDocument::fromJson(obs_data_get_json(settingsData)).object();obs_data_release(settingsData);QJsonArray layout;
     for(const auto&entry:settings.value("layers").toArray()){
@@ -145,6 +149,7 @@ void SpatialDock::savePreset(){
         if(layer.contains("fx_stack")){stack.insert("effects",effects);layer.insert("fx_stack",stack);}
         for(const char*k:{"uuid","scene_uuid","item_id","label","visible","original_visible","instance_id","instance_number"})layer.remove(k);layout.append(layer);
     }settings.insert("layout",layout);for(const char*k:{"layers","width","height","play_token","playing"})settings.remove(k);
+    QMap<QString,QString> presetSlots;for(size_t i=0;i<model.layers.size();++i)presetSlots[QString::fromStdString(model.layers[i].instanceId)]=QString("@spatial-layer-slot:%1").arg(i);for(const char*k:{"presets_geometries","presets_motion_blocks","presets_instances"})if(settings.contains(k))settings[k]=remapPresetIds(settings[k],presetSlots);
     // Presets are reusable layouts: encode light relationships by layer slot, never foreign UUID.
     auto encodeLight=[&](QJsonObject &light){
         for(bool receiver:{false,true}){const char*key=receiver?"receiver_uuid":"light_bind";const char*item=receiver?"receiver_item":"light_bind_item";const char*scene=receiver?"receiver_scene":"light_bind_scene";const char*instance=receiver?"receiver_instance":"light_bind_instance";int index=-1;
@@ -157,7 +162,8 @@ void SpatialDock::savePreset(){
     QSaveFile file(configFile("presets.json"));if(!file.open(QIODevice::WriteOnly)||file.write(QJsonDocument(QJsonObject{{"version",1},{"presets",result}}).toJson())<0||!file.commit()){message(tr8("预设保存失败。"),true);return;}loadPresets();presetChoice->setCurrentIndex(presetChoice->findText(name));message(tr8("预设已原子写入 OBS 配置目录。"));blog(LOG_INFO,"[SpatialFX] preset saved: %s",name.toUtf8().constData());
 }
 void SpatialDock::applyPreset(){
-    if(stageUuid.isEmpty()){message(tr8("请先创建舞台。"),true);return;}const QVariant selected=presetChoice->currentData();
+    if(!presetChoice)return;
+    if(stageUuid.isEmpty()){message(tr8("请先创建舞台。"),true);return;}const QVariant selected=presetChoice->currentData();if(presetPanel)presetPanel->cancelCurrentPreview();const StageModel before=model;
     if(selected.metaType().id()==QMetaType::QString){const QString builtin=selected.toString();model.camera={};model.cameraAnimation.clear();model.cameraOrbit={};model.compositeAnimation.clear();model.outputScaleX=model.outputScaleY=model.outputOpacity=1;model.fx={};model.light={};model.extraLights.clear();model.lookAtTarget=false;model.target={};if(builtin!="builtin-default"){Keyframe a;a.time=0;a.camera=model.camera;Keyframe b=a;b.time=6;if(builtin=="builtin-push"){b.camera.position.z=-1050;}else{a.camera.position.x=-250;a.camera.rotation.y=5;b.camera.position.x=250;b.camera.rotation.y=-5;}model.camera=a.camera;cameraTrack(model,a.camera,b.camera,6);}}
     else {const auto settings=selected.toJsonObject();const auto json=QJsonDocument(settings).toJson(QJsonDocument::Compact);auto*settingsData=obs_data_create_from_json(json.constData());auto incoming=readModel(settingsData);obs_data_release(settingsData);model.camera=incoming.camera;model.cameraAnimation=incoming.cameraAnimation;model.cameraOrbit=incoming.cameraOrbit;model.compositeAnimation=incoming.compositeAnimation;model.outputScaleX=incoming.outputScaleX;model.outputScaleY=incoming.outputScaleY;model.outputOpacity=incoming.outputOpacity;model.light=incoming.light;model.extraLights=incoming.extraLights;model.fx=incoming.fx;model.loop=incoming.loop;model.target=incoming.target;model.lookAtTarget=incoming.lookAtTarget;model.animationSpeed=incoming.animationSpeed;model.animationDuration=incoming.animationDuration;model.focusDistance=incoming.focusDistance;model.aperture=incoming.aperture;
         const auto layout=settings.value("layout").toArray();for(int i=0;i<std::min(layout.size(),qsizetype(model.layers.size()));++i){auto item=layout[i].toObject();
@@ -171,7 +177,8 @@ void SpatialDock::applyPreset(){
         auto remap=[&](Light&light,const QJsonObject&presetData){auto field=[&](const char*key,std::string&uuid,std::string&scene,int64_t&item,std::string&instance){const QString slot=QString(key)+"_layer";if(presetData.contains(slot)){const int i=presetData.value(slot).toInt(-1);if(i>=0&&size_t(i)<model.layers.size()){const auto&l=model.layers[size_t(i)];uuid=l.sourceUuid;scene=l.sceneUuid;item=l.itemId;instance=l.instanceId;}else{uuid.clear();scene.clear();item=0;instance.clear();}}else if(!uuid.empty()&&std::none_of(model.layers.begin(),model.layers.end(),[&](const Layer&l){return l.sourceUuid==uuid;})){uuid.clear();instance.clear();}};field("light_bind",light.bindUuid,light.bindSceneUuid,light.bindItemId,light.bindInstanceId);field("receiver_uuid",light.receiverUuid,light.receiverSceneUuid,light.receiverItemId,light.receiverInstanceId);};
         remap(model.light,settings);const auto extra=settings.value("extra_lights").toArray();for(size_t i=0;i<model.extraLights.size()&&i<size_t(extra.size());++i)remap(model.extraLights[i],extra[int(i)].toObject());}
 
-    model.animationDuration=toSeconds(contentEnd(model));model.playing=false;model.timelinePreview=true;model.timelinePosition=0;++model.playToken;syncControls();commit();message(tr8("预设已应用；图层 UUID 关联保留。"));
+    if(selected.metaType().id()!=QMetaType::QString){const auto original=selected.toJsonObject();QMap<QString,QString>ids;for(size_t i=0;i<model.layers.size();++i)ids[QString("@spatial-layer-slot:%1").arg(i)]=QString::fromStdString(model.layers[i].instanceId);for(const char*k:{"presets_geometries","presets_motion_blocks","presets_instances"})for(auto v:original[k].toArray()){const auto old=v.toObject()["instance_id"].toString();if(!old.isEmpty())ids[old]=QUuid::createUuid().toString(QUuid::WithoutBraces);}auto*d=modelData(model);auto settings=QJsonDocument::fromJson(obs_data_get_json(d)).object();obs_data_release(d);for(const char*k:{"presets_geometries","presets_motion_blocks","presets_instances"})settings[k]=remapPresetIds(original[k],ids);const auto bytes=QJsonDocument(settings).toJson(QJsonDocument::Compact);d=obs_data_create_from_json(bytes.constData());auto incoming=readModel(d);obs_data_release(d);model.geometries=std::move(incoming.geometries);model.motionBlocks=std::move(incoming.motionBlocks);model.presetInstances=std::move(incoming.presetInstances);}
+    model.animationDuration=toSeconds(contentEnd(model));model.playing=false;model.timelinePreview=true;model.timelinePosition=0;++model.playToken;const StageModel next=model;model=before;editor->applyDocument(next);syncControls();message(tr8("预设已应用；图层 UUID 关联保留。"));
 }
 #endif
 

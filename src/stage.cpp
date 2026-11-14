@@ -5,12 +5,16 @@
 #include "fx_motion.hpp"
 #include "fx_stage.hpp"
 #include "scene_evaluator.hpp"
+#include "presets/graphics.hpp"
+#include "fx_blur.hpp"
+#include "shadow_blur.hpp"
 #include <obs-module.h>
 #include <graphics/graphics.h>
 #include <graphics/vec2.h>
 #include <graphics/vec3.h>
 #include <graphics/vec4.h>
 #include <util/bmem.h>
+#include <util/platform.h>
 #include <algorithm>
 #include <array>
 #include <atomic>
@@ -43,12 +47,14 @@ struct Stage {
     std::atomic<uint32_t> width{1920},height{1080};
     std::array<Cache,32> cache;
     std::unique_ptr<FxRenderer> fx=std::make_unique<FxRenderer>();
+    std::unique_ptr<presets::GraphicsRenderer> graphics=std::make_unique<presets::GraphicsRenderer>();
     struct MotionCache {std::string instance;Projected previous{},current{};uint64_t frame=0;bool valid=false;};
     std::array<MotionCache,32>motion;double effectEpoch=0;
-    gs_effect_t *effect=nullptr;gs_vertbuffer_t *vertices=nullptr;gs_texture_t *white=nullptr;gs_texrender_t *shadow=nullptr,*composite=nullptr;
+    gs_effect_t *effect=nullptr,*shadowKernel=nullptr;gs_vertbuffer_t *vertices=nullptr;gs_texture_t *white=nullptr;gs_texrender_t *shadow=nullptr,*casterShadow=nullptr,*composite=nullptr;
+    std::unique_ptr<FxBlur> shadowBlur;std::string shadowKernelSource;uint64_t shadowAllocations=0,shadowPasses=0,shadowFailures=0;bool shadowKernelAttempted=false;
     bool effectAttempted=false;uint64_t lastToken=UINT64_MAX;double elapsed=0;
     std::atomic<uint64_t> renders{0},renderNanoseconds{0},textureAllocations{0},fxAllocations{0},fxPasses{0},fxFailures{0};
-    std::atomic<uint32_t> missing{0};std::atomic<double> timeline{0};std::atomic<bool> ready{false};
+    std::atomic<uint32_t> missing{0};std::atomic<double> timeline{0},effectTime{0};std::atomic<bool> ready{false};
 };
 // Readers never wait for the writer. Sequentially consistent entry protects old snapshots
 // until a later update observes a quiescent state; reclamation never waits in video_render.
@@ -161,6 +167,17 @@ void draw(Stage &s,gs_texture_t *texture,int mode){
     gs_effect_set_int(gs_effect_get_param_by_name(s.effect,"pass_mode"),mode);
     while(gs_effect_loop(s.effect,"Draw"))gs_draw(GS_TRISTRIP,0,4);
 }
+bool shadowResources(Stage&s){
+    if(!s.shadowKernelAttempted){
+        s.shadowKernelAttempted=true;char*error=nullptr;
+        if(!s.shadowKernelSource.empty())s.shadowKernel=gs_effect_create(s.shadowKernelSource.c_str(),"spatial-shadow-blur",&error);
+        if(!s.shadowKernel){++s.shadowFailures;blog(LOG_ERROR,"[SpatialFX] shadow blur compilation failed: %s",error?error:"effect missing");}
+        bfree(error);
+    }
+    if(!s.casterShadow){s.casterShadow=gs_texrender_create(GS_RGBA,GS_ZS_NONE);++s.shadowAllocations;}
+    if(!s.shadowBlur)s.shadowBlur=std::make_unique<FxBlur>();
+    return s.shadowKernel&&s.casterShadow;
+}
 
 void vec4param(gs_effect_t *e,const char*name,double x,double y,double z,double w){struct vec4 v;vec4_set(&v,float(x),float(y),float(z),float(w));gs_effect_set_vec4(gs_effect_get_param_by_name(e,name),&v);}
 void cropParam(Stage &s,const char*name,const Layer&l,uint32_t w,uint32_t h){
@@ -189,6 +206,7 @@ void render(void *data,gs_effect_t*){
     std::vector<SourceSize> sourceSizes;sourceSizes.reserve(m.layers.size());
     for(auto&weak:read.value->sources){auto*source=weak->get();sourceSizes.push_back({source?double(obs_source_get_width(source)):0,source?double(obs_source_get_height(source)):0});obs_source_release(source);}
     const double frameTime=double(obs_get_video_frame_time())/1e9;if(s.effectEpoch==0)s.effectEpoch=frameTime;const double fxTime=std::max(0.0,frameTime-s.effectEpoch);
+    s.effectTime.store(fxTime);
     const auto evaluated=evaluateSceneAt(m,toTime(time),sourceSizes,evaluate,fxTime);const auto camera=evaluated.camera;
     const auto widescreen=stageWidescreen(m,&evaluated);
     const bool composite=widescreen.enabled||std::abs(evaluated.outputScaleX-1)>1e-9||std::abs(evaluated.outputScaleY-1)>1e-9||std::abs(evaluated.outputOpacity-1)>1e-9;
@@ -241,7 +259,8 @@ void render(void *data,gs_effect_t*){
         }planes[i]=evaluated.world[i].plane;order[count++]=i;
     }
     // Capture every input before resolving references; forward references never read stale surfaces.
-    std::vector<gs_texture_t*>textures(m.layers.size(),nullptr);
+    std::vector<gs_texture_t*>textures(m.layers.size(),nullptr),casterTextures(m.layers.size(),nullptr);
+    std::array<double,32>paddingX{},paddingY{};
     s.fx->beginFrame(m.layers);
     std::array<bool,32> drawn{};for(size_t n=0;n<count;++n)drawn[order[n]]=true;
     // Hidden/missing frames break the motion history; reappearing is not motion.
@@ -255,7 +274,22 @@ void render(void *data,gs_effect_t*){
       context.cameraPosition=camera.position;context.uvCenterX=.5+double(drawLayers[i].cropLeft-drawLayers[i].cropRight)/(2*sourceWidths[i]);context.uvCenterY=.5+double(drawLayers[i].cropTop-drawLayers[i].cropBottom)/(2*sourceHeights[i]);
       context.uvSpanX=double(widths[i])/sourceWidths[i];context.uvSpanY=double(heights[i])/sourceHeights[i];
       if(motion.valid&&center.visible&&motion.previous.visible){const auto uv=motionUvFromScreen(planes[i].position,context.right,context.down,camera,m.width,m.height,center.x-motion.previous.x,center.y-motion.previous.y);context.motionX=uv.x;context.motionY=uv.y;}
-      textures[i]=s.fx->process(drawLayers[i],raw[i],context,raw);
+      context.cropLeft=double(drawLayers[i].cropLeft)/sourceWidths[i];context.cropRight=double(drawLayers[i].cropRight)/sourceWidths[i];
+      context.cropTop=double(drawLayers[i].cropTop)/sourceHeights[i];context.cropBottom=double(drawLayers[i].cropBottom)/sourceHeights[i];
+      const auto result=s.fx->process(drawLayers[i],raw[i],context,raw);
+      textures[i]=result.texture;casterTextures[i]=result.caster;paddingX[i]=result.paddingX;paddingY[i]=result.paddingY;
+    }
+    // Apply all receiver masks after FX capture; referenced source inputs stay raw.
+    // Every mask multiplies premultiplied RGB and alpha, with multiple masks intersecting.
+    for(size_t n=0;n<count;++n){const auto i=order[n];const auto&l=drawLayers[i];
+        presets::Receiver receiver;receiver.instanceId=l.instanceId;receiver.plane=planes[i];receiver.sourceWidth=sourceWidths[i]+2*paddingX[i];receiver.sourceHeight=sourceHeights[i]+2*paddingY[i];
+        receiver.width=widths[i];receiver.height=heights[i];receiver.left=l.cropLeft+paddingX[i];receiver.top=l.cropTop+paddingY[i];
+        const bool separateCaster=casterTextures[i]&&casterTextures[i]!=textures[i];
+        textures[i]=s.graphics->mask(i,textures[i]?textures[i]:raw[i],receiver,evaluated.geometries,camera,m.width,m.height);
+        if(separateCaster){
+            receiver.sourceWidth=sourceWidths[i];receiver.sourceHeight=sourceHeights[i];receiver.left=l.cropLeft;receiver.top=l.cropTop;
+            casterTextures[i]=s.graphics->mask(i+32,casterTextures[i],receiver,evaluated.geometries,camera,m.width,m.height);
+        }else casterTextures[i]=textures[i];
     }
     std::sort(order.begin(),order.begin()+count,[&](size_t a,size_t b){
         const double da=inverseRotate(sub(planes[a].position,camera.position),camera.rotation).z,db=inverseRotate(sub(planes[b].position,camera.position),camera.rotation).z;
@@ -269,27 +303,46 @@ void render(void *data,gs_effect_t*){
         lights[lightCount++]=std::move(light);
     };
     addLight(m.light);for(const auto&light:m.extraLights)if(lightCount<4)addLight(light);
-    double ambient=lightCount?0:1;for(size_t i=0;i<lightCount;++i)ambient+=lights[i].ambient;ambient=std::min(ambient,2.0);
+    const double ambient=lightCount?0:1;
+    double ambientSum=0;for(size_t i=0;i<lightCount;++i)ambientSum+=lights[i].ambient;
+    const double ambientScale=ambientSum>2?2/ambientSum:1; // Preserve the previous total-fill ceiling.
     // Initialize all effect uniforms, including inactive branches. No stale D3D constants.
     scalar(s.effect,"opacity",1);scalar(s.effect,"ambient",ambient);scalar(s.effect,"shadow_opacity",0);scalar(s.effect,"light_intensity",0);scalar(s.effect,"light_range",1);scalar(s.effect,"light_falloff",2);scalar(s.effect,"soft_radius",0);scalar(s.effect,"light_extent",0);scalar(s.effect,"caster_opacity",1);scalar(s.effect,"rim_strength",0);scalar(s.effect,"rim_width",8);scalar(s.effect,"rim_softness",.65);scalar(s.effect,"dof_radius",0);
     scalar(s.effect,"exposure",m.fx.enabled?m.fx.exposure:0);scalar(s.effect,"saturation",m.fx.enabled?m.fx.saturation:1);scalar(s.effect,"vignette",m.fx.enabled?m.fx.vignette:0);
     vec4param(s.effect,"output_transform",1,1,1,0);scalar(s.effect,"widescreen_amount",0);
     vec3param(s.effect,"light_position",{});vec3param(s.effect,"light_color",{1,1,1});vec3param(s.effect,"shadow_color",{});planeParams(s,"plane_",{},1,1);planeParams(s,"caster_",{},1,1);
-    vec4param(s.effect,"uv_rect",0,0,1,1);vec4param(s.effect,"caster_crop",0,0,1,1);vec4param(s.effect,"depths",1,1,1,1);
+    vec4param(s.effect,"uv_rect",0,0,1,1);vec4param(s.effect,"caster_crop",0,0,1,1);vec4param(s.effect,"receiver_shadow_rect",0,0,1,1);vec4param(s.effect,"depths",1,1,1,1);
     struct vec2 texel;vec2_set(&texel,1,1);gs_effect_set_vec2(gs_effect_get_param_by_name(s.effect,"texel_size"),&texel);
     gs_effect_set_texture(gs_effect_get_param_by_name(s.effect,"shadow_map"),s.white);gs_effect_set_texture(gs_effect_get_param_by_name(s.effect,"caster_image"),s.white);
+    gs_effect_set_texture(gs_effect_get_param_by_name(s.effect,"rim_image"),s.white);
+    vec4param(s.effect,"rim_rect",0,0,1,1);gs_effect_set_vec2(gs_effect_get_param_by_name(s.effect,"rim_texel_size"),&texel);
+    vec4param(s.effect,"rim_crop",0,0,1,1);
     std::array<Light,4> markers{};size_t markerCount=0,markerIndex=0;
     auto addMarker=[&](Light light){if(!m.fx.enabled||!light.visible)return;if(!resolveLight(light))return;markers[markerCount++]=std::move(light);};
     addMarker(m.light);for(const auto&light:m.extraLights)addMarker(light);
     auto depth=[&](Vec3 position){return inverseRotate(sub(position,camera.position),camera.rotation).z;};
+    std::vector<size_t>geometryOrder;geometryOrder.reserve(evaluated.geometries.size());
+    for(size_t i=0;i<evaluated.geometries.size();++i){const auto&g=evaluated.geometries[i];if(g.active&&g.geometry.enabled&&g.geometry.visible&&g.opacity>0&&g.geometry.mode!=presets::Mode::Mask)geometryOrder.push_back(i);}
+    std::stable_sort(geometryOrder.begin(),geometryOrder.end(),[&](size_t a,size_t b){const auto&ga=evaluated.geometries[a];const auto&gb=evaluated.geometries[b];const auto da=depth(ga.plane.position),db=depth(gb.plane.position);return da==db?ga.geometry.depthOrder<gb.geometry.depthOrder:da>db;});
+    size_t geometryIndex=0;
+    auto drawGeometryBefore=[&](double cutoff,int orderAtDepth){while(geometryIndex<geometryOrder.size()){
+        const auto&g=evaluated.geometries[geometryOrder[geometryIndex]];const auto d=depth(g.plane.position);
+        if(d<cutoff||(d==cutoff&&g.geometry.depthOrder>orderAtDepth))break;
+        s.graphics->draw(g,camera,m.width,m.height);++geometryIndex;
+    }};
     std::sort(markers.begin(),markers.begin()+markerCount,[&](const Light&a,const Light&b){return depth(a.position)>depth(b.position);});
     auto drawMarker=[&](const Light&light){Plane p;p.position=light.position;p.rotation=camera.rotation;const double size=std::max(8.0,light.size);if(!geometry(s,corners(p,size,size),camera,m))return;vec3param(s.effect,"light_color",light.color);scalar(s.effect,"light_intensity",light.intensity);scalar(s.effect,"light_extent",light.type?1:0);gs_blend_function(GS_BLEND_ONE,GS_BLEND_INVSRCALPHA);draw(s,s.white,3);};
     for(size_t n=0;n<count;++n){
-        while(markerIndex<markerCount&&depth(markers[markerIndex].position)>depth(planes[order[n]].position))drawMarker(markers[markerIndex++]);
+        while(markerIndex<markerCount&&depth(markers[markerIndex].position)>depth(planes[order[n]].position)){drawGeometryBefore(depth(markers[markerIndex].position),0);drawMarker(markers[markerIndex++]);}
         const size_t i=order[n];const auto&l=drawLayers[i];const auto&p=planes[i];auto*texture=textures[i]?textures[i]:raw[i];
-        const auto quad=corners(p,widths[i],heights[i]);if(!geometry(s,quad,camera,m))continue;
-        planeParams(s,"plane_",p,widths[i],heights[i]);cropParam(s,"uv_rect",l,sourceWidths[i],sourceHeights[i]);
-        vec2_set(&texel,1.0f/s.cache[i].width,1.0f/s.cache[i].height);gs_effect_set_vec2(gs_effect_get_param_by_name(s.effect,"texel_size"),&texel);
+        drawGeometryBefore(depth(p.position),l.depthOrder);
+        const auto quad=corners(p,widths[i]+2*paddingX[i],heights[i]+2*paddingY[i]);if(!geometry(s,quad,camera,m))continue;
+        planeParams(s,"plane_",p,widths[i]+2*paddingX[i],heights[i]+2*paddingY[i]);
+        vec4param(s.effect,"uv_rect",double(l.cropLeft)/(sourceWidths[i]+2*paddingX[i]),double(l.cropTop)/(sourceHeights[i]+2*paddingY[i]),
+                  (widths[i]+2*paddingX[i])/(sourceWidths[i]+2*paddingX[i]),(heights[i]+2*paddingY[i])/(sourceHeights[i]+2*paddingY[i]));
+        vec2_set(&texel,1.0f/gs_texture_get_width(texture),1.0f/gs_texture_get_height(texture));gs_effect_set_vec2(gs_effect_get_param_by_name(s.effect,"texel_size"),&texel);
+        vec4param(s.effect,"receiver_shadow_rect",paddingX[i]/(widths[i]+2*paddingX[i]),paddingY[i]/(heights[i]+2*paddingY[i]),
+                  widths[i]/(widths[i]+2*paddingX[i]),heights[i]/(heights[i]+2*paddingY[i]));
         const double distance=inverseRotate(sub(p.position,camera.position),camera.rotation).z;
         scalar(s.effect,"dof_radius",std::min(20.0,std::abs(distance-m.focusDistance)/std::max(distance,10.0)*(m.fx.enabled?m.aperture:0)*l.focusBlur));
         scalar(s.effect,"opacity",l.opacity);scalar(s.effect,"ambient",l.receiveLight?ambient:1);
@@ -297,30 +350,63 @@ void render(void *data,gs_effect_t*){
         if(!l.receiveLight)continue;
         for(size_t j=0;j<lightCount;++j){
             const auto&light=lights[j];vec3param(s.effect,"light_position",light.position);vec3param(s.effect,"light_color",light.color);vec3param(s.effect,"shadow_color",light.shadowColor);
+            scalar(s.effect,"ambient",light.ambient*ambientScale);
             scalar(s.effect,"light_intensity",light.intensity);scalar(s.effect,"light_range",light.range);scalar(s.effect,"light_falloff",light.falloff);scalar(s.effect,"light_extent",light.type?light.size*.5:0);
             scalar(s.effect,"soft_radius",light.softness+(light.type?light.size*.5:light.size*.05));scalar(s.effect,"shadow_opacity",light.shadowOpacity);
             bool hasMask=false;
             if(l.receiveShadow&&light.shadows&&(light.receiverUuid.empty()||lightMatchesLayer(light,l,true))){
+                // Clear once, then union each continuously blurred caster into this light mask.
+                gs_effect_set_texture(gs_effect_get_param_by_name(s.effect,"shadow_map"),s.white);
                 gs_texrender_reset(s.shadow);
                 if(gs_texrender_begin(s.shadow,512,512)){
-                    struct vec4 clear;vec4_zero(&clear);gs_clear(GS_CLEAR_COLOR,&clear,0,0);gs_ortho(0,512,0,512,-100,100);flatGeometry(s,512,512);gs_blend_function(GS_BLEND_ONE,GS_BLEND_INVSRCALPHA);
+                    struct vec4 clear;vec4_zero(&clear);gs_clear(GS_CLEAR_COLOR,&clear,0,0);gs_texrender_end(s.shadow);hasMask=true;
                     for(size_t k=0;k<count;++k){const size_t c=order[k];const auto&caster=drawLayers[c];if(c==i||!caster.castShadow)continue;
-                        // Only planes between the emitter and this receiver can occlude it.
                         const auto delta=sub(planes[c].position,p.position);const auto normal=rotate({0,0,-1},p.rotation);const auto dot=[](Vec3 a,Vec3 b){return a.x*b.x+a.y*b.y+a.z*b.z;};
                         if(dot(delta,normal)*dot(sub(light.position,p.position),normal)<=0)continue;
-                        planeParams(s,"caster_",planes[c],widths[c],heights[c]);cropParam(s,"caster_crop",caster,sourceWidths[c],sourceHeights[c]);scalar(s.effect,"caster_opacity",caster.opacity);gs_effect_set_texture(gs_effect_get_param_by_name(s.effect,"caster_image"),textures[c]?textures[c]:raw[c]);draw(s,texture,1);
+                        if(!shadowResources(s))continue;
+                        const double radius=light.softness+(light.type?light.size*.5:light.size*.05);
+                        const auto blur=shadowBlurRadius(p,planes[c].position,light.position,radius,widths[i],heights[i]);
+                        // Padded receiver capture includes silhouettes just outside its boundary.
+                        const double expansionX=1+2*blur[0]/512,expansionY=1+2*blur[1]/512;
+                        gs_effect_set_texture(gs_effect_get_param_by_name(s.effect,"image"),s.white);
+                        gs_texrender_reset(s.casterShadow);
+                        if(!gs_texrender_begin(s.casterShadow,512,512)){++s.shadowFailures;continue;}
+                        vec4_zero(&clear);gs_clear(GS_CLEAR_COLOR,&clear,0,0);gs_ortho(0,512,0,512,-100,100);flatGeometry(s,512,512);
+                        planeParams(s,"plane_",p,widths[i]*expansionX,heights[i]*expansionY);
+                        planeParams(s,"caster_",planes[c],widths[c],heights[c]);cropParam(s,"caster_crop",caster,sourceWidths[c],sourceHeights[c]);scalar(s.effect,"caster_opacity",caster.opacity);
+                        gs_effect_set_texture(gs_effect_get_param_by_name(s.effect,"caster_image"),casterTextures[c]?casterTextures[c]:raw[c]);
+                        gs_blend_function(GS_BLEND_ONE,GS_BLEND_INVSRCALPHA);draw(s,s.white,1);gs_texrender_end(s.casterShadow);++s.shadowPasses;
+                        auto*mask=s.shadowBlur->render(s.shadowKernel,gs_texrender_get_texture(s.casterShadow),512,512,blur[0]/expansionX,0,2,0,0,0,0,0,{},s.shadowAllocations,s.shadowPasses,blur[1]/expansionY);
+                        if(!mask){++s.shadowFailures;continue;}
+                        gs_texrender_reset(s.shadow);
+                        if(gs_texrender_begin(s.shadow,512,512)){
+                            gs_ortho(0,512,0,512,-100,100);flatGeometry(s,512,512);
+                            vec4param(s.effect,"uv_rect",0,0,1/expansionX,1/expansionY);
+                            gs_blend_function(GS_BLEND_ONE,GS_BLEND_INVSRCALPHA);draw(s,mask,5);gs_texrender_end(s.shadow);++s.shadowPasses;
+                        }else ++s.shadowFailures;
                     }
-                    gs_texrender_end(s.shadow);hasMask=true;
+                    planeParams(s,"plane_",p,widths[i]+2*paddingX[i],heights[i]+2*paddingY[i]);
+        vec4param(s.effect,"uv_rect",double(l.cropLeft)/(sourceWidths[i]+2*paddingX[i]),double(l.cropTop)/(sourceHeights[i]+2*paddingY[i]),
+                  (widths[i]+2*paddingX[i])/(sourceWidths[i]+2*paddingX[i]),(heights[i]+2*paddingY[i])/(sourceHeights[i]+2*paddingY[i]));
                 }
             }
             if(!geometry(s,quad,camera,m))continue;
             gs_effect_set_texture(gs_effect_get_param_by_name(s.effect,"shadow_map"),hasMask?gs_texrender_get_texture(s.shadow):s.white);
             if(!hasMask)scalar(s.effect,"shadow_opacity",0);
             scalar(s.effect,"rim_strength",l.rimLight?light.rim:0);scalar(s.effect,"rim_width",light.rimWidth);scalar(s.effect,"rim_softness",light.rimSoftness);
+            // Reuse the masked pre-optics surface; exclude local FX shadow alpha.
+            auto*rimSurface=casterTextures[i]?casterTextures[i]:raw[i];
+            gs_effect_set_texture(gs_effect_get_param_by_name(s.effect,"rim_image"),rimSurface);
+            cropParam(s,"rim_crop",l,sourceWidths[i],sourceHeights[i]);
+            vec4param(s.effect,"rim_rect",paddingX[i]/(sourceWidths[i]+2*paddingX[i]),paddingY[i]/(sourceHeights[i]+2*paddingY[i]),
+                      sourceWidths[i]/(sourceWidths[i]+2*paddingX[i]),sourceHeights[i]/(sourceHeights[i]+2*paddingY[i]));
+            struct vec2 rimTexel;vec2_set(&rimTexel,1.0f/gs_texture_get_width(rimSurface),1.0f/gs_texture_get_height(rimSurface));
+            gs_effect_set_vec2(gs_effect_get_param_by_name(s.effect,"rim_texel_size"),&rimTexel);
             gs_blend_function(GS_BLEND_ONE,GS_BLEND_ONE);draw(s,texture,2);
         }
     }
-    while(markerIndex<markerCount)drawMarker(markers[markerIndex++]);
+    while(markerIndex<markerCount){drawGeometryBefore(depth(markers[markerIndex].position),0);drawMarker(markers[markerIndex++]);}
+    while(geometryIndex<geometryOrder.size())s.graphics->draw(evaluated.geometries[geometryOrder[geometryIndex++]],camera,m.width,m.height);
     gs_load_vertexbuffer(nullptr);gs_set_cull_mode(cull);gs_blend_state_pop();
     if(composite){
         gs_texrender_end(s.composite);gs_blend_state_push();gs_enable_blending(true);gs_blend_function(GS_BLEND_ONE,GS_BLEND_INVSRCALPHA);flatGeometry(s,m.width,m.height);
@@ -331,13 +417,13 @@ void render(void *data,gs_effect_t*){
         scalar(s.effect,"widescreen_amount",widescreen.enabled?widescreen.amount:0);scalar(s.effect,"opacity",evaluated.outputOpacity);
         draw(s,gs_texrender_get_texture(s.composite),4);gs_load_vertexbuffer(nullptr);gs_blend_state_pop();
     }
-    s.fxAllocations.store(s.fx->allocations());s.fxPasses.store(s.fx->passes());s.fxFailures.store(s.fx->failures());s.missing.store(missing);s.renders.fetch_add(1);s.renderNanoseconds.fetch_add(uint64_t(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now()-started).count()));
+    s.fxAllocations.store(s.fx->allocations()+s.graphics->allocations()+s.shadowAllocations);s.fxPasses.store(s.fx->passes()+s.graphics->passes()+s.shadowPasses);s.fxFailures.store(s.fx->failures()+s.graphics->failures()+s.shadowFailures);s.missing.store(missing);s.renders.fetch_add(1);s.renderNanoseconds.fetch_add(uint64_t(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now()-started).count()));
 }
 
 void destroy(void *data){
     auto *s=static_cast<Stage*>(data);auto *snapshot=s->published.exchange(nullptr);
     // OBS has detached this source before destroy; callbacks/readers have completed.
-    obs_enter_graphics();s->fx.reset();for(auto &cache:s->cache)gs_texrender_destroy(cache.texture);gs_vertexbuffer_destroy(s->vertices);gs_effect_destroy(s->effect);gs_texture_destroy(s->white);gs_texrender_destroy(s->shadow);gs_texrender_destroy(s->composite);obs_leave_graphics();
+    obs_enter_graphics();s->fx.reset();s->graphics.reset();s->shadowBlur.reset();gs_effect_destroy(s->shadowKernel);gs_texrender_destroy(s->casterShadow);for(auto &cache:s->cache)gs_texrender_destroy(cache.texture);gs_vertexbuffer_destroy(s->vertices);gs_effect_destroy(s->effect);gs_texture_destroy(s->white);gs_texrender_destroy(s->shadow);gs_texrender_destroy(s->composite);obs_leave_graphics();
     delete snapshot;for(auto *old:s->retired)delete old;
     blog(LOG_INFO,"[SpatialFX] stage destroyed; renders=%llu cached_texture_allocations=%llu",(unsigned long long)s->renders.load(),(unsigned long long)s->textureAllocations.load());delete s;
 }
@@ -353,7 +439,11 @@ void loaded(void *data,obs_data_t*){
     },weak,false);
 }
 void *create(obs_data_t *settings,obs_source_t *source){
-    auto *s=new Stage;s->owner=source;applySettings(s,settings);auto *privateSettings=obs_source_get_private_settings(source);auto *copy=modelData(readModel(settings));obs_data_set_obj(privateSettings,"spatial_fx_model",copy);obs_data_release(copy);obs_data_release(privateSettings);
+    auto *s=new Stage;
+    // Load source text during creation; video_render only compiles cached text.
+    char*path=obs_module_file("effects/fx_blur.body");char*code=path?os_quick_read_utf8_file(path):nullptr;
+    if(code)s->shadowKernelSource=code;bfree(code);bfree(path);
+    s->owner=source;applySettings(s,settings);auto *privateSettings=obs_source_get_private_settings(source);auto *copy=modelData(readModel(settings));obs_data_set_obj(privateSettings,"spatial_fx_model",copy);obs_data_release(copy);obs_data_release(privateSettings);
     auto *handler=obs_source_get_proc_handler(source);proc_handler_add(handler,"void spatial_fx_get_metrics(out int fx_allocations, out int fx_passes, out int fx_failures, out int renders, out float render_ms)",procMetrics,s);proc_handler_add(handler,"void spatial_fx_set_state(in ptr settings)",procSetState,s);proc_handler_add(handler,"void spatial_fx_get_state(out ptr settings)",procGetState,s);return s;
 }
 }
@@ -375,10 +465,14 @@ void stageApplySettings(obs_source_t *source,obs_data_t *settings){
     auto *privateSettings=obs_source_get_private_settings(source);auto *copy=obs_data_create();obs_data_apply(copy,settings);
     obs_data_set_obj(privateSettings,"spatial_fx_model",copy);applySettings(stage,copy);obs_data_release(copy);obs_data_release(privateSettings);
 }
+void stagePreviewSettings(obs_source_t *source,obs_data_t *settings){
+    if(!source||!settings||obs_source_removed(source)||std::string(obs_source_get_unversioned_id(source))!=stageId)return;
+    auto*stage=static_cast<Stage*>(obs_obj_get_data(source));if(stage)applySettings(stage,settings);
+}
 StageStats stageStats(obs_source_t *source){
     if(!source||std::string(obs_source_get_unversioned_id(source))!=stageId)return {};
     auto *s=static_cast<Stage*>(obs_obj_get_data(source));if(!s)return {};
-    return {s->renders.load(),s->renderNanoseconds.load(),s->textureAllocations.load(),s->missing.load(),s->timeline.load(),s->ready.load(),s->fxAllocations.load(),s->fxPasses.load(),s->fxFailures.load()};
+    return {s->renders.load(),s->renderNanoseconds.load(),s->textureAllocations.load(),s->missing.load(),s->timeline.load(),s->ready.load(),s->fxAllocations.load(),s->fxPasses.load(),s->fxFailures.load(),s->effectTime.load()};
 }
 }
 void register_spatial_stage(){

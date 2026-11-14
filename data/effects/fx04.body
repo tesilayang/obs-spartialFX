@@ -5,35 +5,43 @@ float3 fx04_bright(float4 c, float threshold)
     return c.rgb * c.a * max(y - threshold, 0.0) / max(y, 0.00001);
 }
 
+// Convert emitted light to coverage as well as RGB. Adding RGB while keeping
+// the original alpha discards all light outside a transparent silhouette.
+float4 fx04_emit(float4 c,float3 light){
+ float peak=max(max(light.r,light.g),light.b);
+ float alpha=c.a+(1-c.a)*(1-exp(-max(peak,0)));
+ return float4((c.rgb*c.a+light)/max(alpha,.00001),alpha);
+}
+float3 fx04_star(float2 uv){
+ float rays=2;if(p0.z>.5)rays=4;if(p0.z>1.5)rays=5;if(p0.z>2.5)rays=6;
+ float3 result=float3(0,0,0);
+ for(int ray=0;ray<6;++ray){
+  if(float(ray)>=rays)break;
+  float angle=float(ray)*6.283185307/rays+p0.w*.01745329252;
+  float3 beam=float3(0,0,0);float norm=0;
+  // A prefiltered, dense high-light field prevents isolated remote sample copies.
+  for(int k=0;k<32;++k){
+   float t=(float(k)+.5)/32;float weight=exp(-t*3);
+   float2 q=fxTextureUV(uv-float2(cos(angle),sin(angle))*p0.x*t*pixel_size);
+   float3 value=float3(0,0,0);
+   if(q.x>=0&&q.y>=0&&q.x<=1&&q.y<=1)value=blur_image.Sample(fx_sampler,q).rgb;
+   beam+=value*weight;norm+=weight;
+  }
+  result=max(result,beam*8/max(norm,.00001));
+ }
+ return result;
+}
 float4 fxApply(float2 uv)
 {
     float4 c = src(uv);
     if (effect_id == 0) {
-        float3 bloom = blur_image.Sample(fx_sampler, uv).rgb * p0.w;
-        if (p0.x < 0.5) {
-            return float4(c.rgb + bloom, c.a);
-        }
-        // Screen-like soft glow: threshold=1 or gain=0 is exactly neutral.
-        float3 soft = 1.0 - exp(-bloom);
-        return float4(c.rgb + max(1.0 - c.rgb, 0.0) * soft, c.a);
+        float3 bloom = blur_image.Sample(fx_sampler, fxTextureUV(uv)).rgb * p0.w * tint.rgb;
+        if(p0.x>.5)bloom=(1-saturate(c.rgb*c.a))*(1-exp(-bloom));
+        return fx04_emit(c,bloom);
     }
     if (effect_id == 1) {
-        float rays = 4.0;
-        if (p0.z > 0.5) rays = 6.0;
-        if (p0.z > 1.5) rays = 8.0;
-        float3 streak = float3(0.0, 0.0, 0.0);
-        float weights = 0.0;
-        for (int k = 0; k < 24; k++) {
-            float ring = floor(float(k) / rays) + 1.0;
-            float ray = float(k) - floor(float(k) / rays) * rays;
-            float angle = ray * 6.283185307 / rays + p0.w * 0.01745329252;
-            float distance_ray = ring / (24.0 / rays);
-            float weight = exp(-distance_ray * 2.3);
-            float2 offset = float2(cos(angle), sin(angle)) * p0.x * distance_ray * pixel_size;
-            streak += fx04_bright(src(uv + offset), p0.y) * weight;
-            weights += weight;
-        }
-        return float4(c.rgb + streak / max(weights, 0.00001) * p1.x, c.a);
+        float3 beam=blur_image.Sample(fx_sampler,fxTextureUV(uv)).rgb*tint.rgb*p1.x;
+        return fx04_emit(c,beam);
     }
     if (effect_id == 2) {
         float angle = p0.z * 0.01745329252;

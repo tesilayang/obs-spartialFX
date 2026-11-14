@@ -23,6 +23,7 @@ uniform float4 tint;
 uniform float4 tint2;
 uniform int effect_id;
 uniform float strength;
+uniform float4 content_rect;
 uniform float lut_size;
 uniform float3 lut_min;
 uniform float3 lut_max;
@@ -40,7 +41,8 @@ sampler_state fx_sampler { Filter=Linear; AddressU=Clamp; AddressV=Clamp; };
 struct FxVert { float4 pos:POSITION; float2 uv:TEXCOORD0; };
 FxVert FxVS(FxVert v){FxVert r;r.pos=mul(float4(v.pos.xyz,1),ViewProj);r.uv=v.uv;return r;}
 float4 straight(float4 c){return float4(c.a>.00001?c.rgb/max(c.a,.00001):float3(0,0,0),c.a);}
-float4 src(float2 uv){if(uv.x<0||uv.x>1||uv.y<0||uv.y>1)return float4(0,0,0,0);return straight(image.Sample(fx_sampler,uv));}
+float2 fxTextureUV(float2 uv){return content_rect.xy+uv*content_rect.zw;}
+float4 src(float2 uv){float2 q=fxTextureUV(uv);if(q.x<0||q.x>1||q.y<0||q.y>1)return float4(0,0,0,0);return straight(image.Sample(fx_sampler,q));}
 float4 aux(float2 uv){if(auxiliary_valid<.5)return src(uv);if(uv.x<0||uv.x>1||uv.y<0||uv.y>1)return float4(0,0,0,0);return straight(auxiliary.Sample(fx_sampler,uv));}
 float4 past(float2 uv){if(history_valid<.5)return src(uv);if(uv.x<0||uv.x>1||uv.y<0||uv.y>1)return float4(0,0,0,0);return straight(history_image.Sample(fx_sampler,uv));}
 float luminance(float3 c){return dot(c,float3(.2126,.7152,.0722));}

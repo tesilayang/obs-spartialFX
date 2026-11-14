@@ -7,6 +7,8 @@
 #include <functional>
 class QSlider;
 class QDialog;class QVBoxLayout;class QPushButton;
+class QLabel;class QColor;
+void setColorValuePreview(QLabel*,const QColor&);
 // Only the active page determines height; the Dock owns vertical scrolling.
 class ContentTabs final : public QTabWidget {
 public:

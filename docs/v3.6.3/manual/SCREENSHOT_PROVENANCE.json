@@ -1,0 +1,1206 @@
+{
+  "version": "3.6.3",
+  "note": "Retained real evidence; historical examples labelled by version. HTML illustrations are not runtime tests.",
+  "screenshots": [
+    {
+      "file": "screenshots/overview.png",
+      "source": "work/v3.6.3-shadow-isolation/final-bridge/obs-main.png",
+      "version": "3.6.3",
+      "origin": "OBS 33.0.1 / retained v3.6.3 evidence",
+      "type": "actual Qt UI",
+      "altered": false,
+      "sha256": "9e5eca6ae30c5141ba8dd820105628825043642369feff18e437500238824501",
+      "bytes": 93480
+    },
+    {
+      "file": "screenshots/import-timeline.png",
+      "source": "work/v3.6.3/verified-bridge/dock-tab-0.png",
+      "version": "3.6.3",
+      "origin": "OBS 33.0.1 / retained v3.6.3 evidence",
+      "type": "actual Qt UI",
+      "altered": false,
+      "sha256": "b2338b22129ea0c9f50db351e866338a15aa803160c80c6041abf63145c3ffa8",
+      "bytes": 48757
+    },
+    {
+      "file": "screenshots/lights.png",
+      "source": "work/v3.6.3-shadow-isolation/final-bridge/dock-tab-1.png",
+      "version": "3.6.3",
+      "origin": "OBS 33.0.1 / retained v3.6.3 evidence",
+      "type": "actual Qt UI",
+      "altered": false,
+      "sha256": "eb910928cec1af2857461a1030f2f3ce821be9ca79435afe42d9891a7f9898de",
+      "bytes": 36800
+    },
+    {
+      "file": "screenshots/fx-layout.png",
+      "source": "work/v3.6.3-shadow-isolation/final-bridge/shadow-panel.png",
+      "version": "3.6.3",
+      "origin": "OBS 33.0.1 / retained v3.6.3 evidence",
+      "type": "actual Qt UI",
+      "altered": false,
+      "sha256": "c0832e270a6fd23688fc36c8130db33e5cf30c898ee770871a05139a52a6839f",
+      "bytes": 46870
+    },
+    {
+      "file": "screenshots/quality-controls.png",
+      "source": "work/v3.4.1/release/ui34133/quality-controls.png",
+      "sha256": "74dc19fd1af318e748bffeda0ed9d51b44a35a56c190a5edb09f6538979780ad",
+      "bytes": 41421,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual Qt UI",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/presets.png",
+      "source": "work/v3.6.3/verified-bridge/dock-tab-3.png",
+      "version": "3.6.3",
+      "origin": "OBS 33.0.1 / retained v3.6.3 evidence",
+      "type": "actual Qt UI",
+      "altered": false,
+      "sha256": "b8a54921155803b52479a745ec5fff0971c4cc27cd40b3946e97e7191e934dba",
+      "bytes": 60272
+    },
+    {
+      "file": "screenshots/quality-original.png",
+      "source": "work/v3.4.1/release/quality33/original.png",
+      "sha256": "a857db3c66ea180a6c421c5f2868de18f3501166a5517a23b3eec83e502aaa73",
+      "bytes": 13051,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/quality-smaa.png",
+      "source": "work/v3.4.1/release/quality33/smaa-low.png",
+      "sha256": "4dd54eb3a1081b00eca406f1a6a0ed463d0d56cd1bcd32ed6820135abbbdee99",
+      "bytes": 18351,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/quality-fxaa.png",
+      "source": "work/v3.4.1/release/quality33/fxaa.png",
+      "sha256": "85888ea88508b5044e87f5c27ef41dbb7b30425e7456d204253b90f4a43e6304",
+      "bytes": 17385,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/quality-rcas.png",
+      "source": "work/v3.4.1/release/quality33/rcas.png",
+      "sha256": "05de311e8127a68d79758035443ae90c7335858d23d63dcb257d053e5946a71f",
+      "bytes": 16787,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/blur-gaussian.png",
+      "source": "work/v3.4.1/release/patch33/blur-gaussian.png",
+      "sha256": "88a6dcb43a41251c6d695bda5e2e5e562dc8b9e1d834991f584f97426a2b311f",
+      "bytes": 152743,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/blur-box.png",
+      "source": "work/v3.4.1/release/patch33/blur-box.png",
+      "sha256": "0d2b963c500b0e19df0ce3d178980066d93fc685993b26cf7ab2329c1f875e63",
+      "bytes": 133314,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/blur-lens.png",
+      "source": "work/v3.4.1/release/patch33/blur-lens.png",
+      "sha256": "b11edcff0f622043fc42ea5fbb63f50c4c21ccdef9dd83e6daa7fe77d9fc2081",
+      "bytes": 130169,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/led-rgb.png",
+      "source": "work/v3.4.1/release/patch33/led-rgb.png",
+      "sha256": "91e04bcc7ff7d64daa652ae6d549ab1cd2c9966f2addb8b1f14e5c23ca06a8af",
+      "bytes": 4561,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/21x9-blackbars.png",
+      "source": "work/v3.4.1/release/patch33/21x9-blackbars.png",
+      "sha256": "65e891509cd42ddc2f5eca69fa6fca96e23be1d3a1df6816bc43224dd0c00cac",
+      "bytes": 1767,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/21x9-transparent.png",
+      "source": "work/v3.4.1/release/patch33/21x9-transparent.png",
+      "sha256": "0e962c70c3972e101287ed222953f80db22397566c3f77faab6a6176f8a0b140",
+      "bytes": 1578,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX01.0.png",
+      "source": "work/v3.4.1/release/gpu33/FX01.0-default.png",
+      "sha256": "e5985279f76d0eb7b91fbe2bd3e7e369ea5721b942cc486d3dfcd9ae8788e3bf",
+      "bytes": 68718,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX01.1.png",
+      "source": "work/v3.4.1/release/gpu33/FX01.1-default.png",
+      "sha256": "70d40e44a59ac695b96358dd4bcb9d1e05bec295662b35fa40b5b2898b65b5b5",
+      "bytes": 363093,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX01.2.png",
+      "source": "work/v3.4.1/release/gpu33/FX01.2-default.png",
+      "sha256": "ca32be2f7a7b81ea0b528a2f5fc20d40f428ca4f7093962c19927f372e8a5b0e",
+      "bytes": 115187,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX01.3.png",
+      "source": "work/v3.4.1/release/gpu33/FX01.3-default.png",
+      "sha256": "9d05ffc30961312adeba61e01833c993d82285515116bdb93fd71af1b47b1d89",
+      "bytes": 25053,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX01.4.png",
+      "source": "work/v3.4.1/release/gpu33/FX01.4-default.png",
+      "sha256": "1388f3bc97dccf10f50ea05a81024000fc8788ab19867692aa1f2ce113061199",
+      "bytes": 126119,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX01.5.png",
+      "source": "work/v3.4.1/release/gpu33/FX01.5-default.png",
+      "sha256": "60e38cffaccc5b020d26109fed99ffc5a179d5b0ae2b152feacba552a2cad5d2",
+      "bytes": 94358,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX01.6.png",
+      "source": "work/v3.4.1/release/gpu33/FX01.6-default.png",
+      "sha256": "28a34004e140bddf2d99f9d903a2aecf3c73611c16e4bdd8fb12d8914bd6126f",
+      "bytes": 15254,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX01.7.png",
+      "source": "work/v3.4.1/release/gpu33/FX01.7-default.png",
+      "sha256": "28a34004e140bddf2d99f9d903a2aecf3c73611c16e4bdd8fb12d8914bd6126f",
+      "bytes": 15254,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX01.8.png",
+      "source": "work/v3.4.1/release/gpu33/FX01.8-default.png",
+      "sha256": "b82e115078c88b68b07f3f79d441650d5ac000336b6e347d6be93e2a3e34a5b4",
+      "bytes": 65238,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX02.0.png",
+      "source": "work/v3.4.1/release/gpu33/FX02.0-default.png",
+      "sha256": "c40c3f662c6a338b9515a76a36d0104af01ecab3af918f3657f5555182592368",
+      "bytes": 43639,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX02.1.png",
+      "source": "work/v3.4.1/release/gpu33/FX02.1-default.png",
+      "sha256": "4e4ed2588bc853549eac19a5a561038d38ddc22eb1d7f40daafa3ec4bcceef9d",
+      "bytes": 43715,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX02.2.png",
+      "source": "work/v3.4.1/release/gpu33/FX02.2-default.png",
+      "sha256": "f56900796f28eb8ae5fc1f507124b1e6738c776d3885e0617c8cea3dc113fa09",
+      "bytes": 20189,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX02.3.png",
+      "source": "work/v3.4.1/release/gpu33/FX02.3-default.png",
+      "sha256": "1ad33d17edfd1004cfa0a2742c1df3a7a0929b87da0c69e0580641ce21777202",
+      "bytes": 30859,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX02.4.png",
+      "source": "work/v3.4.1/release/gpu33/FX02.4-default.png",
+      "sha256": "661650ff9570cd6a96b17295ef2c5700286c6c48700f8f7b9f65990ac0943f9d",
+      "bytes": 22107,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX03.0.png",
+      "source": "work/v3.4.1/release/gpu33/FX03.0-default.png",
+      "sha256": "0552b1a2e06e09fade12792573f8264766aee33d1046d142208b2ebd2c81562a",
+      "bytes": 11608,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX03.1.png",
+      "source": "work/v3.4.1/release/gpu33/FX03.1-default.png",
+      "sha256": "31d42ffb9394201478fe20f145bddcd829cb59f0a2ccd289bf2ab09e8bc585f7",
+      "bytes": 17187,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX03.2.png",
+      "source": "work/v3.4.1/release/gpu33/FX03.2-default.png",
+      "sha256": "421ceaec5a7c9ae69908ac7d79b48535d283b0a3e92e276ae9d15942bbfd1377",
+      "bytes": 14674,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX03.3.png",
+      "source": "work/v3.4.1/release/gpu33/FX03.3-default.png",
+      "sha256": "77ca46661d610e63ec0a3a2377c7557d802f099f10d0d8acc7094ed3100f3dc4",
+      "bytes": 15622,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX03.4.png",
+      "source": "work/v3.4.1/release/gpu33/FX03.4-default.png",
+      "sha256": "b8dfbee9a5d07e1b729f3732fa5e2d5795e7bd16938309d0f2a095e849ea3004",
+      "bytes": 16258,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX03.5.png",
+      "source": "work/v3.4.1/release/gpu33/FX03.5-default.png",
+      "sha256": "23e267f53f1da4c77264774e6efef2b1aca63aae0d317b7357f0f8e651b5648d",
+      "bytes": 15227,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX03.6.png",
+      "source": "work/v3.4.1/release/gpu33/FX03.6-default.png",
+      "sha256": "399e5398fd88f1e27c6c4064a9f48bbc7c6598d9502503946d62839b637dc202",
+      "bytes": 14765,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX03.7.png",
+      "source": "work/v3.4.1/release/gpu33/FX03.7-default.png",
+      "sha256": "0f801e2d68c980b8862cb4730dfd9713566aa81ee998b3e08383648adb6b18d9",
+      "bytes": 35043,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX03.8.png",
+      "source": "work/v3.4.1/release/gpu33/FX03.8-default.png",
+      "sha256": "23e267f53f1da4c77264774e6efef2b1aca63aae0d317b7357f0f8e651b5648d",
+      "bytes": 15227,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX03.9.png",
+      "source": "work/v3.4.1/release/gpu33/FX03.9-default.png",
+      "sha256": "9e2435c97374360f26bf9b83ee0b2f98987675c392ab2990f3d4ce444f1074d1",
+      "bytes": 17594,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX04.0.png",
+      "source": "work/v3.6.3-shadow-isolation/final-optics/glow-0-red.png",
+      "version": "3.6.3",
+      "origin": "OBS 33.0.1 / retained v3.6.3 evidence",
+      "type": "actual GPU output on synthetic material",
+      "altered": false,
+      "sha256": "a293bba3f1a276923419626b64a500823602534f08012db63d36abc0745540ca",
+      "bytes": 66376
+    },
+    {
+      "file": "screenshots/FX04.1.png",
+      "source": "work/v3.6.3-shadow-isolation/final-optics/star-red-target-1.png",
+      "version": "3.6.3",
+      "origin": "OBS 33.0.1 / retained v3.6.3 evidence",
+      "type": "actual GPU output on synthetic material",
+      "altered": false,
+      "sha256": "65b1a6338b9428e32669d6367e962ca41656640a1daf576ae8917a09524d59bc",
+      "bytes": 19351
+    },
+    {
+      "file": "screenshots/FX04.2.png",
+      "source": "work/v3.4.1/release/gpu33/FX04.2-default.png",
+      "sha256": "e8f826c742ce641f901ad44d142a19126ef07fdd6491545ce45e1ebfd076d350",
+      "bytes": 45357,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX04.3.png",
+      "source": "work/v3.4.1/release/gpu33/FX04.3-default.png",
+      "sha256": "c7fdc0ce4ba71864b4dc1fe29e35dbdf162c37415580cc5787ab39499163bc22",
+      "bytes": 35211,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX04.4.png",
+      "source": "work/v3.4.1/release/gpu33/FX04.4-default.png",
+      "sha256": "df2b59f4e3993c8739c1f87502007d3092d9f42fd760a32febb0f2c967a4eb12",
+      "bytes": 77279,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX04.5.png",
+      "source": "work/v3.4.1/release/gpu33/FX04.5-default.png",
+      "sha256": "bc2eb7f855a1591d54e8ae46b0c60de2b75726dabd9edcba88a84f5e9ef26a33",
+      "bytes": 57283,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX04.6.png",
+      "source": "work/v3.4.1/release/gpu33/FX04.6-default.png",
+      "sha256": "7a0405831d74c3f92ebe1cb02fe0a32848803106a2f34fcbf74e9ba0abb941f0",
+      "bytes": 46250,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX04.7.png",
+      "source": "work/v3.4.1/release/gpu33/FX04.7-default.png",
+      "sha256": "f2d0815ecbb9062420389a5f53b3c26f321b9d583ea78ba4137091fc877693e0",
+      "bytes": 39323,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX05.0.png",
+      "source": "work/v3.4.1/release/gpu33/FX05.0-default.png",
+      "sha256": "ee0fdab54b40e3db2fdcfe187af09cbb1d035e73e5863dd4632b70aa71f2d59f",
+      "bytes": 41836,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX05.1.png",
+      "source": "work/v3.4.1/release/gpu33/FX05.1-default.png",
+      "sha256": "df71a0387af25f8beb3fa26c9313d46ad8a864c22d45efa75537579c3ad7c4b8",
+      "bytes": 35890,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX05.2.png",
+      "source": "work/v3.4.1/release/gpu33/FX05.2-default.png",
+      "sha256": "9d627aae78a42c50fb4004ddc920afd2ea936a7ee2739929184cd221724a7b44",
+      "bytes": 32213,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX05.3.png",
+      "source": "work/v3.4.1/release/gpu33/FX05.3-default.png",
+      "sha256": "d4926957efdb385b3093051c536abf69b1014ffae92d5cdda0d5e5f63477b04b",
+      "bytes": 57941,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX05.4.png",
+      "source": "work/v3.4.1/release/gpu33/FX05.4-default.png",
+      "sha256": "f382f0377d5d59629f59d900e3919738e0c0179a3adaab37199c6ef1286f731c",
+      "bytes": 29994,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX05.5.png",
+      "source": "work/v3.6.3-shadow-isolation/final-isolation/shadow-0-rim-on.png",
+      "version": "3.6.3",
+      "origin": "OBS 33.0.1 / retained v3.6.3 evidence",
+      "type": "actual GPU output on synthetic material",
+      "altered": false,
+      "sha256": "4b37e779375d68b109c02b27b428801652d9c0ee8afb3e71588426e7dd2d2506",
+      "bytes": 19886
+    },
+    {
+      "file": "screenshots/FX06.0.png",
+      "source": "work/v3.4.1/release/gpu33/FX06.0-default.png",
+      "sha256": "7336ba4a4bfef7d00784830b983f4cbe058ba792d821844ac1d875e671c2fc7a",
+      "bytes": 16532,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX06.1.png",
+      "source": "work/v3.4.1/release/gpu33/FX06.1-default.png",
+      "sha256": "bcdcc7ba4305b58633825ed41fb92ec61104d03b377b8927178334dab6f93e6b",
+      "bytes": 16627,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX06.2.png",
+      "source": "work/v3.4.1/release/gpu33/FX06.2-default.png",
+      "sha256": "60c12ff9540364f0647a4d5e0f3ba41ef9fdf8413b2958e42ce0dcce8d97b344",
+      "bytes": 30365,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX07.0.png",
+      "source": "work/v3.4.1/release/gpu33/FX07.0-default.png",
+      "sha256": "b9dcf051309b16167447ca89e56b0de694a202fcce0cb9845d27c04a305b1e04",
+      "bytes": 84393,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX07.1.png",
+      "source": "work/v3.4.1/release/gpu33/FX07.1-default.png",
+      "sha256": "02c6fbf8a87d94a65737f2f7b7d6be2d596640ffe3bf580beee854f33d6945d5",
+      "bytes": 213984,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX07.2.png",
+      "source": "work/v3.4.1/release/gpu33/FX07.2-default.png",
+      "sha256": "925cf097f3d7874caadf8369fd0e91c5c5faae6e35570ba8d49b1f10f14b8830",
+      "bytes": 80268,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX07.3.png",
+      "source": "work/v3.4.1/release/gpu33/FX07.3-default.png",
+      "sha256": "61cbc4222b73895d7ea6421d8e19041436dbfc1e9fc33de926741cbd515cd743",
+      "bytes": 62474,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX07.4.png",
+      "source": "work/v3.4.1/release/gpu33/FX07.4-default.png",
+      "sha256": "580e36d9c2f1bbed50e1b1c485797fa8c6be8656f1d2ee3381d6e0ff7bf02c12",
+      "bytes": 67020,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX07.5.png",
+      "source": "work/v3.4.1/release/gpu33/FX07.5-default.png",
+      "sha256": "d1ad0b541db2fade5bd81031436c27032c5c7a12b38fb5435165449bdb589c7a",
+      "bytes": 8589,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX07.6.png",
+      "source": "work/v3.4.1/release/gpu33/FX07.6-default.png",
+      "sha256": "e43f492663d11ebadc1bf9753bdbd4f288adb3ea4126959ff8c807085c899400",
+      "bytes": 4672,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX08.0.png",
+      "source": "work/v3.4.1/release/gpu33/FX08.0-default.png",
+      "sha256": "8d2be4a2043aa5efacabc55c774a285b8b358c5557797d8ac730702cf72de5f3",
+      "bytes": 20953,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX08.1.png",
+      "source": "work/v3.4.1/release/gpu33/FX08.1-default.png",
+      "sha256": "c6921d67d4c6ed9ae6b9fc21a8dbdd102d76beb5058272dfe9accd49092b43cf",
+      "bytes": 331185,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX08.2.png",
+      "source": "work/v3.4.1/release/gpu33/FX08.2-default.png",
+      "sha256": "0295acf4fbcd6b1c72145620ec1c443c4d6b437357bf5f60bed21798e578dc99",
+      "bytes": 160607,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX08.3.png",
+      "source": "work/v3.4.1/release/gpu33/FX08.3-default.png",
+      "sha256": "a4cbab40306594fa96ef8b6329db8ac34c0482d369ee1ed6f3f1c80f0107cb43",
+      "bytes": 89063,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX08.4.png",
+      "source": "work/v3.4.1/release/gpu33/FX08.4-default.png",
+      "sha256": "3354da4d3378a3b55e79e27e0049c8db37ff6bfa0f7ef2962a29749526631ba7",
+      "bytes": 40778,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX08.5.png",
+      "source": "work/v3.4.1/release/gpu33/FX08.5-default.png",
+      "sha256": "15b179aa23e587982cc68b665c09d6ce6a24a1f9d1035163c3f7a2fcb7af0670",
+      "bytes": 56859,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX08.6.png",
+      "source": "work/v3.4.1/release/gpu33/FX08.6-default.png",
+      "sha256": "62777e173a635c13cc4480a47bbcc5193da5112623dac4433fb7e44b230d2bd2",
+      "bytes": 4521,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX08.7.png",
+      "source": "work/v3.4.1/release/gpu33/FX08.7-default.png",
+      "sha256": "ed61b083e7e5fa8bb2262d9ce4be5df80faa97828e42b6d7ec9282ed390fed1c",
+      "bytes": 33972,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX08.8.png",
+      "source": "work/v3.4.1/release/gpu33/FX08.8-default.png",
+      "sha256": "54b1af962d06aa2d2f63843465a88fa135b67a9978d9f6994b4e39d2ff13a127",
+      "bytes": 244826,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX08.9.png",
+      "source": "work/v3.4.1/release/gpu33/FX08.9-default.png",
+      "sha256": "2246de8b624c21f36fcd5b004d747e5a6aef2e09f11f31e5d9d8dd20e5e39a9c",
+      "bytes": 61431,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX09.0.png",
+      "source": "work/v3.4.1/release/gpu33/FX09.0-default.png",
+      "sha256": "3e630a399197aa269a8247014578a595c2ba7f41a92ff8e364a70c2b97609796",
+      "bytes": 41165,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX09.1.png",
+      "source": "work/v3.4.1/release/gpu33/FX09.1-default.png",
+      "sha256": "8397855cebbe5f7d6a90c9409af52b1f05e3864e4b9d6219a732ed5de2d79365",
+      "bytes": 52631,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX09.2.png",
+      "source": "work/v3.4.1/release/gpu33/FX09.2-default.png",
+      "sha256": "505887541dcc05f8954dfd40f56866705a510606279c86f00f96b8621a737c44",
+      "bytes": 261270,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX09.3.png",
+      "source": "work/v3.4.1/release/gpu33/FX09.3-default.png",
+      "sha256": "3814381973589f5438a1c3b1722d7b821160f686ed3ac67b7664aea2095e1dc2",
+      "bytes": 125500,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX09.4.png",
+      "source": "work/v3.4.1/release/gpu33/FX09.4-default.png",
+      "sha256": "312fb80a34fbb056822016b92572d2f8610b3b9124c2eeeab2b6fe5c6f0eeda9",
+      "bytes": 9553,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX09.5.png",
+      "source": "work/v3.4.1/release/gpu33/FX09.5-default.png",
+      "sha256": "aaddd2969b2987951b73b5eeeaa917e6a4675341c33ff3b147582a9a10f5fd9f",
+      "bytes": 74721,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX09.6.png",
+      "source": "work/v3.4.1/release/gpu33/FX09.6-default.png",
+      "sha256": "1203d78fd038fca6c0dfcfdd516281fffea555e859dba3cc349093d82a326816",
+      "bytes": 67575,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX09.7.png",
+      "source": "work/v3.4.1/release/gpu33/FX09.7-default.png",
+      "sha256": "fda6c12a909389c8de2e96eb005981f1d607664ae29fda66eae78591d15b819a",
+      "bytes": 11965,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX09.8.png",
+      "source": "work/v3.4.1/release/gpu33/FX09.8-default.png",
+      "sha256": "d958f582f30492518bdd3b0ca331500f8a7e4c1551132121f5d7b6db73ac6c6e",
+      "bytes": 78589,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX10.0.png",
+      "source": "work/v3.4.1/release/gpu33/FX10.0-default.png",
+      "sha256": "c1e5927af1d9d517902d0a242f9ac0c2000299447ce7f7b007337eb27919ade7",
+      "bytes": 84357,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX10.1.png",
+      "source": "work/v3.4.1/release/gpu33/FX10.1-default.png",
+      "sha256": "7df4254556bedba9e122fe3c2aa440c95294f077b8abf25ad59a3659d6a72507",
+      "bytes": 56640,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX10.2.png",
+      "source": "work/v3.4.1/release/gpu33/FX10.2-default.png",
+      "sha256": "f9735a8683e1d4800be73fe20418ac049c35eae04a3f326650230619d94e2b35",
+      "bytes": 46936,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX10.3.png",
+      "source": "work/v3.4.1/release/gpu33/FX10.3-default.png",
+      "sha256": "83f2cdc570c8beda3799f18df7b4d233ab84f14f4d2ce96bc25804e32886bc74",
+      "bytes": 124368,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX10.4.png",
+      "source": "work/v3.4.1/release/gpu33/FX10.4-default.png",
+      "sha256": "14c8ad0c4f8a65187c81a05fef9bd8e39e20cdb63f06124d13124d0a605769ac",
+      "bytes": 165923,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX10.5.png",
+      "source": "work/v3.4.1/release/gpu33/FX10.5-default.png",
+      "sha256": "9f0dc78cb71890446c730a47746ab5c6d10a39594e76cd5a5608b4e879822ff1",
+      "bytes": 37656,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX10.6.png",
+      "source": "work/v3.4.1/release/gpu33/FX10.6-default.png",
+      "sha256": "c31bc287f437224315d761bf935e70a9dd842a3384c92debb7755c088cf4b4df",
+      "bytes": 97718,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX10.7.png",
+      "source": "work/v3.4.1/release/gpu33/FX10.7-default.png",
+      "sha256": "d9e9db6bf44b354673f55e872abb42d0802c854b362c1858103757084bcf2e1c",
+      "bytes": 19594,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX10.8.png",
+      "source": "work/v3.4.1/release/gpu33/FX10.8-default.png",
+      "sha256": "09cb38155f93dae8a5255ced48e373aec4d32752b77222ab9a85cca2431effc4",
+      "bytes": 34396,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX10.9.png",
+      "source": "work/v3.4.1/release/gpu33/FX10.9-default.png",
+      "sha256": "b1f93c3054984b3ee88c8a64d43a01b8dea89f4dd341f099f220e01ee994d8fb",
+      "bytes": 144108,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX11.0.png",
+      "source": "work/v3.4.1/release/gpu33/FX11.0-default.png",
+      "sha256": "21b5a267bc7d289f2b5dbc444b8f7817dfa6fbedfbf750052e8c4f3a99734d7b",
+      "bytes": 49087,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX11.2.png",
+      "source": "work/v3.4.1/release/gpu33/FX11.2-default.png",
+      "sha256": "4f192444e2e91b2f437f4e24e9c21f7d665b23703bf6cadc9d037f2c8cd8b032",
+      "bytes": 60390,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX11.3.png",
+      "source": "work/v3.4.1/release/gpu33/FX11.3-default.png",
+      "sha256": "cf332dbe1036d0460310c21ffaeb3b487a392397c29934dbc59b72fee608bd79",
+      "bytes": 50060,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX11.4.png",
+      "source": "work/v3.4.1/release/gpu33/FX11.4-default.png",
+      "sha256": "6d088c799b50eddbeeb842438619231061daa1faf5d7326216d5f3376ba4acc0",
+      "bytes": 15475,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX12.0.png",
+      "source": "work/v3.4.1/release/gpu33/FX12.0-default.png",
+      "sha256": "525c3089e63e715f7a0cbf35775f1a56dc7019d8acb8d446a5956ba1465e958b",
+      "bytes": 13715,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX12.1.png",
+      "source": "work/v3.4.1/release/gpu33/FX12.1-default.png",
+      "sha256": "b5bdc0cabff80521ab7a05b06c6420d559c4585500dda57253b36c35b505fb1b",
+      "bytes": 19320,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX12.2.png",
+      "source": "work/v3.4.1/release/gpu33/FX12.2-default.png",
+      "sha256": "5f2a4efc3bfc94bfb38a544d5b3a08d670564d9dbfdbe6dfe431cdccac7cbd48",
+      "bytes": 15377,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX12.3.png",
+      "source": "work/v3.4.1/release/gpu33/FX12.3-default.png",
+      "sha256": "e8f5cbd080c45aef786f5e7435a312a174c2d7b41582a23bb9d5e56e738e045e",
+      "bytes": 15420,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX12.4.png",
+      "source": "work/v3.4.1/release/gpu33/FX12.4-default.png",
+      "sha256": "2dfb40e2da69b85b9ca94f18269ad5039edba401d0713da84d0a876f55050569",
+      "bytes": 15236,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX12.5.png",
+      "source": "work/v3.4.1/release/gpu33/FX12.5-default.png",
+      "sha256": "5a59b61bae2e2d953cf943528fc11810e10245c8a3f8df4accab3ba64d7ed5d8",
+      "bytes": 17729,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX12.9.png",
+      "source": "work/v3.4.1/release/gpu33/FX12.9-default.png",
+      "sha256": "b201631c05603149d1f13f5aa80879c27c9d159942c1d074928f7f375b3fe0cd",
+      "bytes": 3024,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX12.6.png",
+      "source": "work/v3.4.1/release/gpu33/FX12.6-default.png",
+      "sha256": "56d06a164cef693309b5bb83dad74fe2ff0884f1131b17b0fbde06f25cb05186",
+      "bytes": 19092,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX12.7.png",
+      "source": "work/v3.4.1/release/gpu33/FX12.7-default.png",
+      "sha256": "8b418a0f8fed2699466d9ee26566c2c23787419b001993cd9a1266e68ff8c711",
+      "bytes": 25853,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX12.8.png",
+      "source": "work/v3.4.1/release/gpu33/FX12.8-default.png",
+      "sha256": "f08c4e7f6161cf621cbf11b634fd53a776be94619b7255385a6106fb48fabf2f",
+      "bytes": 118211,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX13.0.png",
+      "source": "work/v3.4.1/release/gpu33/FX13.0-default.png",
+      "sha256": "7bf29c6cdd0eceef105094c47d5b1a117cdf35ebc3ab210006d7b3536adb2ae2",
+      "bytes": 46837,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX13.1.png",
+      "source": "work/v3.4.1/release/gpu33/FX13.1-default.png",
+      "sha256": "84e263096a07fa70d9827ab98b98c7f151d8a08f957680a428e2bd0760a360c4",
+      "bytes": 14057,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX13.2.png",
+      "source": "work/v3.4.1/release/gpu33/FX13.2-default.png",
+      "sha256": "0154a282554a76b41e8a12e5c05713f7a62f1e83079e48ef7e3109f3a969cb6a",
+      "bytes": 45056,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/FX13.3.png",
+      "source": "work/v3.4.1/release/gpu33/FX13.3-default.png",
+      "sha256": "02b4f6e6742877eb745945d1e15e627989953ca9c4a7a5792ab2fae53db35093",
+      "bytes": 94254,
+      "origin": "OBS 33.0.1 / Spatial FX 3.4.1 retained release evidence",
+      "type": "actual GPU output on synthetic test material",
+      "altered": false,
+      "version": "3.4.1"
+    },
+    {
+      "file": "screenshots/project.png",
+      "source": "work/v3.6.3-shadow-isolation/final-bridge/dock-tab-4.png",
+      "version": "3.6.3",
+      "origin": "OBS 33.0.1 / retained v3.6.3 evidence",
+      "type": "actual Qt UI",
+      "altered": false,
+      "sha256": "90d17a4af58ff803b2bc39c94c6d44b899f3be5290bbbd0d734651f258864440",
+      "bytes": 23428
+    },
+    {
+      "file": "screenshots/append-controls.png",
+      "source": "work/v3.6.3/verified-bridge/append-conflict-tail-controls.png",
+      "version": "3.6.3",
+      "origin": "OBS 33.0.1 / retained v3.6.3 evidence",
+      "type": "actual Qt UI",
+      "altered": false,
+      "sha256": "2ccd9f2710742829bd43af8a138d77976cf45afdb52badc65b30d4a0ac246a42",
+      "bytes": 60067
+    },
+    {
+      "file": "screenshots/glow-other.png",
+      "source": "work/v3.6.3-shadow-isolation/final-optics/glow-1-green.png",
+      "version": "3.6.3",
+      "origin": "OBS 33.0.1 / retained v3.6.3 evidence",
+      "type": "actual GPU output on synthetic material",
+      "altered": false,
+      "sha256": "93e0d8290bf97a0bf6bbf07f2f0eb5ca5a78d72b4ec7676d8e7bbc83bfc27d57",
+      "bytes": 56649
+    },
+    {
+      "file": "screenshots/star-other.png",
+      "source": "work/v3.6.3-shadow-isolation/final-optics/star-blue-target-3.png",
+      "version": "3.6.3",
+      "origin": "OBS 33.0.1 / retained v3.6.3 evidence",
+      "type": "actual GPU output on synthetic material",
+      "altered": false,
+      "sha256": "1164304fb5f5d478d416901eb265008b183daa8cd8639e0c6cae12fd4bbd177e",
+      "bytes": 23716
+    },
+    {
+      "file": "screenshots/surface-rim.png",
+      "source": "work/v3.6.3-shadow-isolation/final-isolation/surface-rim.png",
+      "version": "3.6.3",
+      "origin": "OBS 33.0.1 / retained v3.6.3 evidence",
+      "type": "actual GPU output on synthetic material",
+      "altered": false,
+      "sha256": "349578b4752fa86d804a6900264843e8a0de572a9abdf9827337ad7d072c57aa",
+      "bytes": 10381
+    },
+    {
+      "file": "screenshots/shadow-rim-off.png",
+      "source": "work/v3.6.3-shadow-isolation/final-isolation/shadow-0-rim-off.png",
+      "version": "3.6.3",
+      "origin": "OBS 33.0.1 / retained v3.6.3 evidence",
+      "type": "actual GPU output on synthetic material",
+      "altered": false,
+      "sha256": "4c7fcfe12644ce630492cd0637a05fd1920c9a4cebda9f3d432ceaacba70e975",
+      "bytes": 19251
+    },
+    {
+      "file": "screenshots/shadow-rim-on.png",
+      "source": "work/v3.6.3-shadow-isolation/final-isolation/shadow-0-rim-on.png",
+      "version": "3.6.3",
+      "origin": "OBS 33.0.1 / retained v3.6.3 evidence",
+      "type": "actual GPU output on synthetic material",
+      "altered": false,
+      "sha256": "4b37e779375d68b109c02b27b428801652d9c0ee8afb3e71588426e7dd2d2506",
+      "bytes": 19886
+    },
+    {
+      "file": "screenshots/decor-rings.png",
+      "source": "work/v3.6.3/verified-presets/D01-thick-solid-stage.png",
+      "version": "3.6.3",
+      "origin": "OBS 33.0.1 / retained v3.6.3 evidence",
+      "type": "actual GPU output on synthetic material",
+      "altered": false,
+      "sha256": "66d8038292c047c03c5fa2be33e96e783cd384bbc99a4d6b5a97ff48b633658c",
+      "bytes": 42741
+    },
+    {
+      "file": "screenshots/decor-ribbons.png",
+      "source": "work/v3.6.3/verified-presets/D06-thick-solid-stage.png",
+      "version": "3.6.3",
+      "origin": "OBS 33.0.1 / retained v3.6.3 evidence",
+      "type": "actual GPU output on synthetic material",
+      "altered": false,
+      "sha256": "6ccf29a14b7fde7dda7e3762853c5d2c3f42904041245b90a224bceefd18701a",
+      "bytes": 21049
+    }
+  ]
+}

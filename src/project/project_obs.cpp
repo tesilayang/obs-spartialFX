@@ -11,7 +11,7 @@
 namespace spatial::projects {
 namespace {
 constexpr const char*stageId="obs_spatial_fx_stage";
-obs_data_t*stageState(obs_source_t*s){calldata_t cd;calldata_init(&cd);const bool ok=proc_handler_call(obs_source_get_proc_handler(s),"spatial_fx_get_state",&cd);auto*d=ok?static_cast<obs_data_t*>(calldata_ptr(&cd,"settings")):nullptr;calldata_free(&cd);return d?d:obs_source_get_settings(s);}
+obs_data_t*stageState(obs_source_t*s){auto*p=obs_source_get_private_settings(s);auto*saved=obs_data_get_obj(p,"spatial_fx_model");obs_data_release(p);if(saved)return saved;calldata_t cd;calldata_init(&cd);const bool ok=proc_handler_call(obs_source_get_proc_handler(s),"spatial_fx_get_state",&cd);auto*d=ok?static_cast<obs_data_t*>(calldata_ptr(&cd,"settings")):nullptr;calldata_free(&cd);return d?d:obs_source_get_settings(s);}
 QString str(const char*s){return QString::fromUtf8(s?s:"");}
 QJsonObject json(obs_data_t*d){return d?QJsonDocument::fromJson(obs_data_get_json(d)).object():QJsonObject{};}
 obs_data_t*data(const QJsonObject&o){return obs_data_create_from_json(QJsonDocument(o).toJson(QJsonDocument::Compact).constData());}
@@ -71,7 +71,7 @@ QJsonObject captureScene(obs_source_t*root,QString&error){
   obs_source_release(s);
   if(sources.size()>10000){for(size_t j=i+1;j<queue.size();++j)obs_source_release(queue[j]);error=QString::fromUtf8("场景依赖超过 10000 个来源。");return {};}
  }
- return QJsonObject{{"format","obs-spatial-fx-project"},{"version",1},{"plugin_version","3.5.0"},{"obs_version",str(obs_get_version_string())},{"created_utc",QDateTime::currentDateTimeUtc().toString(Qt::ISODate)},{"scene_name",str(obs_source_get_name(root))},{"root_uuid",str(obs_source_get_uuid(root))},{"sources",sources},{"requirements",requirements}};
+ return QJsonObject{{"format","obs-spatial-fx-project"},{"version",1},{"plugin_version","3.6.0"},{"obs_version",str(obs_get_version_string())},{"created_utc",QDateTime::currentDateTimeUtc().toString(Qt::ISODate)},{"scene_name",str(obs_source_get_name(root))},{"root_uuid",str(obs_source_get_uuid(root))},{"sources",sources},{"requirements",requirements}};
 }
 ImportResult restoreScene(const QJsonObject&doc,bool nameMatch){
  ImportResult result;if(!validateDocument(doc,result.error))return result;

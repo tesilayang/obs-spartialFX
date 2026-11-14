@@ -2,6 +2,7 @@
 uniform float4x4 ViewProj;
 uniform texture2d image;
 uniform float2 pixel_size;
+uniform float2 reduce_axis;
 uniform float2 kernel_radius;
 uniform float2 axis;
 uniform float algorithm;
@@ -25,7 +26,7 @@ float4 tap(float2 uv){
 float4 ReducePS(BlurVert v):TARGET{
  // Explicit footprint average also suppresses Nyquist detail at odd dimensions,
  // where a single bilinear fetch is not an area average at a 2:1 ratio.
- float2 d=pixel_size*.5;
+ float2 d=pixel_size*reduce_axis*.5;
  return (image.Sample(linear_sampler,v.uv+d)+image.Sample(linear_sampler,v.uv-d)
        +image.Sample(linear_sampler,v.uv+float2(d.x,-d.y))
        +image.Sample(linear_sampler,v.uv+float2(-d.x,d.y)))*.25;
@@ -92,3 +93,38 @@ technique EnvironmentField {pass {vertex_shader=BlurVS(v);pixel_shader=Environme
 technique Reduce {pass {vertex_shader=BlurVS(v);pixel_shader=ReducePS(v);}}
 technique Convolve {pass {vertex_shader=BlurVS(v);pixel_shader=ConvolvePS(v);}}
 technique Aperture {pass {vertex_shader=BlurVS(v);pixel_shader=AperturePS(v);}}
+
+// Optical preparation is local to this layer; no scene-light dependency.
+uniform float2 input_size;
+uniform float2 output_size;
+uniform float border;
+uniform float4 crop_rect;
+uniform float3 target_color;
+uniform float color_tolerance;
+uniform float shadow_inner;
+float4 PadPS(BlurVert v):TARGET{
+ float2 uv=(v.uv*output_size-border)/input_size;
+ if(uv.x<crop_rect.x||uv.y<crop_rect.y||uv.x>crop_rect.z||uv.y>crop_rect.w)return float4(0,0,0,0);
+ return image.Sample(linear_sampler,uv);
+}
+float4 StarSeedPS(BlurVert v):TARGET{
+ float4 c=image.Sample(linear_sampler,v.uv);float3 rgb=c.rgb/max(c.a,.00001);
+ float3 diff=abs(rgb-target_color);float distance=max(max(diff.r,diff.g),diff.b);
+ float match=color_tolerance>=.99999?1:1-smoothstep(max(color_tolerance-.02,0),max(color_tolerance,.00001),distance);
+ float peak=max(max(rgb.r,rgb.g),rgb.b);float value=max(peak-threshold,0)*c.a*match;
+ return float4(value,value,value,value);
+}
+float4 ShadowMaskPS(BlurVert v):TARGET{
+ float a=image.Sample(linear_sampler,v.uv).a;if(shadow_inner>.5)a=1-a;
+ return float4(0,0,0,a);
+}
+float4 DilatePS(BlurVert v):TARGET{
+ float radius=dot(kernel_radius,axis);float a=tap(v.uv).a;
+ int extent=int(ceil(min(radius,100)));
+ for(int i=-extent;i<=extent;++i){float weight=saturate(radius+1-abs(float(i)));a=max(a,tap(v.uv+axis*pixel_size*float(i)).a*weight);}
+ return float4(0,0,0,a);
+}
+technique Pad {pass {vertex_shader=BlurVS(v);pixel_shader=PadPS(v);}}
+technique ExtractStar {pass {vertex_shader=BlurVS(v);pixel_shader=StarSeedPS(v);}}
+technique ShadowMask {pass {vertex_shader=BlurVS(v);pixel_shader=ShadowMaskPS(v);}}
+technique Dilate {pass {vertex_shader=BlurVS(v);pixel_shader=DilatePS(v);}}

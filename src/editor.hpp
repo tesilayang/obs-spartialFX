@@ -24,7 +24,7 @@ protected:
  bool event(QEvent*)override;
  void paintEvent(QPaintEvent*)override;void mousePressEvent(QMouseEvent*)override;void mouseMoveEvent(QMouseEvent*)override;void mouseReleaseEvent(QMouseEvent*)override;void mouseDoubleClickEvent(QMouseEvent*)override;void wheelEvent(QWheelEvent*)override;void keyPressEvent(QKeyEvent*)override;
 private:
- struct Row {int object;std::string param;QString label;bool summary=false;};std::vector<Row> rows;std::vector<int> collapsed;int knownLayers=0;int firstRow=0;bool dragging=false,panning=false,rubber=false;QPointF origin,current;spatial::TimeUs delta=0;
+ struct Row {int object;std::string param;QString label;bool summary=false;};std::vector<Row> rows;std::vector<int> collapsed;int knownLayers=0,knownGeometries=0;int firstRow=0;bool dragging=false,panning=false,rubber=false;QPointF origin,current;spatial::TimeUs delta=0;
  int reorderFrom=-1,reorderTo=-1;bool reordering=false;
  double xAt(double)const;double timeAt(double)const;std::vector<KeyRef> keys(const Row&)const;int rowAt(double)const;
 };
@@ -51,13 +51,16 @@ public:
  void resetDocument();void refresh();void refreshValues();void tick(double);void selectLayer(int);
  void reorderLayer(int from,int to);
  void editValue(int,const std::string&,double);void record();void removeKeys();void play();void pause();void seek(spatial::TimeUs);void reset(bool all);void undo();void redo();
+ void applyDocument(const spatial::StageModel&);void selectGeometry(int);
 private:
- spatial::StageModel *model;std::vector<spatial::StageModel> undoStates,redoStates;std::vector<KeyRef> clipboard;std::vector<spatial::AnimKey> copied;
- QString identity,bindingSignature;uint64_t editRevision=0,bakeGeneration=0;std::atomic_bool cancelBake{false};std::thread bakeThread;bool syncing=false;QElapsedTimer coalesce;std::string lastEdit;
+ struct HistoryEntry {spatial::StageModel model;bool fullDocument=false;};
+ spatial::StageModel *model;std::vector<HistoryEntry> undoStates,redoStates;std::vector<KeyRef> clipboard;std::vector<spatial::AnimKey> copied;
+ QString identity,bindingSignature,geometrySignature;uint64_t editRevision=0,bakeGeneration=0;std::atomic_bool cancelBake{false};std::thread bakeThread;bool syncing=false;QElapsedTimer coalesce;std::string lastEdit;
  struct Field {QWidget*row;QCheckBox*animated;QDoubleSpinBox*value;QPushButton*diamond;};std::map<std::string,Field> fields;
  QComboBox*objectChoice=nullptr,*interpolation=nullptr,*rotationMode=nullptr,*mediaChoice=nullptr,*beatRatio=nullptr,*curveChoice=nullptr;
  QCheckBox*orbitMode=nullptr,*lookAt=nullptr,*lock=nullptr,*scaleLock=nullptr,*mediaLink=nullptr;
  QWidget*orbitGroup=nullptr;QPushButton*autoKey=nullptr,*positionLock=nullptr;std::string curveParameter;spatial::TimeUs selectedKeyTime=0;
+ QWidget*geometryGroup=nullptr;QCheckBox*geometryVisible=nullptr;QDoubleSpinBox*geometryDepth=nullptr;
  QLabel*state=nullptr,*length=nullptr,*audioStatus=nullptr;QDoubleSpinBox*playhead=nullptr,*keyTime=nullptr,*keyValue=nullptr,*outX=nullptr,*outY=nullptr,*inX=nullptr,*inY=nullptr;
  QDoubleSpinBox*bpm=nullptr,*offset=nullptr,*minimum=nullptr,*audioStart=nullptr,*audioEnd=nullptr,*customRatio=nullptr;
  CurveWidget*curve=nullptr;QLabel*segmentLabel=nullptr;QPushButton*resetCurrent=nullptr,*removeObject=nullptr;std::atomic_bool cancelAudio{false};std::thread audioThread;uint64_t audioGeneration=0;std::shared_ptr<spatial::audio::Analysis> analysis;
@@ -67,6 +70,7 @@ private:
  void configureHelp();void setKey(const std::string&,double);void keySelection();void changeKey();void changeSegment();void editCurveKey(spatial::TimeUs,spatial::AnimKey);void moveKeys(const std::vector<KeyRef>&,spatial::TimeUs);void navigate(const std::string&,bool);void navigateCurrent(bool);
  void initAudio(QFormLayout*);void refreshMedia();void analyze();void previewBeats();void bakeBeats();void syncMedia(bool playing);
  void restoreMotion(const spatial::StageModel&);void copyKeys();void pasteKeys();
+ void removeGeometry();
  struct LiveCapture {std::vector<float> pcm;std::atomic<size_t> frames{0};unsigned channels=0,rate=0;obs_source_t*source=nullptr;};
  std::unique_ptr<LiveCapture> liveCapture;void captureLive();void stopCapture();static void audioCapture(void*,obs_source_t*,const audio_data*,bool);
 };

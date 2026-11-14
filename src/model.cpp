@@ -1,5 +1,6 @@
 #include "model.hpp"
 #include "scene_evaluator.hpp"
+#include "presets/presets.hpp"
 #include <algorithm>
 #include <cmath>
 namespace spatial {
@@ -87,11 +88,13 @@ StageModel readModel(obs_data_t *d){
     auto*composite=obs_data_get_obj(d,"composite");m.compositeAnimation=readAnimation(composite);m.compositeLocked=boolean(composite,"animation_locked",false);m.outputScaleX=number(composite,"sx",1,-100,100);m.outputScaleY=number(composite,"sy",1,-100,100);m.outputOpacity=number(composite,"opacity",1,0,1);obs_data_release(composite);
     m.autoKey=boolean(d,"auto_key",false);m.keyPositionsLocked=boolean(d,"key_positions_locked",false);
     if(has(d,"timeline_position_us")){try{m.timelinePosition=toSeconds(std::max(int64_t(0),std::stoll(obs_data_get_string(d,"timeline_position_us"))));}catch(...){}}
+    presets::readPresets(m,d);
     m.animationDuration=toSeconds(contentEnd(m));
     return m;
 }
 void writeModel(const StageModel &input,obs_data_t *d){
     const StageModel &m=input;
+    presets::writePresets(m,d);
     for(const char *name:{"legacy_playback_end","use_legacy_playback_range","keyframes"})obs_data_erase(d,name);
     obs_data_set_bool(d,"auto_key",m.autoKey);obs_data_set_bool(d,"key_positions_locked",m.keyPositionsLocked);
     obs_data_set_string(d,"media_uuid",m.mediaUuid.c_str());obs_data_set_bool(d,"media_linked",m.mediaLinked);obs_data_set_double(d,"media_offset",m.mediaOffset);obs_data_set_int(d,"schema_version",5);obs_data_set_bool(d,"fx_enabled",m.fx.enabled);

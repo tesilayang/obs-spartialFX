@@ -1,4 +1,14 @@
 #include "widgets.hpp"
+#include <QLabel>
+#include <QColor>
+
+void setColorValuePreview(QLabel* preview,const QColor& color){
+    preview->setAlignment(Qt::AlignCenter);
+    preview->setText(color.name(QColor::HexArgb).toUpper());
+    preview->setProperty("color",color);
+    preview->setStyleSheet(QString("QLabel { background:%1; color:%2; border:1px solid #555b62; border-radius:2px; padding:2px; }").arg(color.name(),color.lightnessF()>.55?"#111111":"#ffffff"));
+    preview->setAccessibleName(preview->text());
+}
 #include "scene_evaluator.hpp"
 #include "hover_help.hpp"
 #include <QSlider>
@@ -54,7 +64,7 @@ void NumericSlider::sync(){
     // Direct numeric entry still has the complete range; arrow keys step exactly .01.
     if(fixedRange){lo=sliderMinimum;hi=sliderMaximum;}
     else if(hi-lo>2000){lo=std::max(lo,field->value()-500);hi=std::min(hi,field->value()+500);}
-    slider->setRange(int(std::lround(lo*factor)),int(std::lround(hi*factor)));slider->setValue(int(std::lround(field->value()*factor)));
+    slider->setRange(int(std::lround(lo*factor)),int(std::lround(hi*factor)));slider->setValue(int(std::lround(std::clamp(field->value(),lo,hi)*factor)));
 }
 bool NumericSlider::eventFilter(QObject*o,QEvent*e){if(o==field&&e->type()==QEvent::EnabledChange)slider->setEnabled(field->isEnabled());return QWidget::eventFilter(o,e);}
 SpatialTimeline::SpatialTimeline(QWidget*p):QWidget(p){setObjectName("spatial.timeline");setMinimumWidth(360);setMouseTracking(true);setAccessibleName(QString::fromUtf8("运动时间轴：点击移动播放头，拖动菱形调整关键帧时间"));}

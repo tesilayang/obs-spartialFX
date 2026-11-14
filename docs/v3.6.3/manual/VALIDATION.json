@@ -1,0 +1,85 @@
+{
+  "status": "PASS",
+  "browser": "157.0.4341.57",
+  "checks": [
+    {
+      "name": "95 entries, 13 groups, 478 parameter rows",
+      "status": "PASS"
+    },
+    {
+      "name": "fixed manual has no editable text or network stylesheet",
+      "status": "PASS"
+    },
+    {
+      "name": "all screenshot images decode offline",
+      "status": "PASS"
+    },
+    {
+      "name": "TOC and quick links reach valid anchors",
+      "status": "PASS"
+    },
+    {
+      "name": "FX search/group filters and expand/collapse",
+      "status": "PASS"
+    },
+    {
+      "name": "real screenshot zoom dialog opens and Escape closes",
+      "status": "PASS"
+    },
+    {
+      "name": "parallax depth relationship changes",
+      "status": "PASS"
+    },
+    {
+      "name": "keyframe interpolation, Bezier controls, play/pause/reset",
+      "status": "PASS"
+    },
+    {
+      "name": "bound light follows animated layer; unbound stays fixed",
+      "status": "PASS"
+    },
+    {
+      "name": "FX dual gate and strength zero",
+      "status": "PASS"
+    },
+    {
+      "name": "BPM/ratio/minimum spacing candidate count",
+      "status": "PASS"
+    },
+    {
+      "name": "preset preview, append next frame and cancellation",
+      "status": "PASS"
+    },
+    {
+      "name": "project JSON name match and persistent ZIP folder explanation",
+      "status": "PASS"
+    },
+    {
+      "name": "current preset library and per-image version attribution",
+      "status": "PASS"
+    },
+    {
+      "name": "desktop page has no horizontal overflow",
+      "status": "PASS"
+    },
+    {
+      "name": "mobile no horizontal page overflow, TOC drawer works",
+      "status": "PASS"
+    },
+    {
+      "name": "mobile effect table scroll stays inside its container",
+      "status": "PASS"
+    },
+    {
+      "name": "zero JS errors, zero HTTP requests while fully offline",
+      "status": "PASS"
+    }
+  ],
+  "errors": [],
+  "remote": [],
+  "viewports": [
+    "1440x1000",
+    "390x844"
+  ],
+  "note": "Browser/manual checks only; no new OBS runtime or performance test."
+}

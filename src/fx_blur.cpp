@@ -20,32 +20,38 @@ template<class Target>gs_texture_t*pass(Target&target,gs_effect_t*e,const char*t
  gs_blend_state_pop();gs_texrender_end(target.value);++draws;return gs_texrender_get_texture(target.value);
 }
 }
-FxBlur::~FxBlur(){for(auto&t:reduction)gs_texrender_destroy(t.value);for(auto&level:axis)for(auto&t:level)gs_texrender_destroy(t.value);}
+FxBlur::~FxBlur(){for(auto&x:reduction)for(auto&t:x)gs_texrender_destroy(t.value);for(auto&x:axis)for(auto&y:x)for(auto&t:y)gs_texrender_destroy(t.value);}
 gs_texture_t*FxBlur::render(gs_effect_t*e,gs_texture_t*input,uint32_t width,uint32_t height,
  double radius,int algorithm,int edge,double aperture,double rotation,double threshold,double boost,int fieldMode,const std::array<double,4>&field,
- uint64_t&alloc,uint64_t&draws){
- if(radius<=.0001)return input;
- auto*current=input;uint32_t w=width,h=height;size_t levels=0;
+ uint64_t&alloc,uint64_t&draws,double radiusY){
+ if(radiusY<0)radiusY=radius;
+ if(std::max(radius,radiusY)<=.0001)return input;
+ auto*current=input;uint32_t w=width,h=height;size_t levels=0,xLevel=0,yLevel=0;
  const double limit=algorithm==2?8.0:12.5;
  // Consecutive 2x area averages eliminate aliasing before reducing the kernel.
  // Fixed per-level targets avoid dimension changes and allocations every frame.
- while(radius/std::pow(2.0,double(levels))>limit&&levels<reduction.size()&&w>1&&h>1){
-  const auto nw=(w+1)/2,nh=(h+1)/2;
+ while(levels<6){
+  const bool reduceX=radius*double(w)/width>limit&&w>1;
+  const bool reduceY=radiusY*double(h)/height>limit&&h>1;
+  if(!reduceX&&!reduceY)break;
+  const auto nw=reduceX?(w+1)/2:w,nh=reduceY?(h+1)/2:h;
+  if(reduceX)++xLevel;if(reduceY)++yLevel;
   pair(e,"pixel_size",1.0/w,1.0/h);
-  current=pass(reduction[levels],e,"Reduce",current,nw,nh,alloc,draws);
+  pair(e,"reduce_axis",reduceX?1:0,reduceY?1:0);
+  current=pass(reduction[xLevel][yLevel],e,"Reduce",current,nw,nh,alloc,draws);
   if(!current)return nullptr;w=nw;h=nh;++levels;
  }
  // Each pass rebinds uniforms: OBS clears parameters at technique end.
  const int count=algorithm==2?1:2;
  for(int direction=0;direction<count;++direction){
   pair(e,"pixel_size",1.0/w,1.0/h);
-  pair(e,"kernel_radius",radius*double(w)/width,radius*double(h)/height);
+  pair(e,"kernel_radius",radius*double(w)/width,radiusY*double(h)/height);
   pair(e,"axis",direction==0?1:0,direction==1?1:0);
   scalar(e,"algorithm",algorithm);scalar(e,"edge_mode",edge);scalar(e,"aperture",aperture);
   scalar(e,"rotation",rotation);scalar(e,"threshold",threshold);scalar(e,"boost",boost);
   scalar(e,"field_mode",fieldMode);pair(e,"canvas_size",width,height);
   if(auto*p=gs_effect_get_param_by_name(e,"field_params")){vec4 v;vec4_set(&v,float(field[0]),float(field[1]),float(field[2]),float(field[3]));gs_effect_set_vec4(p,&v);}
-  current=pass(axis[levels][direction],e,algorithm==2?"Aperture":"Convolve",current,w,h,alloc,draws);
+  current=pass(axis[xLevel][yLevel][direction],e,algorithm==2?"Aperture":(algorithm==3?"Dilate":"Convolve"),current,w,h,alloc,draws);
   if(!current)return nullptr;
  }
  return current;

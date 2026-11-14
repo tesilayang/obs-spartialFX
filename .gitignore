@@ -9,6 +9,8 @@
 # Local builds, test evidence and downloadable release artifacts
 /dist/
 /work/
+# Historical standalone duplicate; the versioned manual/index.html remains tracked.
+/docs/v3.4.1/OBS_Spatial_FX_V3.4.1_Manual.html
 /logs/
 /tools/sdk-staging/
 /tools/vsmanifest.json

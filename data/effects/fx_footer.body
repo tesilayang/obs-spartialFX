@@ -5,6 +5,7 @@ float4 fxPremultiplied(float4 value) {
  return float4(value.rgb*value.a,value.a);
 }
 float4 FxPS(FxVert v):TARGET {
+ v.uv=(v.uv-content_rect.xy)/content_rect.zw;
  // Interpolate in premultiplied alpha to avoid dark fringes at transparent edges.
  return lerp(fxPremultiplied(src(v.uv)),fxPremultiplied(fxApply(v.uv)),strength);
 }

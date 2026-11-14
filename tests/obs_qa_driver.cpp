@@ -11,6 +11,7 @@
 #include <QComboBox>
 #include <QDockWidget>
 #include <QDoubleSpinBox>
+#include <QSpinBox>
 #include <QFile>
 #include <QSaveFile>
 #include <QJsonArray>
@@ -49,6 +50,7 @@
 #include "project/project_obs.hpp"
 #include "project/project_archive.hpp"
 #include <QDateTime>
+#include "presets/presets.hpp"
 OBS_DECLARE_MODULE()
 namespace {
 QString output,scenario;QJsonArray checks;int failures=0;
@@ -58,11 +60,33 @@ QWidget* panel(){auto*main=mainWidget();return main?main->findChild<QWidget*>("s
 obs_source_t* stageSource(){auto*scene=obs_frontend_get_current_scene();obs_source_t*result=nullptr;if(scene){auto*s=obs_scene_from_source(scene);if(s)obs_scene_enum_items(s,[](obs_scene_t*,obs_sceneitem_t*i,void*p){auto*source=obs_sceneitem_get_source(i);if(QString::fromUtf8(obs_source_get_unversioned_id(source))=="obs_spatial_fx_stage"){auto**out=static_cast<obs_source_t**>(p);if(!*out)*out=obs_source_get_ref(source);}return true;},&result);obs_source_release(scene);}return result;}
 obs_data_t* currentSettings(obs_source_t*source){if(!source)return nullptr;calldata_t cd;calldata_init(&cd);const bool ok=proc_handler_call(obs_source_get_proc_handler(source),"spatial_fx_get_state",&cd);auto*d=ok?static_cast<obs_data_t*>(calldata_ptr(&cd,"settings")):nullptr;calldata_free(&cd);return d?d:obs_source_get_settings(source);}
 void finish();
+#include "v361_ui_bridge.inc"
 void bridge(){
-    static QString lastId;QFile f(output+"/native-command.json");if(!f.open(QIODevice::ReadOnly))return;const auto command=QJsonDocument::fromJson(f.readAll()).object();const QString id=command.value("id").toString();if(id.isEmpty()||id==lastId)return;f.close();
-    if(command.value("action").toString()=="finish"){lastId=id;QTimer::singleShot(0,qApp,finish);return;}
+    static QString lastId;static QByteArray cachedAnswer;static bool answerPending=false;
+    const auto publishAnswer=[&]{QSaveFile answer(output+"/native-answer.json");if(answer.open(QIODevice::WriteOnly)&&answer.write(cachedAnswer)==cachedAnswer.size()&&answer.commit())answerPending=false;};
+    // A Windows reader can temporarily prevent response replacement. Retry the
+    // cached response instead of executing the same UI action a second time.
+    if(answerPending){publishAnswer();return;}
+    QFile f(output+"/native-command.json");if(!f.open(QIODevice::ReadOnly))return;const auto command=QJsonDocument::fromJson(f.readAll()).object();const QString id=command.value("id").toString();if(id.isEmpty()||id==lastId)return;f.close();
+    lastId=id;
+    if(command.value("action").toString()=="finish"){QTimer::singleShot(0,qApp,finish);return;}
     auto*source=obs_get_source_by_name(command.value("source").toString().toUtf8().constData());bool ok=source!=nullptr;
     const auto action=command.value("action").toString();
+    QJsonObject ui;
+    if(action.startsWith("ui-")&&action!="ui-refresh")ui=v361Ui(command,ok);
+    if(action=="project-roundtrip"){
+        auto*scene=obs_frontend_get_current_scene();QString error;auto document=spatial::projects::captureScene(scene,error);obs_source_release(scene);
+        const auto original=document;bool restored=false;
+        if(command["package"].toBool()){
+            spatial::projects::discoverAssets(document);std::atomic_bool canceled{false};
+            const auto suffix=id.left(12),zip=output+"/v361-package-"+suffix+".zip",folder=output+"/v361-unpacked-"+suffix;
+            if(spatial::projects::writeProjectPackage(document,zip,canceled,{},error)&&spatial::projects::extractProjectPackage(zip,folder,canceled,{},error))document=spatial::projects::readProjectFolder(folder,canceled,{},error);else document={};
+        }
+        if(!document.isEmpty()&&error.isEmpty()){
+            document["scene_name"]="V361 roundtrip "+id.left(10);const auto result=spatial::projects::restoreScene(document,false);restored=result.success;
+            if(restored){auto*sceneCopy=obs_get_source_by_uuid(result.sceneUuid.toUtf8().constData());const auto copy=spatial::projects::captureScene(sceneCopy,error);obs_source_release(sceneCopy);ui["original"]=original;ui["restored"]=copy;}else error=result.error;
+        }ok&=restored&&error.isEmpty();ui["error"]=error;
+    }
     if(action=="ui-refresh"){auto*b=panel()?panel()->findChild<QPushButton*>("spatial.refresh"):nullptr;ok&=b!=nullptr;if(b)b->click();}
     if(action=="fx-color-open"){auto*b=panel()?panel()->findChild<QPushButton*>(command.value("widget").toString()):nullptr;ok&=b!=nullptr;if(b)b->click();}
     if(action.startsWith("fx-color-")&&action!="fx-color-open"){
@@ -73,8 +97,9 @@ void bridge(){
         const auto bytes=QJsonDocument(command.value("settings").toObject()).toJson(QJsonDocument::Compact);auto*d=obs_data_create_from_json(bytes.constData());calldata_t cd;calldata_init(&cd);calldata_set_ptr(&cd,"settings",d);ok=proc_handler_call(obs_source_get_proc_handler(source),"spatial_fx_set_state",&cd);calldata_free(&cd);obs_data_release(d);
     }
     auto*state=source?currentSettings(source):nullptr;QJsonObject data=state?QJsonDocument::fromJson(obs_data_get_json(state)).object():QJsonObject{};obs_data_release(state);
+    if(source&&action.startsWith("ui-")){auto*privateData=obs_source_get_private_settings(source);auto*saved=obs_data_get_obj(privateData,"spatial_fx_model");ui["authoritative"]=QJsonDocument::fromJson(obs_data_get_json(saved)).object();obs_data_release(saved);obs_data_release(privateData);}
     if(source){calldata_t metrics;calldata_init(&metrics);if(proc_handler_call(obs_source_get_proc_handler(source),"spatial_fx_get_metrics",&metrics))data.insert("_metrics",QJsonObject{{"allocations",qint64(calldata_int(&metrics,"fx_allocations"))},{"passes",qint64(calldata_int(&metrics,"fx_passes"))},{"failures",qint64(calldata_int(&metrics,"fx_failures"))},{"renders",qint64(calldata_int(&metrics,"renders"))},{"renderMs",calldata_float(&metrics,"render_ms")}});calldata_free(&metrics);}obs_source_release(source);
-    QSaveFile answer(output+"/native-answer.json");if(answer.open(QIODevice::WriteOnly)){answer.write(QJsonDocument(QJsonObject{{"id",id},{"ok",ok},{"state",data}}).toJson());if(answer.commit())lastId=id;}
+    cachedAnswer=QJsonDocument(QJsonObject{{"id",id},{"ok",ok},{"state",data},{"ui",ui}}).toJson();answerPending=true;publishAnswer();
 }
 void click(const char*name){auto*p=panel();auto*b=p?p->findChild<QPushButton*>(name):nullptr;check(b&&b->isEnabled(),QString("button available: %1").arg(name));if(b&&b->isEnabled())b->click();}
 void setNumber(const char*name,double v){auto*p=panel();auto*f=p?p->findChild<QDoubleSpinBox*>(name):nullptr;check(f!=nullptr,QString("field available: %1").arg(name));if(f)f->setValue(v);}
@@ -131,7 +156,11 @@ void lifecycle(){
 #include "v342patch_qa.inc"
 #include "v35_qa.inc"
 #include "v35_ui_qa.inc"
+#include "v36_qa.inc"
 void exercise(){
+    if(scenario=="v36"){v36qa::exercise();return;}
+    if(scenario=="v36-persist"){v36qa::persist();return;}
+    if(scenario=="v36-baseline"){v36qa::baseline();return;}
     if(scenario=="v35-baseline"){v35Baseline();return;}
     if(scenario=="v35"){v35exercise();return;}
     if(scenario=="v35-ui"){v35ui();return;}
@@ -139,7 +168,7 @@ void exercise(){
     auto*main=mainWidget();if(main)main->resize(1460,920);if(scenario=="baseline"){QTimer::singleShot(3000,qApp,[]{mainWidget()->close();});return;}auto*p=panel();if(!p){check(false,"dock found for scenario");finish();return;}
     if(scenario=="baseline"){QTimer::singleShot(3000,qApp,[]{mainWidget()->close();});return;}
     if(scenario=="phase1"){finish();return;}
-    
+
     if(scenario=="presets"){
         click("spatial.refresh");auto*source=stageSource();auto*before=source?currentSettings(source):nullptr;
         const auto previous=before?QJsonDocument::fromJson(obs_data_get_json(before)).object().value("layers").toArray():QJsonArray{};

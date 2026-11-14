@@ -1,5 +1,6 @@
 #include "model.hpp"
 #include "fx_shader.hpp"
+#include "fx_optics.hpp"
 #include <obs.h>
 #include <iostream>
 #include <cstdlib>
@@ -73,6 +74,27 @@ static void patch342Persistence(){
  require(levels->values[parameterIndex(*def,"output_black")]==.1&&levels->values[parameterIndex(*def,"output_white")]==.9&&levels->values[parameterIndex(*def,"channel")]==2,"old curve endpoints and channel migrate to levels");
  back=spatial::findFx(restored,"FX05.1");def=spatial::fxDefinition("FX05.1");require(back->values[parameterIndex(*def,"radius")]==91.14&&back->values[parameterIndex(*def,"gain")]==1.5&&back->values[parameterIndex(*def,"scale")]==2,"old backlight shared parameters retained");obs_data_release(input);
 }
+static void localOptics363(){
+ const auto*shadow=spatial::fxDefinition("FX05.5");const auto*star=spatial::fxDefinition("FX04.1");
+ require(shadow&&!shadow->color&&shadow->color2,"local shadow exposes only its shadow color");
+ for(const char*key:{"angle","radius","spread","opacity"})require(parameterIndex(*shadow,key)<shadow->parameters.size(),"local shadow exposes independent named controls");
+ for(const auto&p:shadow->parameters)require(p.key!="auxiliary","local shadow has no auxiliary highlight parameter");
+ for(int i=0;i<4;++i)require(spatial::starRayCount(i)==(i==0?2:i==1?4:i==2?5:6),"star choices are exactly 2 4 5 6");
+ require(star->parameters[2].choices.size()==4&&star->color&&star->color2,"star has four ray choices plus effect and target colors");
+ spatial::FxStack stack;stack.attached=true;stack.groups[3]=stack.groups[4]=true;
+ for(const char*id:{"FX04.0","FX04.1","FX05.5"}){auto f=spatial::makeFx(*spatial::fxDefinition(id));f.enabled=true;stack.effects.push_back(f);}
+ require(spatial::opticalPadding(stack)>=80,"active local optics reserve transparent output margins");
+ stack.effects[2].values[4]=-75.25;stack.effects[2].values[5]=24.5;
+ stack.effects[1].values[2]=2;stack.effects[1].values[5]=.13;stack.effects[1].color={.1,.7,.3};stack.effects[1].color2={.8,.2,.4};
+ auto*data=obs_data_create();spatial::writeFxStack(data,stack);auto restored=spatial::readFxStack(data);obs_data_release(data);
+ require(restored.effects[2].values[4]==-75.25&&restored.effects[2].values[5]==24.5,"shadow angle and spread roundtrip exactly");
+ require(restored.effects[1].values[2]==2&&restored.effects[1].values[5]==.13&&restored.effects[1].color.y==.7&&restored.effects[1].color2.z==.4,"new star color selector survives save/load without legacy migration");
+ for(auto&f:stack.effects)f.enabled=false;require(spatial::opticalPadding(stack)==0,"disabled optics reserve no padding or work");
+ auto*old=obs_data_create_from_json(R"({"fx_stack":{"effects":[{"id":"FX04.1","color":{"r":0,"g":0,"b":0},"parameters":{"rays":0}},{"id":"FX05.5","parameters":{"scale":9}}]}})");
+ auto legacy=spatial::readFxStack(old);obs_data_release(old);
+ require(legacy.effects[0].values[2]==1&&legacy.effects[0].values[5]==1&&legacy.effects[0].color.x==1,"legacy four-ray unfiltered star keeps appearance with neutral new tint");
+ require(legacy.effects[1].values[4]==135,"removed light-surface scale never becomes the local angle");
+}
 int main(){patch342ShaderIsolation();patch342Persistence();quality341();
  for(const char*id:{"FX05.1","FX05.2","FX05.3"}){
   const auto*def=spatial::fxDefinition(id);require(def&&def->color,"backlight candle and spotlight expose their own color");
@@ -81,6 +103,7 @@ int main(){patch342ShaderIsolation();patch342Persistence();quality341();
   require(restored.effects.size()==1&&restored.effects[0].color.x==.12&&restored.effects[0].color.y==.34&&restored.effects[0].color.z==.56,"local effect color survives scene serialization");
  }
  auto*legacy=obs_data_create_from_json(R"({"layers":[{"uuid":"legacy-source","instance_id":""},{"uuid":"legacy-source","instance_id":""},{"uuid":"another-source","instance_id":"explicit"},{"uuid":"another-source","instance_id":"explicit"}]})");auto migrated=spatial::readModel(legacy);obs_data_release(legacy);std::set<std::string>migratedIds;for(auto&l:migrated.layers)require(!l.instanceId.empty()&&migratedIds.insert(l.instanceId).second,"legacy and duplicated instance IDs become unique");auto*legacySaved=spatial::modelData(migrated);auto legacyRound=spatial::readModel(legacySaved);obs_data_release(legacySaved);for(size_t i=0;i<migrated.layers.size();++i)require(migrated.layers[i].instanceId==legacyRound.layers[i].instanceId,"migrated instance IDs remain stable after save/load");
+ localOptics363();
  sixColorPersistence();
  localLightControlPersistence();
  std::set<std::string>ids;std::array<int,13>counts{};

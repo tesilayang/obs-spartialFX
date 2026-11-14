@@ -12,7 +12,7 @@ const std::vector<FxDefinition>&fxCatalog(){
  return result;}();return catalog;
 }
 const FxDefinition*fxDefinition(const std::string&id){for(auto&d:fxCatalog())if(d.id==id)return &d;return nullptr;}
-FxInstance makeFx(const FxDefinition&d){FxInstance f;f.id=d.id;const auto count=std::min(d.parameters.size(),f.values.size());for(size_t i=0;i<count;++i)f.values[i]=d.parameters[i].initial;return f;}
+FxInstance makeFx(const FxDefinition&d){FxInstance f;f.id=d.id;const auto count=std::min(d.parameters.size(),f.values.size());for(size_t i=0;i<count;++i)f.values[i]=d.parameters[i].initial;if(d.id=="FX04.0"||d.id=="FX04.1"){f.color={1,1,1};f.color2={1,1,1};}return f;}
 FxInstance*findFx(FxStack&s,const std::string&id){for(auto&f:s.effects)if(f.id==id)return &f;return nullptr;}
 const FxInstance*findFx(const FxStack&s,const std::string&id){for(auto&f:s.effects)if(f.id==id)return &f;return nullptr;}
 const FxInstance*activeFx(const FxStack&s,const FxDefinition&d){if(!s.attached||d.group<1||d.group>13||!s.groups[size_t(d.group-1)])return nullptr;auto*f=findFx(s,d.id);if(d.id=="FX02.3"){auto*other=findFx(s,"FX02.2");if(other&&other->enabled&&other->strength>0)return nullptr;}return f&&f->enabled&&f->strength>0?f:nullptr;}
