@@ -1,4 +1,5 @@
 #include "presets/presets.hpp"
+#include "presets/composer.hpp"
 #include "scene_evaluator.hpp"
 #include <QUuid>
 #include <algorithm>
@@ -99,11 +100,8 @@ bool applyPreset(StageModel&m,const ApplyRequest&r,std::string&error){
  const size_t generatedBlocks=r.loop?(r.motion?1+r.backgroundIds.size()+r.foregroundIds.size()+(r.templateId=="shutter"?1:0)+(r.camera?1:0):0)+generatedGeometry:0;
  if(m.geometries.size()+generatedGeometry>128||m.motionBlocks.size()+generatedBlocks>512||m.presetInstances.size()>=256)return fail("舞台预设对象数量已达上限");
  StageModel out=m;const auto owner=fresh();TimeUs end=r.start+r.period*r.cycles;PresetInstance instance;instance.instanceId=owner;instance.definitionId=r.templateId;instance.label=def->name;instance.start=r.start;instance.end=end;instance.definitionSnapshot=snapshot(*def,r);out.presetInstances.push_back(instance);
- auto addMotion=[&](const std::string&id,std::vector<MotionChannel>channels){int o=targetObject(out,id);if(o==INT_MIN){error="运动实例失效";return false;}if(objectLocked(out,o)){error="对象已锁定";return false;}auto&a=objectAnimation(out,o);for(const auto&c:channels){auto it=a.find(c.parameter);if(it!=a.end()&&it->second.locked){error="参数轨已锁定："+c.parameter;return false;}for(const auto&b:out.motionBlocks)if(b.enabled&&b.targetId==id&&overlaps(r.start,end,b.start,b.end))for(const auto&bc:b.channels)if(bc.parameter==c.parameter){error="循环模板参数区间冲突："+c.parameter;return false;}}
-  if(r.loop){MotionBlock b;b.instanceId=fresh();b.ownerId=owner;b.targetId=id;b.camera=o==-1;b.label=def->name;b.start=r.start;b.end=end;b.period=r.period;b.timeOrigin=r.start;b.channels=std::move(channels);out.motionBlocks.push_back(std::move(b));return true;}
-  for(const auto&ch:channels){GeneratedTrack provenance;provenance.targetId=id;provenance.parameter=ch.parameter;provenance.existed=a.find(ch.parameter)!=a.end();auto&c=a[ch.parameter];provenance.before=c;if(keyConflict(c,r.start,end)&&!r.replace){error="参数区间已有关键帧："+ch.parameter;return false;}double base=baseValue(out,o,ch.parameter),begin=c.value(r.start,base),finish=c.value(end,base);const TimeUs quarter=(end-r.start)/4;MotionBlock finiteBlock;finiteBlock.start=r.start;finiteBlock.end=end;finiteBlock.period=end-r.start;finiteBlock.timeOrigin=r.start;
-   std::vector<AnimKey>keys;for(int sample=0;sample<=4;++sample){TimeUs t=sample==4?end:r.start+quarter*sample;double offset=blockOffset(finiteBlock,ch,t);double v=combine(begin,ch.parameter,offset);if(ch.parameter!="opacity"&&sample==0)v=begin;if(ch.parameter!="opacity"&&sample==4)v=finish;keys.push_back({t,v,Interpolation::EaseBoth});}
-   if(ch.parameter=="opacity")bakeInterval(c,r.start,end,base,keys);else interval(c,r.start,end,base,keys);provenance.after=c;if(o>=-1)out.presetInstances.back().generatedTracks.push_back(std::move(provenance));}
+ auto addMotion=[&](const std::string&id,std::vector<MotionChannel>channels){int o=targetObject(out,id);if(o==INT_MIN){error="运动实例失效";return false;}if(objectLocked(out,o)){error="对象已锁定";return false;}auto&a=objectAnimation(out,o);for(const auto&c:channels){auto it=a.find(c.parameter);if(it!=a.end()&&it->second.locked){error="参数轨已锁定："+c.parameter;return false;}if(it!=a.end()&&keyConflict(it->second,r.start,end)&&!r.replace){error="参数区间已有关键帧："+c.parameter;return false;}for(const auto&b:out.motionBlocks)if(b.enabled&&b.targetId==id&&overlaps(r.start,end,b.start,b.end))for(const auto&bc:b.channels)if(bc.parameter==c.parameter){error="循环模板参数区间冲突："+c.parameter;return false;}}
+  MotionBlock b;b.instanceId=fresh();b.ownerId=owner;b.targetId=id;b.camera=o==-1;b.label=def->name;b.start=r.start;b.end=end;b.period=r.period;b.timeOrigin=r.start;b.channels=std::move(channels);out.motionBlocks.push_back(std::move(b));
   return true;
  };
  if(r.motion){auto orbit=out.layers[size_t(layerIndex(out,r.subjectId))].orbit.enabled;std::vector<MotionChannel>c={{orbit?"yaw":"x",r.strength*(orbit?4:40),0,false},{"sx",.035*r.strength,0,true},{"sy",.035*r.strength,0,true}};
@@ -137,7 +135,17 @@ bool applyPreset(StageModel&m,const ApplyRequest&r,std::string&error){
   std::vector<MotionChannel>channels;if(r.templateId=="iris"){mask.width=r.variant==1?out.width*.8:out.height*.8;mask.height=out.height*.8;mask.plane.scaleX*=.02;mask.plane.scaleY*=.02;channels={{"sx",49*r.strength,0,true},{"sy",49*r.strength,0,true}};}else if(r.variant==1){mask.plane.scaleY*=.02;channels={{"sy",49*r.strength,0,true}};}else{mask.plane.scaleX*=.02;channels={{"sx",49*r.strength,0,true}};}
   out.geometries.push_back(mask);if(!addMotion(mask.instanceId,channels))return fail(error);
  }
- if(out.geometries.size()>128||out.motionBlocks.size()>512)return fail("舞台预设对象数量已达上限");m=std::move(out);return true;
+ if(out.geometries.size()>128||out.motionBlocks.size()>512)return fail("舞台预设对象数量已达上限");
+ // Blocks are an internal recipe only. Bake the new recipe atomically, keeping
+ // any pre-existing legacy blocks untouched for the loader migration policy.
+ std::vector<MotionBlock> previousBlocks(out.motionBlocks.begin(),out.motionBlocks.begin()+m.motionBlocks.size());
+ out.motionBlocks.erase(out.motionBlocks.begin(),out.motionBlocks.begin()+m.motionBlocks.size());
+ std::set<std::pair<std::string,std::string>> generated;
+ for(const auto&block:out.motionBlocks)for(const auto&channel:block.channels)generated.insert({block.targetId,channel.parameter});
+ if(!migrateLegacyMotionBlocks(out,error))return false;
+ out.motionBlocks=std::move(previousBlocks);
+ for(const auto&entry:generated){const int o=targetObject(out,entry.first);if(o < -1)continue;GeneratedTrack track;track.targetId=entry.first;track.parameter=entry.second;const auto&before=objectAnimation(m,o);const auto found=before.find(entry.second);track.existed=found!=before.end();if(track.existed)track.before=found->second;track.after=objectAnimation(out,o).at(entry.second);out.presetInstances.back().generatedTracks.push_back(std::move(track));}
+ m=std::move(out);return true;
 }
 std::vector<EvaluatedGeometry> evaluateGeometry(const StageModel&m,TimeUs t,const std::vector<Plane>&world,bool motion){std::vector<EvaluatedGeometry>v;v.reserve(m.geometries.size());for(const auto&g:m.geometries){EvaluatedGeometry e;e.geometry=g;e.plane=g.plane;e.opacity=g.opacity;e.active=g.enabled&&g.visible;
  if(motion&&g.reveal>0&&g.revealPeriod>0){

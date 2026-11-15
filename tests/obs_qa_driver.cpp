@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <memory>
+#include <vector>
 #include <obs-module.h>
 #include <obs-frontend-api.h>
 #include <QApplication>
@@ -52,6 +53,7 @@
 #include <QDateTime>
 #include "presets/presets.hpp"
 OBS_DECLARE_MODULE()
+#include "v364_alpha_source.inc"
 namespace {
 QString output,scenario;QJsonArray checks;int failures=0;
 void check(bool ok,const QString&label){checks.push_back(QJsonObject{{"name",label},{"pass",ok}});if(!ok)++failures;blog(ok?LOG_INFO:LOG_ERROR,"[SpatialFX QA] %s %s",ok?"PASS":"FAIL",label.toUtf8().constData());}
@@ -256,11 +258,5 @@ void exercise(){
 }
 void event(enum obs_frontend_event e,void*){if(e==OBS_FRONTEND_EVENT_FINISHED_LOADING)QTimer::singleShot(1800,qApp,exercise);}
 }
-bool obs_module_load(void){output=qEnvironmentVariable("SPATIAL_QA_OUTPUT");scenario=qEnvironmentVariable("SPATIAL_QA_SCENARIO");if(output.isEmpty())return false;if(scenario.isEmpty())scenario="phase1";QDir().mkpath(output);obs_frontend_add_event_callback(event,nullptr);auto*bridgeTimer=new QTimer(qApp);bridgeTimer->setInterval(30);QObject::connect(bridgeTimer,&QTimer::timeout,qApp,bridge);bridgeTimer->start();return true;}
+bool obs_module_load(void){registerAlphaFixture();output=qEnvironmentVariable("SPATIAL_QA_OUTPUT");scenario=qEnvironmentVariable("SPATIAL_QA_SCENARIO");if(output.isEmpty())return false;if(scenario.isEmpty())scenario="phase1";QDir().mkpath(output);obs_frontend_add_event_callback(event,nullptr);auto*bridgeTimer=new QTimer(qApp);bridgeTimer->setInterval(30);QObject::connect(bridgeTimer,&QTimer::timeout,qApp,bridge);bridgeTimer->start();return true;}
 void obs_module_unload(void){obs_frontend_remove_event_callback(event,nullptr);}
-
-
-
-
-
-

@@ -23,6 +23,7 @@ struct Layer {
     bool hasDefault=false;
 };
 struct Light {
+    std::string instanceId;Animation animation;bool locked=false,present=false;
     bool enabled=false,shadows=true,visible=false;
     int type=0;
     std::string label="点光源 1",bindUuid,receiverUuid,bindSceneUuid,receiverSceneUuid,bindInstanceId,receiverInstanceId;int64_t bindItemId=0,receiverItemId=0;
@@ -32,6 +33,7 @@ struct Light {
 };
 struct Fx {bool enabled=false;double exposure=0,saturation=1,vignette=0;};
 struct StageModel {
+    std::string legacyMotionBackup,motionMigrationError;bool motionMigrationFailed=false;
     uint32_t width=1920,height=1080;
     std::string mediaUuid;bool mediaLinked=false;double mediaOffset=0;
     Camera camera{};

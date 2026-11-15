@@ -44,5 +44,5 @@ void CameraEditor::configureHelp(){
  help("spatial.beat-minimum32","候选点还必须满足的最小秒数间隔，与拍长比例共同过滤密集点。设为0时只使用拍长比例。");
  help("spatial.beat-preview32","把检测拍点或手工BPM网格显示为时间轴参考线。不会改变动画长度或写入关键帧。");
  help("spatial.beat-bake32","确认后向所选参数曲线写入候选时间点。采样原有运动，保留同时间已有帧；不会自动创造运动。整批可一次撤销，锁定对象或轨道不能写入。");
- for(auto&pair:fields){const auto*meta=spatial::parameter(pair.first);QString text=u(meta->label)+u("：滑条为实际数值的绝对映射，方向键步进0.01；超出滑条范围可在数值框手工输入。动画开关控制该参数是否参与曲线求值；◇/◆记录当前秒数，‹/›定位前后帧。");if(pair.first=="rx"||pair.first=="ry"||pair.first=="rz")text+=u("旋转滑条范围−360°～360°，从0拖到任一端可完成一整圈。");pair.second.row->setToolTip(text);pair.second.value->setToolTip(text);pair.second.animated->setToolTip(u("启用当前参数动画。开启时保留基础值作为0秒初值；关闭后使用静态基础值，已有关键帧仍保存。自动新建关键帧另由◆+开关控制。"));}
+ for(auto&pair:fields){auto meta=spatial::objectParameter(*model,active,pair.first);if(!meta)continue;QString text=u(meta->label.c_str())+u("：滑条为实际数值的绝对映射，方向键步进0.01；超出滑条范围可在数值框手工输入。动画开关控制该参数是否参与曲线求值；◇/◆记录当前秒数，‹/›定位前后帧。");if(pair.first=="rx"||pair.first=="ry"||pair.first=="rz")text+=u("旋转滑条范围−360°～360°，从0拖到任一端可完成一整圈。");pair.second.row->setToolTip(text);pair.second.value->setToolTip(text);pair.second.animated->setToolTip(u("启用当前参数动画。开启时保留基础值作为0秒初值；关闭后使用静态基础值，已有关键帧仍保存。自动新建关键帧另由◆+开关控制。"));}
 }

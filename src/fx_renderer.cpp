@@ -28,12 +28,13 @@ struct Surface {
  ~Surface(){release();}void release(){gs_texrender_destroy(value);value=nullptr;width=height=0;}bool begin(uint32_t w,uint32_t h,uint64_t&alloc){if(!value){value=gs_texrender_create(GS_RGBA16F,GS_ZS_NONE);}gs_texrender_reset(value);if(!gs_texrender_begin(value,w,h))return false;if(width!=w||height!=h){++alloc;width=w;height=h;}vec4 clear;vec4_zero(&clear);gs_clear(GS_CLEAR_COLOR,&clear,0,0);gs_ortho(0,float(w),0,float(h),-100,100);return true;}
 };
 struct History {
- gs_texture_t*previous=nullptr,*next=nullptr;uint32_t width=0,height=0;uint64_t frame=0;bool valid=false,pending=false;double time=0,nextTime=0;
+ gs_texture_t*previous=nullptr,*next=nullptr;uint32_t width=0,height=0;uint64_t frame=0,epoch=UINT64_MAX;bool valid=false,pending=false;double time=0,nextTime=0;
  ~History(){gs_texture_destroy(previous);gs_texture_destroy(next);}
- void prepare(uint32_t w,uint32_t h,uint64_t current,uint64_t&alloc){
+ void prepare(uint32_t w,uint32_t h,uint64_t current,uint64_t currentEpoch,bool advance,uint64_t&alloc){
+  if(epoch!=currentEpoch){valid=false;pending=false;time=nextTime=0;epoch=currentEpoch;}
   // History is copied from temporalRaw; formats must match for D3D CopyResource.
   if(w!=width||h!=height){gs_texture_destroy(previous);gs_texture_destroy(next);previous=gs_texture_create(w,h,GS_RGBA16F,1,nullptr,0);next=gs_texture_create(w,h,GS_RGBA16F,1,nullptr,0);alloc+=2;width=w;height=h;valid=false;pending=false;}
-  if(frame!=current){if(pending){std::swap(previous,next);valid=true;time=nextTime;}frame=current;pending=false;}
+  if(frame!=current){if(pending&&advance){std::swap(previous,next);valid=true;time=nextTime;pending=false;}frame=current;}
  }
 };
 struct Asset {gs_texture_t*texture=nullptr;std::shared_ptr<const FxPixels>pixels;~Asset(){gs_texture_destroy(texture);}};
@@ -116,7 +117,7 @@ FxRenderResult FxRenderer::process(const Layer&layer,gs_texture_t*original,const
   if(!f->reference.empty()){for(size_t i=0;i<s.instanceOrder.size()&&i<references.size();++i)if(s.instanceOrder[i]==f->reference&&references[i]){auxiliary=references[i];auxValid=true;break;}}
   if(f->pixels){assetsActive.insert(f->id);auto&a=res.assets[f->id];if(!a)a=std::make_unique<Asset>();if(a->pixels!=f->pixels){gs_texture_destroy(a->texture);const uint8_t*p=f->pixels->pixels.data();a->texture=gs_texture_create(f->pixels->width,f->pixels->height,GS_RGBA,1,&p,0);++s.allocated;a->pixels=f->pixels;}if(a->texture){auxiliary=a->texture;auxValid=true;}}
   if(def.asset==FxAsset::Lut&&!auxValid)continue;
-  History*history=nullptr;if(def.history){historyActive.insert(f->id);auto&h=res.history[f->id];if(!h)h=std::make_unique<History>();history=h.get();history->prepare(ctx.width,ctx.height,ctx.frame,s.allocated);}
+  History*history=nullptr;if(def.history){historyActive.insert(f->id);auto&h=res.history[f->id];if(!h)h=std::make_unique<History>();history=h.get();history->prepare(ctx.width,ctx.height,ctx.frame,ctx.historyEpoch,ctx.advanceHistory,s.allocated);}
   // OBS tracks texture dependencies before D3D removes sibling branches.
   // Bind a valid image even for children which do not use the dense blur path.
   texture(e,"blur_image",current);scalar(e,"blur_minimum_radius",1);
@@ -179,7 +180,7 @@ FxRenderResult FxRenderer::process(const Layer&layer,gs_texture_t*original,const
    if(!blurred){++s.errors;continue;}texture(e,"blur_image",blurred);
    scalar(e,"blur_minimum_radius",std::max(double(ctx.width)/gs_texture_get_width(blurred),double(ctx.height)/gs_texture_get_height(blurred)));
   }
-  texture(e,"image",current);texture(e,"auxiliary",auxiliary?auxiliary:current);texture(e,"history_image",history&&history->valid?history->previous:current);texture(e,"effect_result",current);four(e,"content_rect",double(opticalBorder)/ctx.width,double(opticalBorder)/ctx.height,double(inputContext.width)/ctx.width,double(inputContext.height)/ctx.height);two(e,"pixel_size",1.0/inputContext.width,1.0/inputContext.height);two(e,"canvas_size",inputContext.width,inputContext.height);two(e,"motion_delta",ctx.motionX,ctx.motionY);scalar(e,"elapsed",ctx.elapsed);scalar(e,"frame_index",double(s.frameIndex%16777216));scalar(e,"history_valid",history&&history->valid?1:0);scalar(e,"history_time",history?history->time:ctx.elapsed);scalar(e,"frame_delta",history&&history->valid?std::max(0.0,ctx.elapsed-history->time):1.0/60);scalar(e,"auxiliary_valid",auxValid?1:0);scalar(e,"strength",f->strength);
+  texture(e,"image",current);texture(e,"auxiliary",auxiliary?auxiliary:current);texture(e,"history_image",history&&history->valid?history->previous:current);texture(e,"effect_result",current);four(e,"content_rect",double(opticalBorder)/ctx.width,double(opticalBorder)/ctx.height,double(inputContext.width)/ctx.width,double(inputContext.height)/ctx.height);two(e,"pixel_size",1.0/inputContext.width,1.0/inputContext.height);two(e,"canvas_size",inputContext.width,inputContext.height);two(e,"motion_delta",ctx.motionX,ctx.motionY);scalar(e,"elapsed",ctx.elapsed);scalar(e,"frame_index",ctx.timelineClock?std::fmod(std::floor(ctx.elapsed*60.0),16777216.0):double(s.frameIndex%16777216));scalar(e,"history_valid",history&&history->valid?1:0);scalar(e,"history_time",history?history->time:ctx.elapsed);scalar(e,"frame_delta",history&&history->valid?std::max(0.0,ctx.elapsed-history->time):1.0/60);scalar(e,"auxiliary_valid",auxValid?1:0);scalar(e,"strength",f->strength);
   const char*names[]={"p0","p1","p2","p3","p4","p5","p6","p7"};for(size_t j=0;j<8;++j)four(e,names[j],f->values[j*4],f->values[j*4+1],f->values[j*4+2],f->values[j*4+3]);four(e,"tint",f->color.x,f->color.y,f->color.z,1);four(e,"tint2",f->color2.x,f->color2.y,f->color2.z,1);const auto materialLight=localFxLighting(ctx.position,multiply(ctx.right,ctx.uvSpanX),multiply(ctx.down,ctx.uvSpanY),ctx.normal);three(e,"lamp_position",materialLight.position);three(e,"lamp_color",materialLight.color);scalar(e,"lamp_intensity",materialLight.intensity);scalar(e,"lamp_range",materialLight.range);three(e,"layer_position",ctx.position);three(e,"camera_position",ctx.cameraPosition);three(e,"layer_right",ctx.right);three(e,"layer_down",ctx.down);three(e,"layer_normal",ctx.normal);two(e,"layer_uv_center",ctx.uvCenterX,ctx.uvCenterY);scalar(e,"lut_size",f->pixels?f->pixels->lutSize:0);three(e,"lut_min",f->pixels?f->pixels->minimum:Vec3{});three(e,"lut_max",f->pixels?f->pixels->maximum:Vec3{1,1,1});
   if(def.id=="FX04.1"){
    // Integrate the dense seed field at bounded resolution, then upscale once.
@@ -197,7 +198,7 @@ FxRenderResult FxRenderer::process(const Layer&layer,gs_texture_t*original,const
    if(!res.temporalRaw.begin(ctx.width,ctx.height,s.allocated)){++s.errors;continue;}
    gs_blend_state_push();gs_enable_blending(false);while(gs_effect_loop(e,"CaptureHistory"))gs_draw_sprite(current,0,ctx.width,ctx.height);gs_blend_state_pop();gs_texrender_end(res.temporalRaw.value);
    auto*rawResult=gs_texrender_get_texture(res.temporalRaw.value);if(!rawResult){++s.errors;continue;}++s.draws;
-   if(history->next){gs_copy_texture(history->next,rawResult);history->pending=true;history->nextTime=ctx.elapsed;}
+   if(history->next&&ctx.advanceHistory){gs_copy_texture(history->next,rawResult);history->pending=true;history->nextTime=ctx.elapsed;}
    // gs_technique_end clears every parameter. MixHistory is a new technique.
    texture(e,"image",current);scalar(e,"strength",f->strength);four(e,"content_rect",0,0,1,1);
    texture(e,"effect_result",rawResult);

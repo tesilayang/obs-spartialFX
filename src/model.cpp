@@ -1,12 +1,13 @@
 #include "model.hpp"
+#include "animation_io.hpp"
+#include "timeline_object.hpp"
+#include "motion_migration.hpp"
 #include "scene_evaluator.hpp"
 #include "presets/presets.hpp"
 #include <algorithm>
 #include <cmath>
 namespace spatial {
 namespace {
-Animation readAnimation(obs_data_t*d){Animation a;auto*arr=obs_data_get_array(d,"animation");if(arr)for(size_t i=0;i<obs_data_array_count(arr);++i){auto*r=obs_data_array_item(arr,i);std::string id=obs_data_get_string(r,"parameter");if(parameter(id)){Curve c;c.enabled=obs_data_get_bool(r,"enabled");c.locked=obs_data_get_bool(r,"locked");c.shortest=obs_data_get_bool(r,"shortest");auto*keys=obs_data_get_array(r,"keys");if(keys)for(size_t j=0;j<obs_data_array_count(keys);++j){auto*k=obs_data_array_item(keys,j);AnimKey key;try{key.time=std::stoll(obs_data_get_string(k,"time_us"));}catch(...){key.time=0;}key.value=obs_data_get_double(k,"value");key.interpolation=Interpolation(std::clamp(int(obs_data_get_int(k,"mode")),0,7));key.legacyFrom=obs_data_has_user_value(k,"legacy_from")?obs_data_get_double(k,"legacy_from"):0;key.legacyTo=obs_data_has_user_value(k,"legacy_to")?obs_data_get_double(k,"legacy_to"):1;key.outAbsolute=obs_data_get_bool(k,"out_absolute");key.inAbsolute=obs_data_get_bool(k,"in_absolute");key.outX=obs_data_has_user_value(k,"out_x")?obs_data_get_double(k,"out_x"):1.0/3;key.outY=obs_data_has_user_value(k,"out_y")?obs_data_get_double(k,"out_y"):1.0/3;key.inX=obs_data_has_user_value(k,"in_x")?obs_data_get_double(k,"in_x"):2.0/3;key.inY=obs_data_has_user_value(k,"in_y")?obs_data_get_double(k,"in_y"):2.0/3;if(!std::isfinite(key.outX))key.outX=1.0/3;if(!std::isfinite(key.outY))key.outY=1.0/3;if(!std::isfinite(key.inX))key.inX=2.0/3;if(!std::isfinite(key.inY))key.inY=2.0/3;c.put(key);obs_data_release(k);}obs_data_array_release(keys);a[id]=std::move(c);}obs_data_release(r);}obs_data_array_release(arr);return a;}
-void writeAnimation(obs_data_t*d,const Animation&a){auto*arr=obs_data_array_create();for(auto&pair:a){auto*r=obs_data_create();obs_data_set_string(r,"parameter",pair.first.c_str());auto&c=pair.second;obs_data_set_bool(r,"enabled",c.enabled);obs_data_set_bool(r,"locked",c.locked);obs_data_set_bool(r,"shortest",c.shortest);auto*keys=obs_data_array_create();for(auto&k:c.keys()){auto*v=obs_data_create();obs_data_set_string(v,"time_us",std::to_string(k.time).c_str());obs_data_set_double(v,"value",k.value);obs_data_set_int(v,"mode",int(k.interpolation));obs_data_set_double(v,"legacy_from",k.legacyFrom);obs_data_set_double(v,"legacy_to",k.legacyTo);obs_data_set_bool(v,"out_absolute",k.outAbsolute);obs_data_set_bool(v,"in_absolute",k.inAbsolute);obs_data_set_double(v,"out_x",k.outX);obs_data_set_double(v,"out_y",k.outY);obs_data_set_double(v,"in_x",k.inX);obs_data_set_double(v,"in_y",k.inY);obs_data_array_push_back(keys,v);obs_data_release(v);}obs_data_set_array(r,"keys",keys);obs_data_array_release(keys);obs_data_array_push_back(arr,r);obs_data_release(r);}obs_data_set_array(d,"animation",arr);obs_data_array_release(arr);}
 Orbit readOrbit(obs_data_t*d){Orbit o;o.enabled=obs_data_get_bool(d,"orbit_enabled");o.x=obs_data_get_double(d,"orbit_x");o.y=obs_data_get_double(d,"orbit_y");o.z=obs_data_get_double(d,"orbit_z");o.radius=obs_data_has_user_value(d,"orbit_radius")?obs_data_get_double(d,"orbit_radius"):1500;o.yaw=obs_data_get_double(d,"orbit_yaw");o.pitch=obs_data_get_double(d,"orbit_pitch");for(auto*p:{&o.x,&o.y,&o.z,&o.radius,&o.yaw,&o.pitch})if(!std::isfinite(*p))*p=0;o.radius=std::clamp(o.radius,0.0,100000.0);return o;}
 void writeOrbit(obs_data_t*d,const Orbit&o){obs_data_set_bool(d,"orbit_enabled",o.enabled);obs_data_set_double(d,"orbit_x",o.x);obs_data_set_double(d,"orbit_y",o.y);obs_data_set_double(d,"orbit_z",o.z);obs_data_set_double(d,"orbit_radius",o.radius);obs_data_set_double(d,"orbit_yaw",o.yaw);obs_data_set_double(d,"orbit_pitch",o.pitch);}
 bool has(obs_data_t *d,const char *k){return d&&(obs_data_has_user_value(d,k)||obs_data_has_default_value(d,k));}
@@ -54,11 +55,16 @@ StageModel readModel(obs_data_t *d){
     m.light.bindSceneUuid=obs_data_get_string(d,"light_bind_scene");m.light.receiverSceneUuid=obs_data_get_string(d,"receiver_scene");m.light.bindItemId=obs_data_get_int(d,"light_bind_item");m.light.receiverItemId=obs_data_get_int(d,"receiver_item");
     m.light.bindInstanceId=obs_data_get_string(d,"light_bind_instance");m.light.receiverInstanceId=obs_data_get_string(d,"receiver_instance");
     if(has(d,"light_label"))m.light.label=obs_data_get_string(d,"light_label");
+    m.light.instanceId=obs_data_get_string(d,"light_instance_id");if(m.light.instanceId.empty())m.light.instanceId="legacy-main-light";
+    m.light.present=boolean(d,"light_present",m.light.enabled||m.light.visible);
+    m.light.locked=boolean(d,"light_locked",false);auto*lightAnimation=obs_data_get_obj(d,"light_animation");m.light.animation=readParameterAnimation(lightAnimation);obs_data_release(lightAnimation);
     auto *extra=obs_data_get_array(d,"extra_lights");
     if(extra)for(size_t n=0;n<std::min(size_t(3),obs_data_array_count(extra));++n){auto*entry=obs_data_array_item(extra,n);
         // Additional emitter objects do not recurse through nested emitter arrays.
         auto*clean=obs_data_create();obs_data_apply(clean,entry);obs_data_erase(clean,"extra_lights");m.extraLights.push_back(readModel(clean).light);obs_data_release(clean);obs_data_release(entry);}
     obs_data_array_release(extra);
+    for(size_t i=0;i<m.extraLights.size();++i){auto&l=m.extraLights[i];l.present=true;if(l.instanceId==m.light.instanceId||std::any_of(m.extraLights.begin(),m.extraLights.begin()+i,[&](const Light&a){return a.instanceId==l.instanceId;}))l.instanceId="legacy-extra-light-"+std::to_string(i);}
+
     m.fx.enabled=obs_data_get_int(d,"schema_version")>=3&&boolean(d,"fx_enabled",false);m.fx.exposure=number(d,"fx_exposure",0,-5,5);m.fx.saturation=number(d,"fx_saturation",1,0,3);m.fx.vignette=number(d,"fx_vignette",0,0,1);
     auto *layers=obs_data_get_array(d,"layers");
     if(layers)for(size_t i=0;i<std::min(size_t(32),obs_data_array_count(layers));++i){
@@ -80,26 +86,27 @@ StageModel readModel(obs_data_t *d){
         l.followSourceSize=boolean(item,"follow_source_size",false);l.importWidth=number(item,"import_width",0,0,100000);l.importHeight=number(item,"import_height",0,0,100000);
         auto&t=l.importTransform;t.scaleX=number(item,"source_sx",1,-100,100);t.scaleY=number(item,"source_sy",1,-100,100);t.alignment=int(number(item,"source_alignment",5,0,15));t.boundsAlignment=int(number(item,"bounds_alignment",0,0,15));t.cropToBounds=boolean(item,"crop_to_bounds",false);t.boundsWidth=l.boundsWidth;t.boundsHeight=l.boundsHeight;t.boundsType=l.boundsType;t.left=l.cropLeft;t.right=l.cropRight;t.top=l.cropTop;t.bottom=l.cropBottom;
         l.hasDefault=boolean(item,"has_default",false);l.defaultPlane.position=readVec(item,"default_",l.plane.position);l.defaultPlane.rotation=readVec(item,"default_r",l.plane.rotation);l.defaultPlane.scaleX=number(item,"default_sx",l.plane.scaleX,-100,100);l.defaultPlane.scaleY=number(item,"default_sy",l.plane.scaleY,-100,100);
-        l.animation=readAnimation(item);l.orbit=readOrbit(item);l.locked=boolean(item,"animation_locked",false);l.defaultOpacity=number(item,"default_opacity",number(item,"opacity",1,0,1),0,1);l.opacity=number(item,"opacity",1,0,1);l.visible=boolean(item,"visible",true);l.originalVisible=boolean(item,"original_visible",true);
+        l.animation=readParameterAnimation(item);l.orbit=readOrbit(item);l.locked=boolean(item,"animation_locked",false);l.defaultOpacity=number(item,"default_opacity",number(item,"opacity",1,0,1),0,1);l.opacity=number(item,"opacity",1,0,1);l.visible=boolean(item,"visible",true);l.originalVisible=boolean(item,"original_visible",true);
         if(!l.sourceUuid.empty())m.layers.push_back(std::move(l));obs_data_release(item);
     }
     obs_data_array_release(layers);
-    m.mediaUuid=obs_data_get_string(d,"media_uuid");m.mediaLinked=boolean(d,"media_linked",false);m.mediaOffset=number(d,"media_offset",0,-100000,100000);m.cameraAnimation=readAnimation(d);m.cameraOrbit=readOrbit(d);m.cameraLocked=boolean(d,"animation_locked",false);
-    auto*composite=obs_data_get_obj(d,"composite");m.compositeAnimation=readAnimation(composite);m.compositeLocked=boolean(composite,"animation_locked",false);m.outputScaleX=number(composite,"sx",1,-100,100);m.outputScaleY=number(composite,"sy",1,-100,100);m.outputOpacity=number(composite,"opacity",1,0,1);obs_data_release(composite);
+    m.mediaUuid=obs_data_get_string(d,"media_uuid");m.mediaLinked=boolean(d,"media_linked",false);m.mediaOffset=number(d,"media_offset",0,-100000,100000);m.cameraAnimation=readParameterAnimation(d);m.cameraOrbit=readOrbit(d);m.cameraLocked=boolean(d,"animation_locked",false);
+    auto*composite=obs_data_get_obj(d,"composite");m.compositeAnimation=readParameterAnimation(composite);m.compositeLocked=boolean(composite,"animation_locked",false);m.outputScaleX=number(composite,"sx",1,-100,100);m.outputScaleY=number(composite,"sy",1,-100,100);m.outputOpacity=number(composite,"opacity",1,0,1);obs_data_release(composite);
     m.autoKey=boolean(d,"auto_key",false);m.keyPositionsLocked=boolean(d,"key_positions_locked",false);
     if(has(d,"timeline_position_us")){try{m.timelinePosition=toSeconds(std::max(int64_t(0),std::stoll(obs_data_get_string(d,"timeline_position_us"))));}catch(...){}}
-    presets::readPresets(m,d);
+    presets::readPresets(m,d);migrateLoadedMotion(m,d);
     m.animationDuration=toSeconds(contentEnd(m));
+    sanitizeObjectAnimations(m);
     return m;
 }
 void writeModel(const StageModel &input,obs_data_t *d){
     const StageModel &m=input;
-    presets::writePresets(m,d);
+    presets::writePresets(m,d);writeMotionMigration(m,d);
     for(const char *name:{"legacy_playback_end","use_legacy_playback_range","keyframes"})obs_data_erase(d,name);
     obs_data_set_bool(d,"auto_key",m.autoKey);obs_data_set_bool(d,"key_positions_locked",m.keyPositionsLocked);
-    obs_data_set_string(d,"media_uuid",m.mediaUuid.c_str());obs_data_set_bool(d,"media_linked",m.mediaLinked);obs_data_set_double(d,"media_offset",m.mediaOffset);obs_data_set_int(d,"schema_version",5);obs_data_set_bool(d,"fx_enabled",m.fx.enabled);
-    writeAnimation(d,m.cameraAnimation);writeOrbit(d,m.cameraOrbit);obs_data_set_bool(d,"animation_locked",m.cameraLocked);
-    auto*composite=obs_data_create();writeAnimation(composite,m.compositeAnimation);obs_data_set_bool(composite,"animation_locked",m.compositeLocked);obs_data_set_double(composite,"sx",m.outputScaleX);obs_data_set_double(composite,"sy",m.outputScaleY);obs_data_set_double(composite,"opacity",m.outputOpacity);obs_data_set_obj(d,"composite",composite);obs_data_release(composite);
+    obs_data_set_string(d,"media_uuid",m.mediaUuid.c_str());obs_data_set_bool(d,"media_linked",m.mediaLinked);obs_data_set_double(d,"media_offset",m.mediaOffset);obs_data_set_int(d,"schema_version",6);obs_data_set_bool(d,"fx_enabled",m.fx.enabled);
+    writeParameterAnimation(d,m.cameraAnimation);writeOrbit(d,m.cameraOrbit);obs_data_set_bool(d,"animation_locked",m.cameraLocked);
+    auto*composite=obs_data_create();writeParameterAnimation(composite,m.compositeAnimation);obs_data_set_bool(composite,"animation_locked",m.compositeLocked);obs_data_set_double(composite,"sx",m.outputScaleX);obs_data_set_double(composite,"sy",m.outputScaleY);obs_data_set_double(composite,"opacity",m.outputOpacity);obs_data_set_obj(d,"composite",composite);obs_data_release(composite);
     obs_data_set_string(d,"timeline_position_us",std::to_string(toTime(m.timelinePosition)).c_str());obs_data_set_double(d,"timeline_position",m.timelinePosition);obs_data_set_bool(d,"timeline_preview",m.timelinePreview);
     obs_data_set_double(d,"light_rim_width",m.light.rimWidth);obs_data_set_double(d,"light_rim_softness",m.light.rimSoftness);
     writeVec(d,"camera_target_",m.target);obs_data_set_bool(d,"camera_look_at",m.lookAtTarget);obs_data_set_bool(d,"preview",m.preview);
@@ -108,6 +115,8 @@ void writeModel(const StageModel &input,obs_data_t *d){
     obs_data_set_bool(d,"light_visible",m.light.visible);obs_data_set_string(d,"light_bind",m.light.bindUuid.c_str());obs_data_set_string(d,"receiver_uuid",m.light.receiverUuid.c_str());obs_data_set_string(d,"light_label",m.light.label.c_str());
     obs_data_set_string(d,"light_bind_scene",m.light.bindSceneUuid.c_str());obs_data_set_string(d,"receiver_scene",m.light.receiverSceneUuid.c_str());obs_data_set_int(d,"light_bind_item",m.light.bindItemId);obs_data_set_int(d,"receiver_item",m.light.receiverItemId);
     obs_data_set_string(d,"light_bind_instance",m.light.bindInstanceId.c_str());obs_data_set_string(d,"receiver_instance",m.light.receiverInstanceId.c_str());
+    obs_data_set_string(d,"light_instance_id",m.light.instanceId.c_str());obs_data_set_bool(d,"light_present",m.light.present);obs_data_set_bool(d,"light_locked",m.light.locked);
+    auto*lightAnimation=obs_data_create();writeParameterAnimation(lightAnimation,m.light.animation);obs_data_set_obj(d,"light_animation",lightAnimation);obs_data_release(lightAnimation);
     auto*extra=obs_data_array_create();for(const auto&light:m.extraLights){StageModel single;single.light=light;auto*item=modelData(single);obs_data_erase(item,"extra_lights");obs_data_array_push_back(extra,item);obs_data_release(item);}obs_data_set_array(d,"extra_lights",extra);obs_data_array_release(extra);obs_data_set_int(d,"width",m.width);obs_data_set_int(d,"height",m.height);writeCamera(d,m.camera);
     obs_data_set_bool(d,"playing",m.playing);obs_data_set_bool(d,"loop",m.loop);obs_data_set_int(d,"play_token",int64_t(m.playToken));
     obs_data_set_bool(d,"light_enabled",m.light.enabled);obs_data_set_bool(d,"shadows_enabled",m.light.shadows);writeVec(d,"light_",m.light.position);
@@ -121,7 +130,7 @@ void writeModel(const StageModel &input,obs_data_t *d){
         obs_data_set_double(item,"bounds_width",l.boundsWidth);obs_data_set_double(item,"bounds_height",l.boundsHeight);obs_data_set_int(item,"bounds_type",l.boundsType);
         obs_data_set_bool(item,"follow_source_size",l.followSourceSize);obs_data_set_double(item,"import_width",l.importWidth);obs_data_set_double(item,"import_height",l.importHeight);obs_data_set_double(item,"source_sx",l.importTransform.scaleX);obs_data_set_double(item,"source_sy",l.importTransform.scaleY);obs_data_set_int(item,"source_alignment",l.importTransform.alignment);obs_data_set_int(item,"bounds_alignment",l.importTransform.boundsAlignment);obs_data_set_bool(item,"crop_to_bounds",l.importTransform.cropToBounds);
         obs_data_set_bool(item,"has_default",l.hasDefault);writeVec(item,"default_",l.defaultPlane.position);writeVec(item,"default_r",l.defaultPlane.rotation);obs_data_set_double(item,"default_sx",l.defaultPlane.scaleX);obs_data_set_double(item,"default_sy",l.defaultPlane.scaleY);
-        writeFxStack(item,l.fx);obs_data_set_string(item,"instance_id",l.instanceId.c_str());obs_data_set_int(item,"instance_number",l.instanceNumber);writeAnimation(item,l.animation);writeOrbit(item,l.orbit);obs_data_set_bool(item,"animation_locked",l.locked);obs_data_set_double(item,"default_opacity",l.defaultOpacity);obs_data_array_push_back(layers,item);obs_data_release(item);}obs_data_set_array(d,"layers",layers);obs_data_array_release(layers);
+        writeFxStack(item,l.fx);obs_data_set_string(item,"instance_id",l.instanceId.c_str());obs_data_set_int(item,"instance_number",l.instanceNumber);writeParameterAnimation(item,l.animation);writeOrbit(item,l.orbit);obs_data_set_bool(item,"animation_locked",l.locked);obs_data_set_double(item,"default_opacity",l.defaultOpacity);obs_data_array_push_back(layers,item);obs_data_release(item);}obs_data_set_array(d,"layers",layers);obs_data_array_release(layers);
 }
 obs_data_t *modelData(const StageModel &m){auto *d=obs_data_create();writeModel(m,d);return d;}
 }

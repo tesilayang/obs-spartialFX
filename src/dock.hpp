@@ -44,7 +44,7 @@ private:
     QDoubleSpinBox *focusField=nullptr,*apertureField=nullptr;
     QCheckBox *lightVisible=nullptr;
     void initV2(QFormLayout*,QFormLayout*,QFormLayout*);void syncV2();void syncLayerV2();void refreshSources();
-    spatial::Light &selectedLight();void syncLight();void addLight(int type);
+    spatial::Light &selectedLight();void syncLight(bool bindings=true);void addLight(int type);
     void message(const QString&,bool error=false);void updateStats();
     QCheckBox *fxEnabled=nullptr;SpatialTimeline *timeline=nullptr;StructurePreview *structure=nullptr;QComboBox *trackChoice=nullptr;
     std::array<QDoubleSpinBox*,2> rimFields{};

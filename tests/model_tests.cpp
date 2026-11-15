@@ -5,6 +5,12 @@
 using namespace spatial;
 void expect(bool condition,const char *label) { if(!condition){std::cerr<<"FAIL: "<<label<<'\n';std::exit(1);} }
 int main() {
+    auto* lightTrackData=obs_data_create_from_json(R"({"light_instance_id":"lamp-stable","light_animation":{"animation":[{"parameter":"intensity","enabled":true,"keys":[{"time_us":"0","value":1},{"time_us":"2000000","value":3}]}]}})");
+    auto lightTrackModel=readModel(lightTrackData);auto* lightTrackRound=modelData(lightTrackModel);
+    expect(std::string(obs_data_get_string(lightTrackRound,"light_instance_id"))=="lamp-stable","light identity survives save and reopen");
+    auto* lightTrack=obs_data_get_obj(lightTrackRound,"light_animation");auto* lightChannels=obs_data_get_array(lightTrack,"animation");
+    expect(obs_data_array_count(lightChannels)==1,"light parameter animation survives save and reopen");
+    obs_data_array_release(lightChannels);obs_data_release(lightTrack);obs_data_release(lightTrackRound);obs_data_release(lightTrackData);
     auto*copies=obs_data_create_from_json(R"({"layers":[{"uuid":"shared","scene_uuid":"scene","item_id":5,"instance_id":"a","instance_number":1,"x":10},{"uuid":"shared","scene_uuid":"scene","item_id":5,"instance_id":"b","instance_number":2,"x":90}],"light_bind":"shared","light_bind_scene":"scene","light_bind_item":5,"light_bind_instance":"b","receiver_uuid":"shared","receiver_scene":"scene","receiver_item":5,"receiver_instance":"a"})");
     auto copyModel=readModel(copies);auto*copyData=modelData(copyModel);auto*copyArray=obs_data_get_array(copyData,"layers");auto*copyB=obs_data_array_item(copyArray,1);
     expect(std::string(obs_data_get_string(copyB,"instance_id"))=="b"&&obs_data_get_int(copyB,"instance_number")==2,"same OBS item instances preserve unique identity and display number");

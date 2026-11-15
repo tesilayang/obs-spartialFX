@@ -109,6 +109,69 @@ std::vector<MotionChannel>motion(const std::string&id,double strength,double dir
  return {};
 }
 }
+bool migrateLegacyMotionBlocks(StageModel&m,std::string&error,MotionMigrationReport*report,const MotionMigrationOptions&options){
+ error.clear();if(report)*report={};
+ auto fail=[&](const std::string&message){error=message;return false;};
+ if(m.motionBlocks.empty())return true;
+ if(!options.maxKeys||!std::isfinite(options.absoluteTolerance)||options.absoluteTolerance<=0||!std::isfinite(options.relativeTolerance)||options.relativeTolerance<0)return fail("旧运动转换误差或数据预算无效");
+ StageModel out=m;MotionMigrationReport result;result.blocks=m.motionBlocks.size();
+ std::map<std::pair<std::string,std::string>,std::set<TimeUs>> groups;size_t mandatoryKeys=0;
+ for(const auto&b:m.motionBlocks){
+  if(options.cancelled&&options.cancelled())return fail("旧运动转换已取消，原数据保留");
+  if(b.start<0||b.end<b.start||b.period<=0||b.timeOrigin < -1||object(m,b.targetId)==INT_MIN)return fail("旧运动块时间或绑定无效："+b.instanceId);
+  const TimeUs origin=b.timeOrigin<0?b.start:b.timeOrigin;
+  for(const auto&ch:b.channels){
+   if(!parameter(ch.parameter)||!std::isfinite(ch.amplitude)||!std::isfinite(ch.phase)||std::any_of(ch.samples.begin(),ch.samples.end(),[](double value){return !std::isfinite(value);}))return fail("旧运动块参数或采样无效："+b.instanceId);
+   if(!b.enabled)continue;
+   auto&times=groups[{b.targetId,ch.parameter}];const size_t beforeCount=times.size();
+   auto put=[&](TimeUs t){times.insert(t);if(t>0)times.insert(t-1);if(t<INT64_MAX)times.insert(t+1);};
+   put(b.start);put(b.end);
+   if(origin>b.end){mandatoryKeys+=times.size()-beforeCount;if(mandatoryKeys>options.maxKeys)return fail("旧运动转换超过关键帧预算，原数据保留");continue;}
+   const TimeUs first=std::max(b.start,origin);
+   TimeUs cycle=origin+(first-origin)/b.period*b.period;
+   // Every stored sample boundary (including stepped jumps), and 64 nodes per
+   // analytic period, is mandatory. Refuse oversized conversions before baking.
+   const size_t divisions=ch.samples.size()>=2?ch.samples.size()-1:64;
+   if(divisions>options.maxKeys||uint64_t((b.end-first)/b.period)>options.maxKeys/std::max(size_t(1),divisions))return fail("旧运动转换超过关键帧预算，原数据保留");
+   while(cycle<=b.end){
+    for(size_t i=0;i<=divisions;++i){
+     const TimeUs offset=(b.period/TimeUs(divisions))*TimeUs(i)+(b.period%TimeUs(divisions))*TimeUs(i)/TimeUs(divisions);
+     if(offset>INT64_MAX-cycle)continue;
+     const TimeUs t=cycle+offset;if(t>=first&&t<=b.end)put(t);
+    }
+    if(times.size()>options.maxKeys)return fail("旧运动转换超过关键帧预算，原数据保留");
+    if(b.period>INT64_MAX-cycle)break;cycle+=b.period;
+   }
+   mandatoryKeys+=times.size()-beforeCount;if(mandatoryKeys>options.maxKeys)return fail("旧运动转换超过关键帧预算，原数据保留");
+  }
+ }
+ for(auto&entry:groups){
+  if(options.cancelled&&options.cancelled())return fail("旧运动转换已取消，原数据保留");
+  const auto&id=entry.first.first;const auto&p=entry.first.second;const int o=object(m,id);
+  const auto&animation=objectAnimation(m,o);const auto found=animation.find(p);const Curve original=found==animation.end()?Curve{}:found->second;const double base=baseValue(m,o,p);
+  auto&times=entry.second;
+  // Retain the complete manual curve domain: its eased sections are composed
+  // with offsets rather than frozen at the block's initial value.
+  for(const auto&key:original.keys()){times.insert(key.time);if(key.time>0)times.insert(key.time-1);}
+  if(times.size()>options.maxKeys-result.keys)return fail("旧运动转换超过关键帧预算，原数据保留");
+  auto value=[&](TimeUs t){const double v=original.value(t,base),offset=motionOffset(m,id,p,t);return multi(p)?v*(1+offset):v+offset;};
+  std::vector<AnimKey>keys;bool stopped=false;
+  auto append=[&](TimeUs t,double v){if(!std::isfinite(v)){error="旧运动转换产生非有限数值，原数据保留";stopped=true;return;}if(keys.size()>=options.maxKeys-result.keys){error="旧运动转换超过关键帧预算，原数据保留";stopped=true;return;}keys.push_back({t,v,Interpolation::Linear});};
+  std::function<void(TimeUs,double,TimeUs,double)> refine;
+  refine=[&](TimeUs a,double av,TimeUs z,double zv){
+   if(stopped)return;if(options.cancelled&&options.cancelled()){error="旧运动转换已取消，原数据保留";stopped=true;return;}
+   double checked=0;bool split=false;
+   for(int i=1;i<=3;++i){const TimeUs t=a+(z-a)/4*i+(z-a)%4*i/4;if(t==a||t==z)continue;const double actual=value(t),linear=av+(zv-av)*(double(t-a)/double(z-a)),difference=std::abs(actual-linear);if(!std::isfinite(actual)){error="旧运动转换产生非有限数值，原数据保留";stopped=true;return;}checked=std::max(checked,difference);if(difference>options.absoluteTolerance+options.relativeTolerance*std::abs(actual))split=true;}
+   if(split&&z-a>1){const TimeUs middle=a+(z-a)/2;const double mv=value(middle);refine(a,av,middle,mv);refine(middle,mv,z,zv);}
+   else{result.maxError=std::max(result.maxError,checked);append(z,zv);}
+  };
+  auto previous=times.begin();append(*previous,value(*previous));for(auto next=std::next(previous);next!=times.end()&&!stopped;++next){refine(*previous,value(*previous),*next,value(*next));previous=next;}
+  if(stopped)return false;
+  Curve converted;converted.enabled=true;converted.locked=original.locked;for(const auto&key:keys)converted.put(key);
+  result.keys+=keys.size();objectAnimation(out,o)[p]=std::move(converted);
+ }
+ out.motionBlocks.clear();m=std::move(out);if(report)*report=result;return true;
+}
 bool compileComposition(StageModel&m,const ComposeRequest&r,std::string&error,ComposeFailure*failure){
  error.clear();if(failure)*failure=ComposeFailure::None;auto fail=[&](const std::string&s,ComposeFailure kind=ComposeFailure::Other){error=s;if(failure)*failure=kind;return false;};
  auto style=std::find_if(styleCatalog().begin(),styleCatalog().end(),[&](const auto&s){return r.styleId==s.id;});if(style==styleCatalog().end())return fail("找不到风格卡片");
@@ -152,6 +215,7 @@ bool compileComposition(StageModel&m,const ComposeRequest&r,std::string&error,Co
  QJsonArray resolvedDecor;for(const auto&id:decorIds)resolvedDecor.append(QJsonObject{{"id",QString::fromStdString(id)}});recipe["decoration_ids"]=resolvedDecor;
  recipe["decoration_style"]=QString::fromStdString(decorationStyle);
  const double direction=motionRng.next()%2?1.:-1.;recipe["direction"]=direction;recipe["motion_seed"]=double(motionSeed);recipe["mask_seed"]=double(maskSeed);recipe["decoration_seed"]=double(decorationSeed);auto*recipeData=obs_data_create_from_json(QJsonDocument(recipe).toJson(QJsonDocument::Compact).constData());preset.definitionSnapshot=obs_data_get_json(recipeData);obs_data_release(recipeData);out.presetInstances.push_back(preset);
+ size_t generatedKeyCount=0;
  auto add=[&](const std::string&id,std::vector<MotionChannel>channels){
   int o=object(out,id);if(o==INT_MIN)return fail("运动绑定失效");if(objectLocked(out,o))return fail("对象已锁定");auto&a=objectAnimation(out,o);
   const bool orbit=o==-1?out.cameraOrbit.enabled:o>=0?out.layers[size_t(o)].orbit.enabled:false;
@@ -170,10 +234,11 @@ bool compileComposition(StageModel&m,const ComposeRequest&r,std::string&error,Co
    auto it=a.find(ch.parameter);if(it!=a.end()){if(it->second.locked)return fail("参数轨已锁定："+ch.parameter);if(it->second.enabled&&!it->second.keys().empty()&&it->second.keys().front().time<=preset.end&&it->second.keys().back().time>=r.start&&!r.replace)return fail("参数区间已有关键帧："+ch.parameter,ComposeFailure::IntervalConflict);}
    for(const auto&b:out.motionBlocks)if(b.enabled&&b.targetId==id&&overlap(r.start,preset.end,b.start,b.end))for(const auto&c:b.channels)if(c.parameter==ch.parameter)return fail("参数区间已有循环动作："+ch.parameter,ComposeFailure::IntervalConflict);
   }
-  if(r.loop){MotionBlock b;b.instanceId=fresh();b.ownerId=preset.instanceId;b.targetId=id;b.label=preset.label;b.start=r.start;b.end=preset.end;b.period=r.duration;b.timeOrigin=r.start;b.camera=o==-1;b.channels=std::move(channels);out.motionBlocks.push_back(std::move(b));return true;}
   for(const auto&ch:channels){GeneratedTrack track;track.targetId=id;track.parameter=ch.parameter;track.existed=a.find(ch.parameter)!=a.end();auto&c=a[ch.parameter];track.before=c;const double base=baseValue(out,o,ch.parameter),begin=c.value(r.start,base);std::vector<AnimKey>keys;
-   // Finite cycles have bounded key storage; long repeated work uses loop blocks.
-   if(r.cycles>64)return fail("有限动画最多64次；更多重复请选择循环模式");
+   // Both looping and one-shot presets are finite editable data. Refuse an
+   // oversized request atomically rather than silently shortening its motion.
+   if(ch.samples.size()<2||generatedKeyCount+3>=250000||uint64_t(r.cycles)>(250000-generatedKeyCount-3)/(ch.samples.size()-1))return fail("预设超过250000个关键帧预算，请减少持续时间或重复次数");
+   generatedKeyCount+=size_t(r.cycles)*(ch.samples.size()-1)+3;
    for(int64_t cycle=0;cycle<r.cycles;++cycle)for(size_t i=0;i<ch.samples.size();++i){if(cycle&&i==0)continue;const auto t=r.start+r.duration*cycle+TimeUs(r.duration/TimeUs(ch.samples.size()-1)*TimeUs(i)+(r.duration%TimeUs(ch.samples.size()-1))*TimeUs(i)/TimeUs(ch.samples.size()-1));const double value=multi(ch.parameter)?begin*(1+ch.amplitude*ch.samples[i]):begin+ch.amplitude*ch.samples[i];keys.push_back({t,value,ch.stepped?Interpolation::Hold:Interpolation::Linear});}
    const TimeUs lo=r.start>0?r.start-1:r.start,hi=preset.end<INT64_MAX?preset.end+1:preset.end;if(lo<r.start)keys.insert(keys.begin(),{lo,c.value(lo,base),Interpolation::Hold});if(hi>preset.end){keys.back().interpolation=Interpolation::Hold;keys.push_back({hi,c.value(hi,base),Interpolation::Linear});}splice(c,lo,hi,base,keys,lo<r.start);track.after=c;if(o>=-1)out.presetInstances.back().generatedTracks.push_back(std::move(track));
   }return true;

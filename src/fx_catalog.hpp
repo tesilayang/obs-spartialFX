@@ -1,5 +1,6 @@
 #pragma once
 #include "core.hpp"
+#include "animation.hpp"
 #include <obs.h>
 #include <array>
 #include <memory>
@@ -14,6 +15,7 @@ struct FxDefinition {
 };
 struct FxPixels {uint32_t width=0,height=0;std::vector<uint8_t> pixels;int lutSize=0;Vec3 minimum{},maximum{1,1,1};};
 struct FxInstance {
+ Animation animation;bool locked=false;
  std::string id;bool enabled=false;double strength=1;std::array<double,32> values{};
  Vec3 color{1,.85,.6},color2{.1,.2,.4};std::string reference,path,assetError;
  std::shared_ptr<const FxPixels> pixels;

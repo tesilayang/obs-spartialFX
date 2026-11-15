@@ -15,7 +15,9 @@
 #include <QLabel>
 #include <QListWidget>
 #include <QPushButton>
+#include <QMessageBox>
 #include <QSignalBlocker>
+#include <QUuid>
 #include <algorithm>
 #include <cmath>
 using namespace spatial;
@@ -51,10 +53,10 @@ void SpatialDock::initV2(QFormLayout*imports,QFormLayout*layers,QFormLayout*ligh
     lightChoice=new QComboBox;lightChoice->setObjectName("spatial.light-choice");lights->insertRow(0,u("灯光列表"),lightChoice);connect(lightChoice,&QComboBox::currentIndexChanged,this,[this]{if(lightColorDialog)lightColorDialog->reject();if(!loading)syncLight();});
     auto*addRow=new QHBoxLayout;for(int i=0;i<2;++i){auto*b=new QPushButton(u(i?"添加面光源":"添加点光源"));b->setObjectName(i?"spatial.add-area-light":"spatial.add-point-light");addRow->addWidget(b);connect(b,&QPushButton::clicked,this,[this,i]{addLight(i);});}lights->insertRow(1,addRow);
     auto*removeLight=new QPushButton(u("删除选中灯光"));removeLight->setObjectName("spatial.remove-light");addRow->addWidget(removeLight);addRow->setSpacing(4);for(int i=0;i<addRow->count();++i)addRow->itemAt(i)->widget()->setStyleSheet("QPushButton { padding: 2px 4px; min-height: 24px; }");
-    connect(removeLight,&QPushButton::clicked,this,[this]{int i=lightChoice->currentIndex();if(i>0&&size_t(i)<=model.extraLights.size())model.extraLights.erase(model.extraLights.begin()+i-1);else if(!model.extraLights.empty()){model.light=model.extraLights.front();model.extraLights.erase(model.extraLights.begin());}else model.light={};syncV2();commit();});
+    connect(removeLight,&QPushButton::clicked,this,[this]{if(QMessageBox::question(this,u("删除灯光"),u("删除选中灯光及其动画？"),QMessageBox::Yes|QMessageBox::No,QMessageBox::No)!=QMessageBox::Yes)return;int i=lightChoice->currentIndex();const int handle=lightHandleBase-std::max(0,i);if(objectLocked(model,handle))return;for(const auto&track:objectAnimation(model,handle))if(track.second.locked)return;auto next=model;if(i>0&&size_t(i)<=next.extraLights.size())next.extraLights.erase(next.extraLights.begin()+i-1);else if(!next.extraLights.empty()){next.light=next.extraLights.front();next.extraLights.erase(next.extraLights.begin());}else next.light={};editor->applyDocument(next);syncV2();});
     lightVisible=new QCheckBox(u("显示灯光实体"));lightVisible->setObjectName("spatial.light-visible");lightVisible->setToolTip(u("在画面中显示光源的发光实体，独立于照明启用开关。灯光启用决定是否照亮素材；此项只改变灯具本身是否可见。"));lights->addRow(lightVisible);connect(lightVisible,&QCheckBox::toggled,this,[this](bool v){if(!loading){selectedLight().visible=v;commit();}});
     const char*extraLabels[]={"灯光尺寸 / 世界单位","距离衰减指数","软阴影半径","轮廓光强度"};const char*extraNames[]={"spatial.light-size","spatial.light-falloff","spatial.light-softness","spatial.light-rim"};
-    for(size_t i=0;i<4;++i){lightExtra[i]=number(lights,extraLabels[i],extraNames[i],i==1?.1:0,i==0?2000:(i==1?8:(i==2?300:5)),i==0||i==2?5:.1);connect(lightExtra[i],&QDoubleSpinBox::valueChanged,this,[this,i](double v){if(loading)return;auto&l=selectedLight();double*p[]={&l.size,&l.falloff,&l.softness,&l.rim};*p[i]=v;commit();});}
+    for(size_t i=0;i<4;++i){lightExtra[i]=number(lights,extraLabels[i],extraNames[i],i==1?.1:0,i==0?2000:(i==1?8:(i==2?300:5)),i==0||i==2?5:.1);connect(lightExtra[i],&QDoubleSpinBox::valueChanged,this,[this,i](double v){if(loading)return;static const char*keys[]={"size","falloff","softness","rim"};editor->editExternal(lightHandleBase-std::max(0,lightChoice->currentIndex()),keys[i],v);syncLight(false);});}
     lightBind=new QComboBox;lightBind->setObjectName("spatial.light-bind");lightBind->setToolTip(u("绑定后位置XYZ表示相对于所选图层的局部偏移。图层平移、旋转、缩放和动画都会带动光源；不绑定时使用世界坐标。"));lights->addRow(u("灯光绑定素材"),lightBind);
     receiverChoice=new QComboBox;receiverChoice->setObjectName("spatial.receiver-choice");lights->addRow(u("底层受光 / 阴影接收层"),receiverChoice);
     connect(lightBind,&QComboBox::currentIndexChanged,this,[this]{if(!loading){auto&l=selectedLight();l.bindUuid=lightBind->currentData().toString().toStdString();l.bindSceneUuid=lightBind->currentData(Qt::UserRole+2).toString().toStdString();l.bindItemId=lightBind->currentData(Qt::UserRole+1).toLongLong();l.bindInstanceId=lightBind->currentData(Qt::UserRole+3).toString().toStdString();commit();}});
@@ -65,18 +67,18 @@ void SpatialDock::syncLayerV2(){
     layerName->setEnabled(ok);for(size_t i=0;i<5;++i)layerFlags[i]->setEnabled(ok);for(auto*f:layerExtra)f->setEnabled(ok);
     if(ok){const auto&l=model.layers[size_t(r)];QSignalBlocker b(layerName);layerName->setText(QString::fromUtf8(l.label.c_str()));const bool flags[]={l.enabled,l.receiveLight,l.castShadow,l.receiveShadow,l.rimLight};for(size_t i=0;i<5;++i)set(layerFlags[i],flags[i]);set(layerExtra[0],l.depthOrder);set(layerExtra[1],l.perspective);set(layerExtra[2],l.focusBlur);}loading=was;
 }
-void SpatialDock::syncLight(){
-    if(!lightChoice)return;const bool was=loading;loading=true;const auto&l=selectedLight();
-    if(lightColorPreview){const auto color=QColor::fromRgbF(float(l.color.x),float(l.color.y),float(l.color.z));setColorValuePreview(lightColorPreview,color);lightColorPreview->setToolTip(u("所选灯光颜色：")+color.name().toUpper());}
-    if(shadowColorPreview){const auto color=QColor::fromRgbF(float(l.shadowColor.x),float(l.shadowColor.y),float(l.shadowColor.z));setColorValuePreview(shadowColorPreview,color);shadowColorPreview->setToolTip(u("所选阴影颜色：")+color.name().toUpper());}
+void SpatialDock::syncLight(bool bindings){
+    if(!lightChoice)return;const bool was=loading;loading=true;const auto l=evaluateLight(model,lightHandleBase-std::max(0,lightChoice->currentIndex()),toTime(model.timelinePosition),model.playing||model.timelinePreview);
+    if(lightColorPreview&&!lightColorDialog){const auto color=QColor::fromRgbF(float(l.color.x),float(l.color.y),float(l.color.z));setColorValuePreview(lightColorPreview,color);lightColorPreview->setToolTip(u("所选灯光颜色：")+color.name().toUpper());}
+    if(shadowColorPreview&&!lightColorDialog){const auto color=QColor::fromRgbF(float(l.shadowColor.x),float(l.shadowColor.y),float(l.shadowColor.z));setColorValuePreview(shadowColorPreview,color);shadowColorPreview->setToolTip(u("所选阴影颜色：")+color.name().toUpper());}
     const double values[]={l.position.x,l.position.y,l.position.z,l.intensity,l.range,l.ambient,l.shadowOpacity,l.receiverZ};for(size_t i=0;i<8;++i)set(lightFields[i],values[i]);
     set(lightEnabled,l.enabled);set(shadows,l.shadows);set(lightVisible,l.visible);set(lightExtra[0],l.size);set(lightExtra[1],l.falloff);set(lightExtra[2],l.softness);set(lightExtra[3],l.rim);if(rimFields[0]){set(rimFields[0],l.rimWidth);set(rimFields[1],l.rimSoftness);}
-    for(auto*combo:{lightBind,receiverChoice}){QSignalBlocker b(combo);combo->clear();combo->addItem(u(combo==lightBind?"不绑定（世界坐标）":"全部开启接收阴影的层"),"");for(const auto&layer:model.layers){combo->addItem(QString::fromStdString(layerDisplayName(layer))+QString(" [#%1]").arg(layer.itemId),QString::fromStdString(layer.sourceUuid));combo->setItemData(combo->count()-1,qlonglong(layer.itemId),Qt::UserRole+1);combo->setItemData(combo->count()-1,QString::fromStdString(layer.sceneUuid),Qt::UserRole+2);combo->setItemData(combo->count()-1,QString::fromStdString(layer.instanceId),Qt::UserRole+3);}const auto&uuid=combo==lightBind?l.bindUuid:l.receiverUuid;int selected=0;bool found=uuid.empty();for(size_t i=0;i<model.layers.size();++i)if(lightMatchesLayer(l,model.layers[i],combo==receiverChoice)){selected=int(i)+1;found=true;break;}if(!found){combo->addItem(u("[关联图层已移除，重新选择]。"),QString::fromStdString(uuid));selected=combo->count()-1;combo->setItemData(selected,qlonglong(combo==lightBind?l.bindItemId:l.receiverItemId),Qt::UserRole+1);combo->setItemData(selected,QString::fromStdString(combo==lightBind?l.bindSceneUuid:l.receiverSceneUuid),Qt::UserRole+2);combo->setItemData(combo->count()-1,QString::fromStdString(combo==lightBind?l.bindInstanceId:l.receiverInstanceId),Qt::UserRole+3);}combo->setCurrentIndex(selected);}
+    if(bindings)for(auto*combo:{lightBind,receiverChoice}){QSignalBlocker b(combo);combo->clear();combo->addItem(u(combo==lightBind?"不绑定（世界坐标）":"全部开启接收阴影的层"),"");for(const auto&layer:model.layers){combo->addItem(QString::fromStdString(layerDisplayName(layer))+QString(" [#%1]").arg(layer.itemId),QString::fromStdString(layer.sourceUuid));combo->setItemData(combo->count()-1,qlonglong(layer.itemId),Qt::UserRole+1);combo->setItemData(combo->count()-1,QString::fromStdString(layer.sceneUuid),Qt::UserRole+2);combo->setItemData(combo->count()-1,QString::fromStdString(layer.instanceId),Qt::UserRole+3);}const auto&uuid=combo==lightBind?l.bindUuid:l.receiverUuid;int selected=0;bool found=uuid.empty();for(size_t i=0;i<model.layers.size();++i)if(lightMatchesLayer(l,model.layers[i],combo==receiverChoice)){selected=int(i)+1;found=true;break;}if(!found){combo->addItem(u("[关联图层已移除，重新选择]。"),QString::fromStdString(uuid));selected=combo->count()-1;combo->setItemData(selected,qlonglong(combo==lightBind?l.bindItemId:l.receiverItemId),Qt::UserRole+1);combo->setItemData(selected,QString::fromStdString(combo==lightBind?l.bindSceneUuid:l.receiverSceneUuid),Qt::UserRole+2);combo->setItemData(combo->count()-1,QString::fromStdString(combo==lightBind?l.bindInstanceId:l.receiverInstanceId),Qt::UserRole+3);}combo->setCurrentIndex(selected);}
     loading=was;
 }
 void SpatialDock::syncV2(){
     if(!sceneChoice)return;const bool was=loading;loading=true;set(focusField,model.focusDistance);set(apertureField,model.aperture);
-    const int previous=lightChoice->currentIndex();{QSignalBlocker b(lightChoice);lightChoice->clear();lightChoice->addItem(QString::fromUtf8(model.light.label.c_str())+u(model.light.type?" / 面光":" / 点光"));for(const auto&l:model.extraLights)lightChoice->addItem(QString::fromUtf8(l.label.c_str())+u(l.type?" / 面光":" / 点光"));lightChoice->setCurrentIndex(std::clamp(previous,0,lightChoice->count()-1));}
+    const int previous=lightChoice->currentIndex();const auto selectedId=lightChoice->currentData().toString();{QSignalBlocker b(lightChoice);lightChoice->clear();lightChoice->addItem(QString::fromUtf8(model.light.label.c_str())+u(model.light.type?" / 面光":" / 点光"),QString::fromStdString(model.light.instanceId));for(const auto&l:model.extraLights)lightChoice->addItem(QString::fromUtf8(l.label.c_str())+u(l.type?" / 面光":" / 点光"),QString::fromStdString(l.instanceId));const int same=selectedId.isEmpty()?-1:lightChoice->findData(selectedId);lightChoice->setCurrentIndex(same>=0?same:std::clamp(previous,0,lightChoice->count()-1));}
     loading=was;syncLight();syncLayerV2();refreshSources();
 }
 void SpatialDock::refreshSources(){
@@ -94,9 +96,9 @@ void SpatialDock::addLight(int type){
     for(const auto&layer:model.layers){auto*s=obs_get_source_by_uuid(layer.sourceUuid.c_str());sizes.push_back(s&&!obs_source_removed(s)?SourceSize{double(obs_source_get_width(s)),double(obs_source_get_height(s))}:SourceSize{});obs_source_release(s);}
     double time=model.timelinePosition,fxSeconds=-1;
     auto*stage=obs_get_source_by_uuid(stageUuid.toUtf8().constData());if(stage){const auto stats=stageStats(stage);if(model.playing)time=stats.timeline;fxSeconds=stats.fxSeconds;obs_source_release(stage);}
-    Light light;light.enabled=true;light.type=type;light.ambient=0;
+    Light light;light.present=true;light.instanceId=QUuid::createUuid().toString(QUuid::WithoutBraces).toStdString();light.enabled=true;light.type=type;light.ambient=0;
     light.position=newLightPosition(model,toTime(time),sizes,model.playing||model.timelinePreview,fxSeconds);
     light.label=std::string(type?"面光源 ":"点光源 ")+std::to_string(model.extraLights.size()+2);
-    model.extraLights.push_back(light);syncV2();lightChoice->setCurrentIndex(int(model.extraLights.size()));syncLight();commit();
+    auto next=model;next.extraLights.push_back(light);editor->applyDocument(next);syncV2();lightChoice->setCurrentIndex(int(model.extraLights.size()));syncLight();
 }
 #endif

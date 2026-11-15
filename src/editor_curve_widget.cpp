@@ -70,7 +70,7 @@ void CurveWidget::mousePressEvent(QMouseEvent*event){
 }
 void CurveWidget::change(QPointF pointAt){
  if(!drag||plot.width()<1||plot.height()<1)return;
- const auto*meta=parameter(parameterId);double low=meta?meta->minimum:-100000,high=meta?meta->maximum:100000;
+ double low=parameterMinimum,high=parameterMaximum;
  double value=valueLow+(plot.bottom()-std::clamp(pointAt.y(),plot.top(),plot.bottom()))/plot.height()*(valueHigh-valueLow);value=std::clamp(value,low,high);
  if(drag==3){
   auto next=originalKey;double seconds=timeLow+(std::clamp(pointAt.x(),plot.left(),plot.right())-plot.left())/plot.width()*(timeHigh-timeLow);

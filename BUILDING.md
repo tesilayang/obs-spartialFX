@@ -1,4 +1,4 @@
-# OBS Spatial FX 构建说明（当前 v3.6.3）
+# OBS Spatial FX 构建说明（当前 v3.6.4）
 
 开发、测试和发布必须执行 [项目开发与交付标准](DEVELOPMENT_STANDARDS.md)。
 
@@ -16,7 +16,7 @@
 
 bootstrap 使用 tools/dependencies.json 中固定 URL 与 SHA256，下载到 third_party；需要 Python3.12+、Git 和网络。已有本地官方依赖时也可配置 -DOBS_SOURCE=官方OBS源码路径、-DCMAKE_PREFIX_PATH=Qt6开发目录，工具链使用外部 VS2022/CMake/Ninja。不要把 OBS 自带的 Qt DLL 复制到插件安装目录。
 
-构建产物 build/OBS_Spatial_FX_V3.6.3_Setup.exe；插件 build/obs-spatial-fx.dll；PDB 同目录。
+构建产物 build/OBS_Spatial_FX_V3.6.4_Setup.exe；插件 build/obs-spatial-fx.dll；PDB 同目录。
 
 当前工作区可直接在 PowerShell 执行：
 
@@ -42,3 +42,10 @@ v3.6.3 开发与专项实测报告见 docs/v3.6/。按本次改动选相关 CTes
 本机 tools/package-v363*.py 用于核对各次历史交付证据；最终 GitHub 发布材料由 tools/publish-v363.py 生成，源码包对应指定 Git 提交。新克隆先执行普通编译，不需要运行依赖本机历史证据的打包门槛。
 
 测试缓存不入 Git，相关证据从 Release 的 Evidence.zip 下载。开发机为 Windows 10 22H2、Ryzen 7 5800X、RX 6900 XT；其他环境的资源和功耗表现需要实测。
+## v3.6.4 专项验证
+
+本版对象动画、透明来源和历史缓存的实际编译及隔离 OBS 命令见 docs/v3.6.4/TEST_REPORT.md。专项 CTest：
+
+    ctest --test-dir build -R "^spatial-(model|scene-evaluator|fx|fx-stage|presets|composer|preset-panel|timeline-object|editor-timeline|fx-clock)$" --output-on-failure
+
+交付快照由 tools/package_v364.py 生成，包含文件级 SHA256；工作区快照不冒用旧提交作为本版源码标签。

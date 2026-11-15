@@ -6,9 +6,9 @@ OBS Spatial FX 是一个使用 C++ 和 Qt6 开发的 Windows x64 OBS 插件。�
 
 把背景、人物和前景分成独立图层，设置深度，再移动摄像机，就能制作具有远近视差的 2.5D 直播舞台。还可以给每个图层设置关键帧、绑定灯光、叠加 FX，并将配置保存到 OBS。
 
-> 当前发布版本：**v3.6.3**。包含卡片式运动预设、程序装饰、时间轴补充、工程打包，以及最新灯光、阴影、辉光和星芒修复。
+> 当前发布版本：**v3.6.4**。修复透明捕获白边，预设运动改为普通关键帧，新增时间轴右键操作，灯光与 FX 参数支持动画。
 
-[下载 v3.6.3](https://github.com/tesilayang/obs-spartialFX/releases/tag/v3.6.3) · [下载离线 HTML 说明书](https://github.com/tesilayang/obs-spartialFX/releases/download/v3.6.3/OBS_Spatial_FX_V3.6.3_Manual.html) · [查看说明书源文件](docs/v3.6.3/manual/) · [构建说明](BUILDING.md) · [开发与实测报告](docs/v3.6/) · [开发与交付标准](DEVELOPMENT_STANDARDS.md)
+[下载 v3.6.4](https://github.com/tesilayang/obs-spartialFX/releases/tag/v3.6.4) · [下载现有 v3.6.3 HTML 说明书](https://github.com/tesilayang/obs-spartialFX/releases/download/v3.6.3/OBS_Spatial_FX_V3.6.3_Manual.html) · [查看说明书源文件](docs/v3.6.3/manual/) · [构建说明](BUILDING.md) · [本版开发与实测报告](docs/v3.6.4/) · [开发与交付标准](DEVELOPMENT_STANDARDS.md)
 
 ## 可以做什么
 
@@ -101,7 +101,7 @@ SMAA 与 FXAA 二选一，RCAS 可以叠加。RCAS 是单遍五点采样的自�
 
 ## 安装与开始使用
 
-1. 从 [Release](https://github.com/tesilayang/obs-spartialFX/releases) 下载 `OBS_Spatial_FX_V3.6.3_Setup.exe`。
+1. 从 [Release](https://github.com/tesilayang/obs-spartialFX/releases) 下载 `OBS_Spatial_FX_V3.6.4_Setup.exe`。
 2. 关闭所有 OBS，双击安装。支持覆盖升级，场景和个人预设保留。
 3. 常规版正常启动 OBS；便携版使用安装器创建的便携启动入口。
 4. 在 OBS 的“停靠窗口”中打开 **OBS Spatial FX**，选择/新建舞台。
@@ -131,6 +131,7 @@ SMAA 与 FXAA 二选一，RCAS 可以叠加。RCAS 是单遍五点采样的自�
 ### 性能数据怎么理解
 
 - v3.6.3 对预设、舞台软阴影、局部阴影、辉光、星芒和轮廓隔离分别完成对应专项；测试范围随具体修改确定。
+- v3.6.4 完成 10 组专项测试、39 项真实 OBS 交互检查、保存重启与 1080p60 测试；真实 Spout 验证通过，NDI 因无发送端保持 BLOCKED。详见 [测试报告](docs/v3.6.4/TEST_REPORT.md)。
 - 最新两组 1080p60、各约 30 秒采样中，轮廓光平均渲染耗时约 0.286 ms，叠加外阴影约 0.362 ms，无新增渲染丢帧，缓存分配保持稳定。这些结果只对应测试场景。
 - **没有测量整机电功耗，不能把帧耗时当作瓦数或能耗。** 不承诺其他 CPU、集显、显卡、驱动、分辨率、编码器或 OBS 版本具有与开发机完全相同的资源占用、帧率和能耗表现。
 - 集显/无独显设备、NVIDIA 实机、互联网实际推流、数小时持续运行均为 **NOT RUN**。未来 OBS 版本也需单独回归。

@@ -48,8 +48,8 @@ struct Stage {
     std::array<Cache,32> cache;
     std::unique_ptr<FxRenderer> fx=std::make_unique<FxRenderer>();
     std::unique_ptr<presets::GraphicsRenderer> graphics=std::make_unique<presets::GraphicsRenderer>();
-    struct MotionCache {std::string instance;Projected previous{},current{};uint64_t frame=0;bool valid=false;};
-    std::array<MotionCache,32>motion;double effectEpoch=0;
+    struct MotionCache {std::string instance;Projected previous{},current{};uint64_t frame=0,epoch=0;bool valid=false;};
+    std::array<MotionCache,32>motion;double effectEpoch=0;FxPlaybackClock effectClock;
     gs_effect_t *effect=nullptr,*shadowKernel=nullptr;gs_vertbuffer_t *vertices=nullptr;gs_texture_t *white=nullptr;gs_texrender_t *shadow=nullptr,*casterShadow=nullptr,*composite=nullptr;
     std::unique_ptr<FxBlur> shadowBlur;std::string shadowKernelSource;uint64_t shadowAllocations=0,shadowPasses=0,shadowFailures=0;bool shadowKernelAttempted=false;
     bool effectAttempted=false;uint64_t lastToken=UINT64_MAX;double elapsed=0;
@@ -205,19 +205,23 @@ void render(void *data,gs_effect_t*){
     const bool evaluate=s.clockPlaying.load()||s.clockPreview.load();
     std::vector<SourceSize> sourceSizes;sourceSizes.reserve(m.layers.size());
     for(auto&weak:read.value->sources){auto*source=weak->get();sourceSizes.push_back({source?double(obs_source_get_width(source)):0,source?double(obs_source_get_height(source)):0});obs_source_release(source);}
-    const double frameTime=double(obs_get_video_frame_time())/1e9;if(s.effectEpoch==0)s.effectEpoch=frameTime;const double fxTime=std::max(0.0,frameTime-s.effectEpoch);
+    const uint64_t frame=obs_get_video_frame_time();
+    const double frameTime=double(frame)/1e9;if(s.effectEpoch==0)s.effectEpoch=frameTime;
+    const auto effectClock=s.effectClock.update(frame,std::max(0.0,frameTime-s.effectEpoch),time,evaluate,s.clockPlaying.load(),m.animationSpeed,s.clockToken.load(),start);
+    const double fxTime=effectClock.elapsed;
     s.effectTime.store(fxTime);
     const auto evaluated=evaluateSceneAt(m,toTime(time),sourceSizes,evaluate,fxTime);const auto camera=evaluated.camera;
     const auto widescreen=stageWidescreen(m,&evaluated);
     const bool composite=widescreen.enabled||std::abs(evaluated.outputScaleX-1)>1e-9||std::abs(evaluated.outputScaleY-1)>1e-9||std::abs(evaluated.outputOpacity-1)>1e-9;
     if(composite){gs_texrender_reset(s.composite);if(!gs_texrender_begin(s.composite,m.width,m.height))return;struct vec4 clear;vec4_zero(&clear);gs_clear(GS_CLEAR_COLOR,&clear,0,0);gs_ortho(0,float(m.width),0,float(m.height),-100,100);}
-    const uint64_t frame=obs_get_video_frame_time();uint32_t missing=0;
+    uint32_t missing=0;
     gs_blend_state_push();gs_enable_blending(true);gs_blend_function(GS_BLEND_ONE,GS_BLEND_INVSRCALPHA);
     const auto cull=gs_get_cull_mode();gs_set_cull_mode(GS_NEITHER);
     std::array<size_t,32> order{};std::array<uint32_t,32> widths{},heights{},sourceWidths{},sourceHeights{};std::array<Plane,32> planes{};size_t count=0;std::array<Layer,32> drawLayers{};
-    const auto required=fxCaptureLayers(m.layers);std::vector<gs_texture_t*>raw(m.layers.size(),nullptr);
+    auto evaluatedLayers=m.layers;for(size_t i=0;i<evaluatedLayers.size();++i)evaluatedLayers[i].fx=evaluated.layerFx[i];
+    const auto required=fxCaptureLayers(evaluatedLayers);std::vector<gs_texture_t*>raw(m.layers.size(),nullptr);
     for(size_t i=0;i<m.layers.size();++i){
-        Layer l=m.layers[i];l.plane=evaluated.authoring[i].plane;l.opacity=evaluated.authoring[i].opacity;planes[i]=evaluated.world[i].plane;if(!required[i])continue;
+        Layer l=evaluatedLayers[i];l.plane=evaluated.authoring[i].plane;l.opacity=evaluated.authoring[i].opacity;planes[i]=evaluated.world[i].plane;if(!required[i])continue;
         auto *source=read.value->sources[i]->get();if(!source){++missing;continue;}
         const uint32_t w=obs_source_get_width(source),h=obs_source_get_height(source);
         if(!w||!h){obs_source_release(source);++missing;continue;}
@@ -234,7 +238,9 @@ void render(void *data,gs_effect_t*){
             gs_texrender_reset(cache.texture);
             if(gs_texrender_begin(cache.texture,cache.width,cache.height)){
                 struct vec4 clear;vec4_zero(&clear);gs_clear(GS_CLEAR_COLOR,&clear,0,0);gs_ortho(0,float(w),0,float(h),-100,100);
-                gs_blend_state_push();gs_blend_function(GS_BLEND_ONE,GS_BLEND_INVSRCALPHA);obs_source_video_render(source);gs_blend_state_pop();gs_texrender_end(cache.texture);cache.frame=frame;
+                // Sources inherit OBS's straight-RGB/separate-alpha default; sources
+                // emitting premultiplied pixels override it locally. The cache is premultiplied.
+                gs_blend_state_push();gs_reset_blend_state();obs_source_video_render(source);gs_blend_state_pop();gs_texrender_end(cache.texture);cache.frame=frame;
             }
         }
         obs_source_release(source);if(!gs_texrender_get_texture(cache.texture)){++missing;continue;}
@@ -261,14 +267,15 @@ void render(void *data,gs_effect_t*){
     // Capture every input before resolving references; forward references never read stale surfaces.
     std::vector<gs_texture_t*>textures(m.layers.size(),nullptr),casterTextures(m.layers.size(),nullptr);
     std::array<double,32>paddingX{},paddingY{};
-    s.fx->beginFrame(m.layers);
+    s.fx->beginFrame(evaluatedLayers);
     std::array<bool,32> drawn{};for(size_t n=0;n<count;++n)drawn[order[n]]=true;
     // Hidden/missing frames break the motion history; reappearing is not motion.
     for(size_t i=0;i<s.motion.size();++i)if(!drawn[i])s.motion[i]={};
     for(size_t n=0;n<count;++n){const auto i=order[n];auto&motion=s.motion[i];auto center=project(planes[i].position,camera,m.width,m.height);
       if(motion.instance!=m.layers[i].instanceId){motion={};motion.instance=m.layers[i].instanceId;}
-      if(motion.frame!=frame){motion.previous=motion.current;motion.valid=motion.frame!=0;motion.current=center;motion.frame=frame;}
+      if(motion.frame!=frame){motion.previous=motion.current;motion.valid=motion.frame!=0&&motion.epoch==effectClock.epoch;motion.current=center;motion.frame=frame;motion.epoch=effectClock.epoch;}
       FxRenderContext context;context.frame=frame;context.elapsed=fxTime;context.width=s.cache[i].width;context.height=s.cache[i].height;context.position=planes[i].position;
+      context.historyEpoch=effectClock.epoch;context.advanceHistory=effectClock.advance;context.timelineClock=evaluate;
       context.sourceWidth=sourceWidths[i];context.sourceHeight=sourceHeights[i];
       context.right=multiply(rotate({1,0,0},planes[i].rotation),sourceWidths[i]*planes[i].scaleX);context.down=multiply(rotate({0,1,0},planes[i].rotation),sourceHeights[i]*planes[i].scaleY);context.normal=rotate({0,0,-1},planes[i].rotation);
       context.cameraPosition=camera.position;context.uvCenterX=.5+double(drawLayers[i].cropLeft-drawLayers[i].cropRight)/(2*sourceWidths[i]);context.uvCenterY=.5+double(drawLayers[i].cropTop-drawLayers[i].cropBottom)/(2*sourceHeights[i]);
@@ -302,7 +309,7 @@ void render(void *data,gs_effect_t*){
         if(!resolveLight(light))return;
         lights[lightCount++]=std::move(light);
     };
-    addLight(m.light);for(const auto&light:m.extraLights)if(lightCount<4)addLight(light);
+    for(const auto&light:evaluated.lightStates)if(lightCount<4)addLight(light);
     const double ambient=lightCount?0:1;
     double ambientSum=0;for(size_t i=0;i<lightCount;++i)ambientSum+=lights[i].ambient;
     const double ambientScale=ambientSum>2?2/ambientSum:1; // Preserve the previous total-fill ceiling.
@@ -319,7 +326,7 @@ void render(void *data,gs_effect_t*){
     vec4param(s.effect,"rim_crop",0,0,1,1);
     std::array<Light,4> markers{};size_t markerCount=0,markerIndex=0;
     auto addMarker=[&](Light light){if(!m.fx.enabled||!light.visible)return;if(!resolveLight(light))return;markers[markerCount++]=std::move(light);};
-    addMarker(m.light);for(const auto&light:m.extraLights)addMarker(light);
+    for(const auto&light:evaluated.lightStates)if(markerCount<4)addMarker(light);
     auto depth=[&](Vec3 position){return inverseRotate(sub(position,camera.position),camera.rotation).z;};
     std::vector<size_t>geometryOrder;geometryOrder.reserve(evaluated.geometries.size());
     for(size_t i=0;i<evaluated.geometries.size();++i){const auto&g=evaluated.geometries[i];if(g.active&&g.geometry.enabled&&g.geometry.visible&&g.opacity>0&&g.geometry.mode!=presets::Mode::Mask)geometryOrder.push_back(i);}
@@ -484,7 +491,3 @@ void register_spatial_stage(){
     info.get_defaults=[](obs_data_t*d){obs_data_set_default_int(d,"width",1920);obs_data_set_default_int(d,"height",1080);};
     obs_register_source(&info);
 }
-
-
-
-

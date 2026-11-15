@@ -1,5 +1,6 @@
 #pragma once
 #include "scene_evaluator.hpp"
+#include "timeline_object.hpp"
 #include <QWidget>
 #include <QElapsedTimer>
 #include <functional>
@@ -18,13 +19,14 @@ public:
  std::function<void(spatial::TimeUs)> seek;
  std::function<void(const std::vector<KeyRef>&,spatial::TimeUs)> move;
  std::function<void()> remove,record,copy,paste;
+ std::function<void(int,std::string,QPoint)> context;
  void rebuild();void zoom(double,double anchor=-1);void pan(double);void reveal(double);void fit();
  double snap(double seconds)const;bool snapping=true;
 protected:
  bool event(QEvent*)override;
  void paintEvent(QPaintEvent*)override;void mousePressEvent(QMouseEvent*)override;void mouseMoveEvent(QMouseEvent*)override;void mouseReleaseEvent(QMouseEvent*)override;void mouseDoubleClickEvent(QMouseEvent*)override;void wheelEvent(QWheelEvent*)override;void keyPressEvent(QKeyEvent*)override;
 private:
- struct Row {int object;std::string param;QString label;bool summary=false;};std::vector<Row> rows;std::vector<int> collapsed;int knownLayers=0,knownGeometries=0;int firstRow=0;bool dragging=false,panning=false,rubber=false;QPointF origin,current;spatial::TimeUs delta=0;
+ struct Row {int object;std::string param;QString label;bool summary=false;};std::vector<Row> rows;std::vector<int> collapsed;int knownLayers=0,knownGeometries=0;std::vector<int> knownObjects;int firstRow=0;bool dragging=false,panning=false,rubber=false;QPointF origin,current;spatial::TimeUs delta=0;
  int reorderFrom=-1,reorderTo=-1;bool reordering=false;
  double xAt(double)const;double timeAt(double)const;std::vector<KeyRef> keys(const Row&)const;int rowAt(double)const;
 };
@@ -33,6 +35,7 @@ public:
  spatial::Curve curve;spatial::TimeUs selected=0;std::function<void(spatial::AnimKey,spatial::AnimKey)> handles;
  std::function<void(spatial::TimeUs)> selectKey;std::function<void(spatial::TimeUs,spatial::AnimKey)> editKey;
  bool positionsLocked=false,readOnly=false;
+ double parameterMinimum=-100000,parameterMaximum=100000;
  explicit CurveWidget(QWidget*p=nullptr);void setCurve(const spatial::Curve&,spatial::TimeUs,const std::string& parameter="x");
  void fit();
 protected:void paintEvent(QPaintEvent*)override;void mousePressEvent(QMouseEvent*)override;void mouseMoveEvent(QMouseEvent*)override;void mouseReleaseEvent(QMouseEvent*)override;void keyPressEvent(QKeyEvent*)override;
@@ -52,9 +55,12 @@ public:
  void reorderLayer(int from,int to);
  void editValue(int,const std::string&,double);void record();void removeKeys();void play();void pause();void seek(spatial::TimeUs);void reset(bool all);void undo();void redo();
  void applyDocument(const spatial::StageModel&);void selectGeometry(int);
+ bool editExternal(int,const std::string&,double);void refreshClock();
 private:
  struct HistoryEntry {spatial::StageModel model;bool fullDocument=false;};
  spatial::StageModel *model;std::vector<HistoryEntry> undoStates,redoStates;std::vector<KeyRef> clipboard;std::vector<spatial::AnimKey> copied;
+ QFormLayout*parametersForm=nullptr,*orbitFieldsForm=nullptr;QString fieldsSignature;
+ spatial::Animation timelineClipboard;std::optional<spatial::Layer> layerClipboard;
  QString identity,bindingSignature,geometrySignature;uint64_t editRevision=0,bakeGeneration=0;std::atomic_bool cancelBake{false};std::thread bakeThread;bool syncing=false;QElapsedTimer coalesce;std::string lastEdit;
  struct Field {QWidget*row;QCheckBox*animated;QDoubleSpinBox*value;QPushButton*diamond;};std::map<std::string,Field> fields;
  QComboBox*objectChoice=nullptr,*interpolation=nullptr,*rotationMode=nullptr,*mediaChoice=nullptr,*beatRatio=nullptr,*curveChoice=nullptr;
@@ -70,7 +76,8 @@ private:
  void configureHelp();void setKey(const std::string&,double);void keySelection();void changeKey();void changeSegment();void editCurveKey(spatial::TimeUs,spatial::AnimKey);void moveKeys(const std::vector<KeyRef>&,spatial::TimeUs);void navigate(const std::string&,bool);void navigateCurrent(bool);
  void initAudio(QFormLayout*);void refreshMedia();void analyze();void previewBeats();void bakeBeats();void syncMedia(bool playing);
  void restoreMotion(const spatial::StageModel&);void copyKeys();void pasteKeys();
- void removeGeometry();
+ void removeGeometry();void ensureParameterFields();void contextMenu(int,const std::string&,QPoint);void deleteTimelineObject();
+ void syncSceneVisibility(const spatial::StageModel& before);
  struct LiveCapture {std::vector<float> pcm;std::atomic<size_t> frames{0};unsigned channels=0,rate=0;obs_source_t*source=nullptr;};
  std::unique_ptr<LiveCapture> liveCapture;void captureLive();void stopCapture();static void audioCapture(void*,obs_source_t*,const audio_data*,bool);
 };

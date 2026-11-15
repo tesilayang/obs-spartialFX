@@ -9,6 +9,7 @@
 #include "project/project_panel.hpp"
 #include "presets/panel.hpp"
 #include <QSaveFile>
+#include <QUuid>
 #include <QFile>
 #include <QSlider>
 #include <obs-frontend-api.h>
@@ -43,7 +44,7 @@ QDoubleSpinBox *SpatialDock::number(QFormLayout *form,const char *label,const ch
 SpatialDock::SpatialDock(QWidget *parent):QWidget(parent){
     setObjectName("spatial.dock");setMinimumWidth(440);
     auto*column=new QVBoxLayout(this);column->setContentsMargins(12,10,12,10);column->setSpacing(8);
-    auto*title=new QLabel("SPATIAL FX  <span style='color:#8c9aad;font-size:10px'>3.6.3 · OBS NATIVE</span>");title->setObjectName("spatial.version");title->setStyleSheet("font-weight:700;font-size:16px;letter-spacing:2px;");column->addWidget(title);
+    auto*title=new QLabel("SPATIAL FX  <span style='color:#8c9aad;font-size:10px'>3.6.4 · OBS NATIVE</span>");title->setObjectName("spatial.version");title->setStyleSheet("font-weight:700;font-size:16px;letter-spacing:2px;");column->addWidget(title);
     sceneLabel=new QLabel;sceneLabel->setObjectName("spatial.scene");sceneLabel->setWordWrap(true);column->addWidget(sceneLabel);
     auto*stageRow=new QHBoxLayout;stageChoice=new QComboBox;stageChoice->setObjectName("spatial.stage-choice");stageRow->addWidget(stageChoice,1);
     auto*create=button(stageRow,"新建舞台","spatial.create-stage");column->addLayout(stageRow);
@@ -63,7 +64,7 @@ SpatialDock::SpatialDock(QWidget *parent):QWidget(parent){
     lightForm->parentWidget()->setStyleSheet("QWidget#spatial-light-page QDoubleSpinBox, QWidget#spatial-light-page QComboBox { min-height: 22px; max-height: 22px; padding-top: 0px; padding-bottom: 0px; } QWidget#spatial-light-page QCheckBox { min-height: 22px; padding-top: 0px; padding-bottom: 0px; }");
     lightEnabled=new QCheckBox(text("启用所选灯光"));lightEnabled->setObjectName("spatial.light-enabled");lightForm->addRow(lightEnabled);
     const char*lightLabels[]={"光源 X","光源 Y","光源 Z","强度","范围","环境光","阴影不透明度","接收平面 Z"};const char*lightNames[]={"spatial.light-x","spatial.light-y","spatial.light-z","spatial.light-intensity","spatial.light-range","spatial.light-ambient","spatial.shadow-opacity","spatial.receiver-z"};
-    for(size_t i=0;i<8;++i){lightFields[i]=number(lightForm,lightLabels[i],lightNames[i],i<3||i==7?-100000:(i==4?10:0),i<3||i==7||i==4?100000:(i==3?10:(i==5?2:1)),i<3||i==7||i==4?50:.05);connect(lightFields[i],&QDoubleSpinBox::valueChanged,this,[this,i](double v){if(loading)return;double*p[]={&selectedLight().position.x,&selectedLight().position.y,&selectedLight().position.z,&selectedLight().intensity,&selectedLight().range,&selectedLight().ambient,&selectedLight().shadowOpacity,&selectedLight().receiverZ};*p[i]=v;commit();});}
+    for(size_t i=0;i<8;++i){lightFields[i]=number(lightForm,lightLabels[i],lightNames[i],i<3||i==7?-100000:(i==4?10:0),i<3||i==7||i==4?100000:(i==3?10:(i==5?2:1)),i<3||i==7||i==4?50:.05);connect(lightFields[i],&QDoubleSpinBox::valueChanged,this,[this,i](double v){if(loading)return;static const char*keys[]={"x","y","z","intensity","range","ambient","shadowOpacity","receiverZ"};editor->editExternal(lightHandleBase-std::max(0,lightChoice?lightChoice->currentIndex():0),keys[i],v);syncLight(false);});}
     shadows=new QCheckBox(text("素材间 Alpha 软阴影"));shadows->setObjectName("spatial.shadows");lightForm->addRow(shadows);auto*color=new QPushButton(text("选择颜色"));color->setObjectName("spatial.light-color");auto*colorRow=new QHBoxLayout;colorRow->setSpacing(4);lightColorPreview=new QLabel;lightColorPreview->setObjectName("spatial.light-color-preview33");colorRow->addWidget(lightColorPreview,1);colorRow->addWidget(color,1);lightForm->addRow(text("灯光颜色"),colorRow);connect(color,&QPushButton::clicked,this,[this]{pickLightColor(false);});
     shadows->setToolTip(text("点光 / 面光漫反射 · 素材 Alpha 投影 · 无 CUDA 依赖。\n选择真实受光层；使用灯光尺寸与软阴影调节半影。"));
     auto*shadowColor=new QPushButton(text("选择颜色"));shadowColor->setObjectName("spatial.shadow-color34");auto*shadowRow=new QHBoxLayout;shadowRow->setSpacing(4);shadowColorPreview=new QLabel;shadowColorPreview->setObjectName("spatial.shadow-color-preview34");shadowRow->addWidget(shadowColorPreview,1);shadowRow->addWidget(shadowColor,1);lightForm->addRow(text("阴影颜色"),shadowRow);
@@ -73,6 +74,11 @@ SpatialDock::SpatialDock(QWidget *parent):QWidget(parent){
     lightFields[7]->parentWidget()->hide();if(auto*label=lightForm->labelForField(lightFields[7]->parentWidget()))label->hide();
     initV2(layerForm,editor->layerPropertiesForm,lightForm);initV3(layerForm,nullptr,lightForm);
     fxPanel=new FxPanel(&model);auto*fxScroll=new QScrollArea;fxScroll->setObjectName("spatial.fx-scroll34");fxScroll->setWidgetResizable(true);fxScroll->setFrameShape(QFrame::NoFrame);fxScroll->setWidget(fxPanel);tabs->addTab(fxScroll,text("FX 特效"));fxPanel->changed=[this]{commit();};
+    fxPanel->editParameter=[this](const std::string&owner,const std::string&effect,const std::string&key,double v){for(size_t i=0;i<model.layers.size();++i)if(model.layers[i].instanceId==owner)for(size_t j=0;j<fxCatalog().size();++j)if(fxCatalog()[j].id==effect)return editor->editExternal(fxHandleBase-int(i*256+j),key,v);return false;};
+    const auto fxPreviewTarget=std::make_shared<QString>();
+    fxPanel->previewDocument=[this,fxPreviewTarget](const StageModel&preview){if(stageUuid.isEmpty())return;if(fxPreviewTarget->isEmpty())*fxPreviewTarget=stageUuid;auto*s=obs_get_source_by_uuid(fxPreviewTarget->toUtf8().constData());if(s){auto*d=modelData(preview);stagePreviewSettings(s,d);obs_data_release(d);obs_source_release(s);}};
+    fxPanel->cancelPreview=[fxPreviewTarget](const StageModel&baseline){if(fxPreviewTarget->isEmpty())return;auto*s=obs_get_source_by_uuid(fxPreviewTarget->toUtf8().constData());if(s){auto*d=modelData(baseline);stagePreviewSettings(s,d);obs_data_release(d);obs_source_release(s);}fxPreviewTarget->clear();};
+    fxPanel->applyDocument=[this](const StageModel&next){editor->applyDocument(next);};
     // Depth-of-field remains available with the shared layer inspector.
     focusField=number(editor->layerPropertiesForm,"焦平面距离","spatial.focus-distance",10,100000,50);apertureField=number(editor->layerPropertiesForm,"景深强度 / 像素","spatial.aperture",0,20,.5);
     connect(focusField,&QDoubleSpinBox::valueChanged,this,[this](double v){if(!loading){model.focusDistance=v;commit();}});
@@ -87,7 +93,7 @@ SpatialDock::SpatialDock(QWidget *parent):QWidget(parent){
     saveTimer=new QTimer(this);saveTimer->setSingleShot(true);saveTimer->setInterval(400);connect(saveTimer,&QTimer::timeout,this,[]{obs_frontend_save();});
     connect(create,&QPushButton::clicked,this,[this]{createStage();});connect(refresh,&QPushButton::clicked,this,[this]{refreshScene(true);});connect(demo,&QPushButton::clicked,this,[this]{createDemo();});connect(stageChoice,&QComboBox::currentIndexChanged,this,[this]{if(!loading){stageUuid=stageChoice->currentData().toString();loadStage();}});
     connect(importSelected,&QPushButton::clicked,this,[this]{importLayers(true);});connect(importAll,&QPushButton::clicked,this,[this]{importLayers(false);});connect(remove,&QPushButton::clicked,this,[this]{removeLayer();});connect(restore,&QPushButton::clicked,this,[this]{restoreAll();});connect(layerVisible,&QCheckBox::toggled,this,[this](bool v){int row=selectedLayer();if(!loading&&row>=0&&size_t(row)<model.layers.size()){model.layers[size_t(row)].visible=v;commit();}});
-    connect(lightEnabled,&QCheckBox::toggled,this,[this](bool v){if(!loading){selectedLight().enabled=v;commit();}});connect(shadows,&QCheckBox::toggled,this,[this](bool v){if(!loading){selectedLight().shadows=v;commit();}});
+    connect(lightEnabled,&QCheckBox::toggled,this,[this](bool v){if(!loading){selectedLight().enabled=v;if(v){selectedLight().present=true;if(selectedLight().instanceId.empty())selectedLight().instanceId=QUuid::createUuid().toString(QUuid::WithoutBraces).toStdString();}commit();}});connect(shadows,&QCheckBox::toggled,this,[this](bool v){if(!loading){selectedLight().shadows=v;commit();}});
     editor->clockChanged=[this]{if(presetPanel)presetPanel->cancelCurrentPreview();auto*s=obs_get_source_by_uuid(stageUuid.toUtf8().constData());if(s){stageApplyClock(s,model.timelinePosition,model.playing,model.timelinePreview,model.playToken);obs_source_release(s);saveTimer->start();}syncEvaluatedFields();};editor->changed=[this]{syncEvaluatedFields();commit();};editor->layerSelected=[this](int){syncLayerFields();};editor->removeObjectRequested=[this]{confirmRemoveLayer();};editor->message=[this](QString s,bool error){message(s,error);};
     connect(tabs,&QTabWidget::currentChanged,this,[this,refresh,demo](int i){if(i!=3&&presetPanel)presetPanel->cancelCurrentPreview();refresh->setVisible(i!=0);demo->setVisible(i!=0);});refresh->hide();demo->hide();installHoverHelp(this);auto*timer=new QTimer(this);timer->setInterval(750);connect(timer,&QTimer::timeout,this,[this]{refreshScene();updateStats();});timer->start();refreshScene(true);
 }
@@ -97,15 +103,14 @@ void SpatialDock::pickLightColor(bool shadow){
     if(lightColorDialog){lightColorDialog->raise();lightColorDialog->activateWindow();return;}
     if(presetPanel)presetPanel->cancelCurrentPreview();
     const auto document=stageUuid;const int index=lightChoice->currentIndex();const auto baseline=model;
-    const auto original=shadow?selectedLight().shadowColor:selectedLight().color;
+    const auto evaluated=evaluateLight(model,lightHandleBase-index,toTime(model.timelinePosition),model.playing||model.timelinePreview);const auto original=shadow?evaluated.shadowColor:evaluated.color;
     auto*dialog=new QColorDialog(QColor::fromRgbF(float(original.x),float(original.y),float(original.z)),this);
     lightColorDialog=dialog;dialog->setObjectName(shadow?"spatial.shadow-color-dialog361":"spatial.light-color-dialog361");
     dialog->setWindowTitle(text(shadow?"阴影颜色 · 实时预览":"灯光颜色 · 实时预览"));
     dialog->setOption(QColorDialog::DontUseNativeDialog);dialog->setAttribute(Qt::WA_DeleteOnClose);dialog->setWindowModality(Qt::WindowModal);
     connect(dialog,&QColorDialog::currentColorChanged,this,[this,document,index,baseline,shadow](const QColor& c){
         if(!c.isValid()||document!=stageUuid)return;
-        auto preview=baseline;auto&light=index>0?preview.extraLights[size_t(index-1)]:preview.light;
-        (shadow?light.shadowColor:light.color)={c.redF(),c.greenF(),c.blueF()};
+        auto preview=baseline;std::string error;const auto key=std::string(shadow?"shadowColor.":"color.");if(!writeAnimatedValue(preview,lightHandleBase-index,key+"r",c.redF(),error)||!writeAnimatedValue(preview,lightHandleBase-index,key+"g",c.greenF(),error)||!writeAnimatedValue(preview,lightHandleBase-index,key+"b",c.blueF(),error)){message(QString::fromStdString(error),true);return;}
         auto*s=obs_get_source_by_uuid(document.toUtf8().constData());if(s){auto*d=modelData(preview);stagePreviewSettings(s,d);obs_data_release(d);obs_source_release(s);}
         setColorValuePreview(shadow?shadowColorPreview:lightColorPreview,c);
     });
@@ -113,19 +118,19 @@ void SpatialDock::pickLightColor(bool shadow){
         auto*s=obs_get_source_by_uuid(document.toUtf8().constData());if(s){auto*d=modelData(baseline);stagePreviewSettings(s,d);obs_data_release(d);obs_source_release(s);}
         if(lightColorDialog==dialog)lightColorDialog.clear();
         if(result==QDialog::Accepted&&document==stageUuid&&index==lightChoice->currentIndex()&&index>=0&&size_t(index)<=model.extraLights.size()){
-            const auto c=dialog->currentColor();auto next=model;auto&light=index>0?next.extraLights[size_t(index-1)]:next.light;
-            (shadow?light.shadowColor:light.color)={c.redF(),c.greenF(),c.blueF()};editor->applyDocument(next);
+            const auto c=dialog->currentColor();auto next=baseline;std::string error;const auto key=std::string(shadow?"shadowColor.":"color.");if(writeAnimatedValue(next,lightHandleBase-index,key+"r",c.redF(),error)&&writeAnimatedValue(next,lightHandleBase-index,key+"g",c.greenF(),error)&&writeAnimatedValue(next,lightHandleBase-index,key+"b",c.blueF(),error))editor->applyDocument(next);else message(QString::fromStdString(error),true);
         }
         syncLight();
     });dialog->open();
 }
-SpatialDock::~SpatialDock(){if(lightColorDialog)lightColorDialog->reject();if(presetPanel){presetPanel->cancelCurrentPreview();presetPanel->cancelPreview={};presetPanel->previewDocument={};presetPanel->applyDocument={};presetPanel->message={};}}
+SpatialDock::~SpatialDock(){if(fxPanel){fxPanel->cancelColorEdit();fxPanel->previewDocument={};fxPanel->cancelPreview={};fxPanel->applyDocument={};fxPanel->changed={};fxPanel->editParameter={};}if(lightColorDialog)lightColorDialog->reject();if(presetPanel){presetPanel->cancelCurrentPreview();presetPanel->cancelPreview={};presetPanel->previewDocument={};presetPanel->applyDocument={};presetPanel->message={};}}
 void SpatialDock::commit(){
     if(presetPanel){presetPanel->cancelCurrentPreview();presetPanel->refresh();}
     if(fxPanel)fxPanel->refresh();if(loading||stageUuid.isEmpty())return;auto*source=obs_get_source_by_uuid(stageUuid.toUtf8().constData());if(!source)return;
     auto*settingsData=modelData(model);stageApplySettings(source,settingsData);obs_data_release(settingsData);obs_source_release(source);syncTimeline();if(structure){structure->model=model;structure->selected=selectedLayer();structure->update();}saveTimer->start();message(text("更改已应用；OBS 配置将自动保存。"));
 }
 void SpatialDock::loadStage(){
+    if(fxPanel)fxPanel->cancelColorEdit();
     if(lightColorDialog)lightColorDialog->reject();
     if(presetPanel)presetPanel->cancelCurrentPreview();
     if(editor&&editorStageUuid!=stageUuid){editor->resetDocument();editorStageUuid=stageUuid;}

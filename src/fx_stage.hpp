@@ -8,7 +8,8 @@ inline StageWidescreen stageWidescreen(const StageModel&m,const EvaluatedScene*e
  for(size_t i=0;i<m.layers.size();++i){const auto&layer=m.layers[i];
   const double opacity=evaluated&&i<evaluated->authoring.size()?evaluated->authoring[i].opacity:layer.opacity;
   if(!layer.enabled||!layer.visible||opacity<=0)continue;
-  if(const auto*f=activeFx(layer.fx,*def))return {true,f->values[0]>.5,f->strength,std::clamp(double(m.width)*9.0/(21.0*std::max(1u,m.height)),0.0,1.0)};
+  const auto&fx=evaluated&&i<evaluated->layerFx.size()?evaluated->layerFx[i]:layer.fx;
+  if(const auto*f=activeFx(fx,*def))return {true,f->values[0]>.5,f->strength,std::clamp(double(m.width)*9.0/(21.0*std::max(1u,m.height)),0.0,1.0)};
  }
  return {};
 }

@@ -3,7 +3,20 @@ QJsonObject v361Ui(const QJsonObject& command,bool& ok){
     QJsonObject info;auto*p=panel();if(!p){ok=false;return info;}
     const auto action=command["action"].toString();const auto name=command["widget"].toString();
     auto*w=p->findChild<QWidget*>(name);
-    if(action=="ui-click"){
+    if(action=="ui-context"){
+        auto*timeline=p->findChild<QWidget*>("spatial.timeline32");ok&=timeline!=nullptr;
+        if(timeline){const auto selected=command["menuAction"].toString();const auto confirm=command["confirm"].toString();const auto shot=QFileInfo(command["screenshot"].toString()).fileName();const int row=command["row"].toInt();QTimer::singleShot(0,timeline,[timeline,selected,confirm,shot,row]{
+            QTimer::singleShot(50,qApp,[selected,confirm,shot]{for(auto*w:QApplication::topLevelWidgets())if(auto*m=qobject_cast<QMenu*>(w))if(m->isVisible()){
+                if(!shot.isEmpty())m->grab().save(output+"/"+shot);
+                if(selected.isEmpty()){m->close();return;}
+                for(auto*a:m->actions())if(a->objectName()==selected&&a->isEnabled()){
+                    if(!confirm.isEmpty())QTimer::singleShot(50,qApp,[confirm]{for(auto*w:QApplication::topLevelWidgets())if(auto*b=qobject_cast<QMessageBox*>(w))if(b->isVisible()){auto answer=confirm=="yes"?QMessageBox::Yes:confirm=="ok"?QMessageBox::Ok:QMessageBox::Cancel;if(auto*button=b->button(answer))button->click();}});
+                    m->setActiveAction(a);QKeyEvent enter(QEvent::KeyPress,Qt::Key_Return,Qt::NoModifier);QApplication::sendEvent(m,&enter);return;
+                }m->close();return;
+            }});
+            QPointF pos(80,32+row*27+13);QMouseEvent event(QEvent::MouseButtonPress,pos,timeline->mapToGlobal(pos.toPoint()),Qt::RightButton,Qt::RightButton,Qt::NoModifier);QApplication::sendEvent(timeline,&event);
+        });}
+    }else if(action=="ui-click"){
         auto*b=qobject_cast<QAbstractButton*>(w);ok&=b&&(b->isEnabled()||command["ifEnabled"].toBool());
         if(b&&b->isEnabled()){
             const auto confirm=command["confirm"].toString();

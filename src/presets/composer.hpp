@@ -1,5 +1,6 @@
 #pragma once
 #include "presets/presets.hpp"
+#include <functional>
 
 namespace spatial::presets {
 struct PartDefinition {
@@ -38,4 +39,17 @@ struct ComposeRequest {
 // Atomic: failure leaves model unchanged. Resolved part IDs and seed persist.
 enum class ComposeFailure { None, IntervalConflict, Other };
 bool compileComposition(StageModel&,const ComposeRequest&,std::string&error,ComposeFailure*failure=nullptr);
+struct MotionMigrationOptions {
+ size_t maxKeys=250000;
+ double absoluteTolerance=1e-5,relativeTolerance=1e-8;
+ std::function<bool()> cancelled;
+};
+struct MotionMigrationReport {
+ size_t blocks=0,keys=0;
+ // Largest absolute error at accepted interval quarter/midpoint probes.
+ double maxError=0;
+};
+// Atomic, including cancellation/budget/validation failures. Callers persist the
+// original project before replacing it; no backup or disk access occurs here.
+bool migrateLegacyMotionBlocks(StageModel&,std::string&error,MotionMigrationReport*report=nullptr,const MotionMigrationOptions&options={});
 }
