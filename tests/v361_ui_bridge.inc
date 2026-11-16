@@ -3,7 +3,13 @@ QJsonObject v361Ui(const QJsonObject& command,bool& ok){
     QJsonObject info;auto*p=panel();if(!p){ok=false;return info;}
     const auto action=command["action"].toString();const auto name=command["widget"].toString();
     auto*w=p->findChild<QWidget*>(name);
-    if(action=="ui-context"){
+    if(action=="ui-scroll"){
+        auto*s=qobject_cast<QScrollArea*>(w);ok&=s!=nullptr;if(s){if(command.contains("target")){auto*t=p->findChild<QWidget*>(command["target"].toString());ok&=t!=nullptr;if(t)s->ensureWidgetVisible(t,0,80);}else s->verticalScrollBar()->setValue(command["value"].toInt());}
+    }else if(action=="ui-help-hover"){
+        ok&=w!=nullptr;if(w){auto*host=w->window();host->raise();host->activateWindow();QCursor::setPos(w->mapToGlobal(w->rect().center()));QEvent enter(QEvent::Enter);QApplication::sendEvent(w,&enter);}
+    }else if(action=="ui-help-deactivate"){
+        QEvent event(QEvent::ApplicationDeactivate);QApplication::sendEvent(qApp,&event);
+    }else if(action=="ui-context"){
         auto*timeline=p->findChild<QWidget*>("spatial.timeline32");ok&=timeline!=nullptr;
         if(timeline){const auto selected=command["menuAction"].toString();const auto confirm=command["confirm"].toString();const auto shot=QFileInfo(command["screenshot"].toString()).fileName();const int row=command["row"].toInt();QTimer::singleShot(0,timeline,[timeline,selected,confirm,shot,row]{
             QTimer::singleShot(50,qApp,[selected,confirm,shot]{for(auto*w:QApplication::topLevelWidgets())if(auto*m=qobject_cast<QMenu*>(w))if(m->isVisible()){
@@ -47,11 +53,15 @@ QJsonObject v361Ui(const QJsonObject& command,bool& ok){
             if(auto*n=qobject_cast<QDoubleSpinBox*>(c)){r["value"]=n->value();r["step"]=n->singleStep();}
             if(auto*n=qobject_cast<QSpinBox*>(c)){r["value"]=n->value();r["step"]=n->singleStep();}
             if(auto*n=qobject_cast<QLineEdit*>(c))r["text"]=n->text();
+            if(auto*s=qobject_cast<QScrollArea*>(c)){r["scroll"]=s->verticalScrollBar()->value();r["scrollMax"]=s->verticalScrollBar()->maximum();}
             if(auto*b=qobject_cast<QComboBox*>(c)){r["index"]=b->currentIndex();r["data"]=QJsonValue::fromVariant(b->currentData());QJsonArray items;for(int i=0;i<b->count();++i)items.append(QJsonObject{{"text",b->itemText(i)},{"data",QJsonValue::fromVariant(b->itemData(i))}});r["items"]=items;}
             if(auto*l=qobject_cast<QListWidget*>(c)){QJsonArray items;for(int i=0;i<l->count();++i){auto*v=l->item(i);items.append(QJsonObject{{"text",v->text()},{"id",v->data(Qt::UserRole).toString()},{"checked",v->checkState()==Qt::Checked},{"enabled",bool(v->flags()&Qt::ItemIsEnabled)}});}r["items"]=items;}
             controls.append(r);
         }info["controls"]=controls;
-        if(command.contains("screenshot")){const auto file=QFileInfo(command["screenshot"].toString()).fileName();ok&=!file.isEmpty()&&p->grab().save(output+"/"+file);}
+        QJsonArray surfaces;for(auto*window:QApplication::topLevelWidgets())if(window->isVisible())surfaces.append(QJsonObject{{"class",window->metaObject()->className()},{"name",window->objectName()},{"tooltip",window->windowType()==Qt::ToolTip},{"x",window->x()},{"y",window->y()},{"width",window->width()},{"height",window->height()}});info["surfaces"]=surfaces;
+        for(auto*c:qApp->children())if(c->objectName()=="spatial.hover-help")info["helpDebug"]=QJsonObject{{"target",c->property("hoverTarget").toString()},{"shown",c->property("shown").toBool()},{"fired",c->property("firedAfterMs").toInt()},{"activeWindow",QApplication::activeWindow()?QApplication::activeWindow()->objectName():"null"},{"cursorX",QCursor::pos().x()},{"cursorY",QCursor::pos().y()}};
+        if(auto*bubble=p->window()->findChild<QLabel*>("spatial.hover-bubble"))info["help"]=QJsonObject{{"visible",bubble->isVisible()},{"inside",p->window()->rect().contains(bubble->geometry())},{"native",bubble->isWindow()},{"text",bubble->text()},{"width",bubble->width()},{"height",bubble->height()}};
+        if(command.contains("screenshot")){const auto file=QFileInfo(command["screenshot"].toString()).fileName();auto*shot=command["wholeWindow"].toBool()?p->window():p;ok&=!file.isEmpty()&&shot->grab().save(output+"/"+file);}
     }
     return info;
 }

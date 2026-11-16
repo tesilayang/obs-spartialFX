@@ -23,5 +23,6 @@ private:
  uint64_t colorDocument=0;
  std::vector<std::function<void()>> valueRefreshers;
  spatial::Layer*layer(const std::string&);
+ QString layoutSignature() const;
  void rebuild();void addObject();
 };

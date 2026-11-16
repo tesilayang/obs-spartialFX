@@ -6,9 +6,9 @@ OBS Spatial FX 是一个使用 C++ 和 Qt6 开发的 Windows x64 OBS 插件。�
 
 把背景、人物和前景分成独立图层，设置深度，再移动摄像机，就能制作具有远近视差的 2.5D 直播舞台。还可以给每个图层设置关键帧、绑定灯光、叠加 FX，并将配置保存到 OBS。
 
-> 当前发布版本：**v3.6.4**。修复透明捕获白边，预设运动改为普通关键帧，新增时间轴右键操作，灯光与 FX 参数支持动画。
+> 当前发布版本：**v3.6.5**。修复 FX 参数页操作时跳回顶部的问题，悬停说明改为 OBS 窗口内显示，切换程序时立即收起。
 
-[下载 v3.6.4](https://github.com/tesilayang/obs-spartialFX/releases/tag/v3.6.4) · [下载现有 v3.6.3 HTML 说明书](https://github.com/tesilayang/obs-spartialFX/releases/download/v3.6.3/OBS_Spatial_FX_V3.6.3_Manual.html) · [查看说明书源文件](docs/v3.6.3/manual/) · [构建说明](BUILDING.md) · [本版开发与实测报告](docs/v3.6.4/) · [开发与交付标准](DEVELOPMENT_STANDARDS.md)
+[下载 v3.6.5](https://github.com/tesilayang/obs-spartialFX/releases/tag/v3.6.5) · [下载现有 v3.6.3 HTML 说明书](https://github.com/tesilayang/obs-spartialFX/releases/download/v3.6.3/OBS_Spatial_FX_V3.6.3_Manual.html) · [查看说明书源文件](docs/v3.6.3/manual/) · [构建说明](BUILDING.md) · [本版开发与实测报告](docs/v3.6.5/) · [开发与交付标准](DEVELOPMENT_STANDARDS.md)
 
 ## 可以做什么
 
@@ -101,7 +101,7 @@ SMAA 与 FXAA 二选一，RCAS 可以叠加。RCAS 是单遍五点采样的自�
 
 ## 安装与开始使用
 
-1. 从 [Release](https://github.com/tesilayang/obs-spartialFX/releases) 下载 `OBS_Spatial_FX_V3.6.4_Setup.exe`。
+1. 从 [Release](https://github.com/tesilayang/obs-spartialFX/releases) 下载 `OBS_Spatial_FX_V3.6.5_Setup.exe`。
 2. 关闭所有 OBS，双击安装。支持覆盖升级，场景和个人预设保留。
 3. 常规版正常启动 OBS；便携版使用安装器创建的便携启动入口。
 4. 在 OBS 的“停靠窗口”中打开 **OBS Spatial FX**，选择/新建舞台。

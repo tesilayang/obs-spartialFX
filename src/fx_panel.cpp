@@ -21,6 +21,8 @@
 #include <QSignalBlocker>
 #include <QPointer>
 #include <QRegularExpression>
+#include <QScrollArea>
+#include <QScrollBar>
 #include <algorithm>
 #include <vector>
 #include <map>
@@ -58,10 +60,14 @@ FxPanel::~FxPanel(){cancelColorEdit();}
 void FxPanel::cancelColorEdit(){if(colorDialog)colorDialog->reject();}
 Layer*FxPanel::layer(const std::string&id){for(auto&l:model->layers)if(l.instanceId==id)return &l;return nullptr;}
 void FxPanel::setDocument(const QString&id){if(document!=id){++colorDocument;if(colorDialog)colorDialog->reject();document=id;signature.clear();refresh(true);}}
-void FxPanel::refresh(bool force){QString next=document+"|";for(auto&l:model->layers){next+=q(l.instanceId)+":"+q(l.label)+":"+QString::number(l.instanceNumber)+":"+QString::number(l.fx.attached)+"|";for(const auto&f:l.fx.effects)next+=q(f.id)+":"+QString::number(f.enabled)+";";}if(force||signature!=next){signature=next;rebuild();}syncEvaluatedValues();}
+QString FxPanel::layoutSignature() const{QString next=document+"|";for(const auto&l:model->layers){next+=q(l.instanceId)+":"+q(l.label)+":"+QString::number(l.instanceNumber)+":"+QString::number(l.fx.attached)+"|";for(const auto&f:l.fx.effects)next+=q(f.id)+":"+QString::number(f.enabled)+";";}return next;}
+void FxPanel::refresh(bool force){const auto next=layoutSignature();if(force||signature!=next){signature=next;rebuild();}syncEvaluatedValues();}
 void FxPanel::addObject(){QMenu menu(this);for(auto&l:model->layers)if(!l.fx.attached){auto*a=menu.addAction(q(layerDisplayName(l)));const auto id=l.instanceId;connect(a,&QAction::triggered,this,[this,id]{if(auto*l=layer(id)){l->fx.attached=true;if(changed)changed();refresh(true);}});}if(menu.isEmpty()){auto*a=menu.addAction(QString::fromUtf8(model->layers.empty()?"请先在镜头与动画页导入素材":"全部时间轴素材已添加"));a->setEnabled(false);}menu.exec(mapToGlobal(QPoint(6,34)));}
 void FxPanel::syncEvaluatedValues(){if(colorDialog)return;for(const auto&refresh:valueRefreshers)refresh();}
 void FxPanel::rebuild(){
+ QPointer<QScrollArea> scroll;for(auto*w=parentWidget();w;w=w->parentWidget())if(auto*s=qobject_cast<QScrollArea*>(w)){scroll=s;break;}
+ const int position=scroll?scroll->verticalScrollBar()->value():0;
+ std::map<QString,bool> folds;if(cards)for(auto*b:cards->findChildren<QToolButton*>())if(b->objectName().endsWith(".fold"))folds[b->objectName()]=b->isChecked();
  valueRefreshers.clear();
  if(cards){column->removeWidget(cards);cards->hide();cards->deleteLater();}cards=new QWidget;auto*list=new QVBoxLayout(cards);list->setContentsMargins(0,0,0,0);list->setSpacing(4);column->insertWidget(2,cards);
  for(auto&entry:model->layers){if(!entry.fx.attached)continue;const auto id=entry.instanceId;auto*card=new QWidget;card->setObjectName(node(id,"card"));card->setProperty("fxCard",true);card->setStyleSheet("QWidget[fxCard=\"true\"] { border:1px solid #555b62; border-radius:3px; }");auto*body=new QVBoxLayout(card);body->setContentsMargins(7,5,7,6);body->setSpacing(4);list->addWidget(card);
@@ -131,12 +137,17 @@ void FxPanel::rebuild(){
       if(auto*control=cards->findChild<QCheckBox*>(node(id,sibling+".enabled"))){QSignalBlocker block(control);control->setChecked(false);}
       if(auto*body=cards->findChild<QWidget*>(node(id,sibling+".parameters")))body->hide();
      }
-     auto*f=findFx(l->fx,effectId);if(!f){l->fx.effects.push_back(makeFx(*d));f=&l->fx.effects.back();}f->enabled=on;if(on)build();parameters->setVisible(on);if(changed)changed();});
+     auto*f=findFx(l->fx,effectId);if(!f){l->fx.effects.push_back(makeFx(*d));f=&l->fx.effects.back();}f->enabled=on;if(on)build();parameters->setVisible(on);
+     // Local controls already reflect this mutation; Dock::commit must not
+     // destroy them. External structural edits still invalidate the signature.
+     signature=layoutSignature();if(changed)changed();});
    }
    connect(b,&QToolButton::toggled,this,[this,id,index,panels,detailLayout](bool on){if(auto*l=layer(id)){l->fx.groups[index]=on;auto&order=l->fx.groupOrder;const int group=int(index)+1;order.erase(std::remove(order.begin(),order.end(),group),order.end());if(on){order.push_back(group);detailLayout->removeWidget((*panels)[index]);detailLayout->addWidget((*panels)[index]);}(*panels)[index]->setVisible(on);if(changed)changed();}});
    if(entry.fx.groups[index])panel->show();
   }
   for(int group:entry.fx.groupOrder)if(group>=1&&group<=13&&entry.fx.groups[size_t(group-1)]){auto*w=(*panels)[size_t(group-1)];detailLayout->removeWidget(w);detailLayout->addWidget(w);}
  }
+ for(auto*b:cards->findChildren<QToolButton*>())if(auto i=folds.find(b->objectName());i!=folds.end())b->setChecked(i->second);
+ QPointer<QWidget> currentCards=cards;QTimer::singleShot(0,this,[this,scroll,position,currentCards]{if(scroll&&currentCards==cards){column->activate();scroll->verticalScrollBar()->setValue(position);}});
  installHoverHelp(cards);
 }
