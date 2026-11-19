@@ -35,7 +35,8 @@ QJsonObject v361Ui(const QJsonObject& command,bool& ok){
     }else if(action=="ui-combo"){auto*c=qobject_cast<QComboBox*>(w);const int n=c?(command.contains("data")?c->findData(command["data"].toVariant()):command["value"].toInt()):-1;ok&=c&&n>=0&&n<c->count();if(c&&n>=0)c->setCurrentIndex(n);
     }else if(action=="ui-number"){auto*c=qobject_cast<QDoubleSpinBox*>(w);auto*i=qobject_cast<QSpinBox*>(w);ok&=c||i;if(c)c->setValue(command["value"].toDouble());else if(i)i->setValue(command["value"].toInt());
     }else if(action=="ui-list"){
-        auto*l=qobject_cast<QListWidget*>(w);ok&=l!=nullptr;
+        auto*l=qobject_cast<QListWidget*>(w);auto*t=qobject_cast<QTableWidget*>(w);ok&=l!=nullptr||t!=nullptr;
+        if(t){const int col=command["column"].toInt(1);if(col!=1&&col!=2){ok=false;return info;}const auto ids=command["ids"].toArray();for(int row=0;row<t->rowCount();++row){auto*item=t->item(row,col);if(item&&(item->flags()&Qt::ItemIsEnabled))item->setCheckState(command["all"].toBool()||ids.contains(QJsonValue(t->item(row,0)->data(Qt::UserRole).toString()))?Qt::Checked:Qt::Unchecked);}}
         if(l){const auto selected=command["ids"].toArray();for(int i=0;i<l->count();++i){auto*item=l->item(i);if(item->flags()&Qt::ItemIsUserCheckable)item->setCheckState(((item->flags()&Qt::ItemIsEnabled)&&(command["all"].toBool()||selected.contains(QJsonValue(item->data(Qt::UserRole).toString()))))?Qt::Checked:Qt::Unchecked);}if(command.contains("row"))l->setCurrentRow(command["row"].toInt());}
     }else if(action=="ui-tab"){auto*t=p->findChild<QTabWidget*>("spatial.tabs");ok&=t!=nullptr;if(t)t->setCurrentIndex(command["value"].toInt());
     }else if(action.startsWith("ui-color-")){
@@ -56,6 +57,7 @@ QJsonObject v361Ui(const QJsonObject& command,bool& ok){
             if(auto*s=qobject_cast<QScrollArea*>(c)){r["scroll"]=s->verticalScrollBar()->value();r["scrollMax"]=s->verticalScrollBar()->maximum();}
             if(auto*b=qobject_cast<QComboBox*>(c)){r["index"]=b->currentIndex();r["data"]=QJsonValue::fromVariant(b->currentData());QJsonArray items;for(int i=0;i<b->count();++i)items.append(QJsonObject{{"text",b->itemText(i)},{"data",QJsonValue::fromVariant(b->itemData(i))}});r["items"]=items;}
             if(auto*l=qobject_cast<QListWidget*>(c)){QJsonArray items;for(int i=0;i<l->count();++i){auto*v=l->item(i);items.append(QJsonObject{{"text",v->text()},{"id",v->data(Qt::UserRole).toString()},{"checked",v->checkState()==Qt::Checked},{"enabled",bool(v->flags()&Qt::ItemIsEnabled)}});}r["items"]=items;}
+            if(auto*t=qobject_cast<QTableWidget*>(c);t&&t->objectName()=="spatial.preset-targets361"){QJsonArray items;for(int row=0;row<t->rowCount();++row){auto*v=t->item(row,0);items.append(QJsonObject{{"text",v->text()},{"id",v->data(Qt::UserRole).toString()},{"checked",t->item(row,1)->checkState()==Qt::Checked},{"transition",t->item(row,2)->checkState()==Qt::Checked},{"enabled",bool(t->item(row,1)->flags()&Qt::ItemIsEnabled)}});}r["items"]=items;}
             controls.append(r);
         }info["controls"]=controls;
         QJsonArray surfaces;for(auto*window:QApplication::topLevelWidgets())if(window->isVisible())surfaces.append(QJsonObject{{"class",window->metaObject()->className()},{"name",window->objectName()},{"tooltip",window->windowType()==Qt::ToolTip},{"x",window->x()},{"y",window->y()},{"width",window->width()},{"height",window->height()}});info["surfaces"]=surfaces;

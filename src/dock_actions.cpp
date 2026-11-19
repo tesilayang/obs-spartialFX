@@ -3,6 +3,7 @@
 #include "editor.hpp"
 #include "presets/panel.hpp"
 #include "scene_evaluator.hpp"
+#include "import_depth.hpp"
 #include <obs-module.h>
 #include <obs-frontend-api.h>
 #include <graphics/matrix4.h>
@@ -59,9 +60,10 @@ void SpatialDock::createStage(const StageModel *initial){
 void SpatialDock::importLayers(bool selected){
     if(stageUuid.isEmpty()){createStage();if(stageUuid.isEmpty()){message(tr8("无法创建空间舞台。"),true);return;}}
     auto*sceneSource=obs_frontend_get_current_scene();auto*scene=sceneSource?obs_scene_from_source(sceneSource):nullptr;if(!scene){obs_source_release(sceneSource);return;}
-    size_t total=0;obs_scene_enum_items(scene,[](obs_scene_t*,obs_sceneitem_t*item,void*p){auto*s=obs_sceneitem_get_source(item);if(std::string(obs_source_get_unversioned_id(s))!=stageId)++*static_cast<size_t*>(p);return true;},&total);
-    struct Context {StageModel *model;bool selected;size_t added=0,skipped=0,index=0,total=0;std::string sceneUuid;};
-    Context ctx{&model,selected,0,0,0,total,obs_source_get_uuid(sceneSource)};
+    struct SceneItem {int64_t id;std::string uuid;};std::vector<SceneItem> stack;
+    obs_scene_enum_items(scene,[](obs_scene_t*,obs_sceneitem_t*item,void*p){auto*s=obs_sceneitem_get_source(item);if(std::string(obs_source_get_unversioned_id(s))!=stageId)static_cast<std::vector<SceneItem>*>(p)->push_back({obs_sceneitem_get_id(item),obs_source_get_uuid(s)});return true;},&stack);
+    struct Context {StageModel *model;bool selected;size_t added=0,skipped=0,index=0;std::string sceneUuid;const std::vector<SceneItem>*stack;};
+    Context ctx{&model,selected,0,0,0,obs_source_get_uuid(sceneSource),&stack};
     obs_scene_enum_items(scene,[](obs_scene_t*,obs_sceneitem_t*item,void*opaque){
         auto&ctx=*static_cast<Context*>(opaque);auto*source=obs_sceneitem_get_source(item);const std::string id=obs_source_get_unversioned_id(source);if(id==stageId)return true;
         const size_t rank=ctx.index++;if(ctx.selected&&!obs_sceneitem_selected(item))return true;
@@ -83,7 +85,13 @@ void SpatialDock::importLayers(bool selected){
         const auto layout=sourceLayout(w,h,t);const auto offset=rotate({layout.x,layout.y,0},{0,0,transform.rot});
         const double cw=layout.width,ch=layout.height,scaleX=layout.scaleX,scaleY=layout.scaleY;
         const double screenX=transform.pos.x+offset.x,screenY=transform.pos.y+offset.y;
-        const double depth=double(ctx.total-rank-1)*180;
+        std::vector<ImportDepthAnchor> anchors;
+        const auto evaluated=evaluateSceneAt(*ctx.model,0,{},false);
+        for(size_t i=0;i<ctx.model->layers.size();++i){const auto&existing=ctx.model->layers[i];if(existing.sceneUuid!=ctx.sceneUuid)continue;
+            const auto found=std::find_if(ctx.stack->begin(),ctx.stack->end(),[&](const SceneItem&s){return s.id==existing.itemId&&s.uuid==existing.sourceUuid;});
+            if(found!=ctx.stack->end())anchors.push_back({size_t(found-ctx.stack->begin()),ctx.model->camera.position.z+inverseRotate(sub(evaluated.world[i].plane.position,ctx.model->camera.position),ctx.model->camera.rotation).z});
+        }
+        const double depth=importDepth(rank,ctx.stack->size(),anchors,ctx.model->camera.position.z+20);
         l.plane=importPlane(screenX,screenY,cw,ch,scaleX,scaleY,transform.rot,depth,ctx.model->camera,ctx.model->width,ctx.model->height);
         l.defaultPlane=l.plane;l.hasDefault=true;l.depthOrder=int(ctx.model->layers.size());
         ctx.model->layers.push_back(l);obs_sceneitem_set_visible(item,false);++ctx.added;return true;

@@ -5,6 +5,7 @@
 #include <memory>
 #include <cstdint>
 #include <utility>
+#include <string>
 
 namespace spatial { struct StageModel; }
 namespace spatial::presets {
@@ -17,6 +18,7 @@ public:
  std::function<void(QString,bool)> message;
  // Hosts may supply their video rate; otherwise the panel queries OBS.
  std::function<std::pair<uint32_t,uint32_t>()> videoFrameRate;
+ void openForLayer(const std::string&instanceId);
  void setDocument(QString);
  void refresh();
  void cancelCurrentPreview();

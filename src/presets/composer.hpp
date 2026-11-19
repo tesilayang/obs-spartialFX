@@ -16,7 +16,8 @@ const std::vector<PartDefinition>& maskCatalog();
 const std::vector<PartDefinition>& decorationCatalog();
 struct ComposeRequest {
  std::string styleId="gentle";
- std::vector<std::string> selectedIds;
+ std::vector<std::string> selectedIds; // Motion targets, in timeline order.
+ std::vector<std::string> maskReceiverIds;
  uint32_t seed=1;
  uint32_t motionSeed=0,maskSeed=0,decorationSeed=0;
  // Empty part IDs mean style-based random selection. "none" disables a part.
@@ -30,7 +31,10 @@ struct ComposeRequest {
  double strength=.6;
  int decorationAmount=1; // 0=none, 1=sparse, 2=rich.
  bool loop=false,replace=false,camera=false;
+ bool spatialMotion=true, alignMotionStart=false;
  Vec3 colorA{.38,.28,.95},colorB{.1,.65,1};
+ // Manual protected area in addition to projected foreground bounds: auto, center, left, right, bottom, top.
+ int decorationProtection=0;
  Plane decorationPlane{};
  Plane localMaskPlane{};
  std::string anchorId;

@@ -1,5 +1,6 @@
 #include "core.hpp"
 #include "fx_motion.hpp"
+#include "import_depth.hpp"
 #include <cmath>
 #include <cstdlib>
 #include <iostream>
@@ -9,6 +10,13 @@ int checks=0,failed=0;
 void require(bool yes,const char *label) { ++checks; if(!yes){++failed;std::cerr<<"FAIL: "<<label<<'\n';} }
 bool close(double a,double b,double eps=1e-7) { return std::abs(a-b)<eps; }
 int main() {
+    require(importDepth(0,2,{{1,360}},-1480)>360,"later background import remains behind managed window after unused sources removed");
+    require(importDepth(1,5,{{0,180}},-1480)<180,"new foreground remains ahead after unrelated source count grows");
+    require(close(importDepth(2,3,{{2,360}},-1480),360),"duplicate source item retains existing depth");
+    require(close(importDepth(1,3,{{0,600},{2,0}},-1480),300),"middle import interpolates between existing depths");
+    require(close(importDepth(0,4,{},-1480),540),"first import retains initial depth assignment");
+    require(importDepth(1,2,{{0,-1470}},-1480)>-1480,"new foreground remains in front of near plane");
+    require(std::isfinite(importDepth(1,3,{{0,0},{2,600}},-1480)),"intentional authored depth inversion stays finite");
     Camera motionCamera;motionCamera.fov=90;motionCamera.position.z=-1000;
     auto motion=motionUvFromScreen({},{400,0,0},{0,300,0},motionCamera,1920,1080,21.6,0);
     require(close(motion.x,.1)&&close(motion.y,0),"one-frame motion maps screen pixels to scaled source UV");

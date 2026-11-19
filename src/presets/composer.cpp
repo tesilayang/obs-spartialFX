@@ -1,5 +1,6 @@
 #include "composer.hpp"
 #include "scene_evaluator.hpp"
+#include "presets/style_art.hpp"
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -55,7 +56,15 @@ const std::vector<PartDefinition>&decorationCatalog(){static const std::vector<P
  {"D21","纸条底签","素材下缘的扁平纸条"},{"D23","胶带角贴","卡片角上的半透明斜条"},
  {"D25","呼吸色团","解析波形构成的圆润色团变形"},{"D26","柔波色带","低透明度波浪带缓慢流过"},
  {"D30","稀疏光点","少量柔边小光点缓慢漂浮"},{"D31","渐变光带","低透明度渐变带从边缘掠过"},
- {"D32","实心圆面","清晰的实心圆或椭圆色面，配合主体与辅助图形"}
+ {"D32","实心圆面","清晰的实心圆或椭圆色面，配合主体与辅助图形"},
+ {"D40","晨光花瓣","叠色花瓣从画角舒展，一粒花粉稍晚浮出"},
+ {"D41","几何书挡","方角底座接一块圆面，细刻线沿同一基线对齐"},
+ {"D42","波普印章","错版星形与局部网点组成印章，弹跳后停住"},
+ {"D43","拼贴票根","纸签错落叠放，胶带压住一端，票根带有打孔线"},
+ {"D44","轨道仪表","刻度轨环、指示点与读数短线依次点亮"},
+ {"D45","折面彩带","宽丝带从侧缘掠入，折面、尾叉和速度线沿同一方向展开"},
+ {"D46","新月与极光","细月环、雾光和星点在画角缓慢升起"},
+ {"D47","错位信号条","局部错版色块、棋格和短扫描线分拍归位"}
  };return v;}
 namespace {
 std::string fresh(){return QUuid::createUuid().toString(QUuid::WithoutBraces).toStdString();}
@@ -108,6 +117,7 @@ std::vector<MotionChannel>motion(const std::string&id,double strength,double dir
  if(id=="M44"){bool second=index%2!=0;return {channel("opacity",-1,[second,count](double u){(void)count;double on=smooth((u-.2)/.12)*(1-smooth((u-.7)/.12));return second?1-on:on;})};}
  return {};
 }
+#include "stage_motion.inc"
 }
 bool migrateLegacyMotionBlocks(StageModel&m,std::string&error,MotionMigrationReport*report,const MotionMigrationOptions&options){
  error.clear();if(report)*report={};
@@ -176,50 +186,58 @@ bool compileComposition(StageModel&m,const ComposeRequest&r,std::string&error,Co
  error.clear();if(failure)*failure=ComposeFailure::None;auto fail=[&](const std::string&s,ComposeFailure kind=ComposeFailure::Other){error=s;if(failure)*failure=kind;return false;};
  auto style=std::find_if(styleCatalog().begin(),styleCatalog().end(),[&](const auto&s){return r.styleId==s.id;});if(style==styleCatalog().end())return fail("找不到风格卡片");
  const std::string decorationStyle=r.decorationStyleId.empty()?r.styleId:r.decorationStyleId;auto decorStyle=std::find_if(styleCatalog().begin(),styleCatalog().end(),[&](const auto&s){return decorationStyle==s.id;});if(decorStyle==styleCatalog().end())return fail("找不到装饰风格");
- if(r.selectedIds.empty())return fail("请先勾选要动起来的素材");if(r.selectedIds.size()>32)return fail("最多选择32个素材");
+ if(r.selectedIds.size()>32||r.maskReceiverIds.size()>32)return fail("运动和转场各最多选择32个素材");
  if(r.start<0||r.duration<10000||r.cycles<1||r.cycles>(INT64_MAX-r.start)/r.duration)return fail("时长无效或超出微秒时间范围");
  if(!std::isfinite(r.strength)||r.strength<0||r.strength>2||r.decorationAmount<0||r.decorationAmount>2||!finite(r.colorA)||!finite(r.colorB)||!finite(r.decorationPlane.position)||!finite(r.decorationPlane.rotation)||!std::isfinite(r.decorationPlane.scaleX)||!std::isfinite(r.decorationPlane.scaleY)||!finite(r.localMaskPlane.position)||!finite(r.localMaskPlane.rotation)||!std::isfinite(r.localMaskPlane.scaleX)||!std::isfinite(r.localMaskPlane.scaleY))return fail("组合参数无效");
  for(auto color:{r.colorA,r.colorB})if(color.x<0||color.y<0||color.z<0||color.x>1||color.y>1||color.z>1)return fail("颜色超出范围");
  std::set<std::string>unique,all;for(const auto&l:m.layers)if(l.instanceId.empty()||!all.insert(l.instanceId).second)return fail("舞台有无效或重复身份");for(const auto&g:m.geometries)if(g.instanceId.empty()||!all.insert(g.instanceId).second)return fail("舞台有无效或重复身份");
- for(const auto&id:r.selectedIds){const int o=object(m,id);if(o<0||!unique.insert(id).second)return fail("素材选择失效或重复");if(objectLocked(m,o))return fail("所选素材已锁定："+m.layers[size_t(o)].label);}
+ for(const auto*targets:{&r.selectedIds,&r.maskReceiverIds}){
+  unique.clear();
+  for(const auto&id:*targets){const int o=object(m,id);if(o<0||!unique.insert(id).second)return fail("素材选择失效或重复");if(objectLocked(m,o))return fail("所选素材已锁定："+m.layers[size_t(o)].label);}
+ }
  if(r.camera&&m.cameraLocked)return fail("镜头已锁定");
  auto effective=[&](uint32_t overrideSeed,uint32_t salt){if(overrideSeed)return overrideSeed;Random stream{r.seed^salt};auto value=stream.next();return value?value:1u;};
  const uint32_t motionSeed=effective(r.motionSeed,0x4d4f544eu),maskSeed=effective(r.maskSeed,0x4d41534bu),decorationSeed=effective(r.decorationSeed,0x4445434fu);
  Random motionRng{motionSeed},maskRng{maskSeed},decorRng{decorationSeed};const size_t styleIndex=size_t(style-styleCatalog().begin()),decorStyleIndex=size_t(decorStyle-styleCatalog().begin());
  static const std::vector<std::vector<const char*>>motions={{"M02","M17","M18","M20"},{"M04","M08","M26","M27"},{"M28","M29","M33","M39"},{"M20","M31","M26"},{"M04","M08","M35"},{"M33","M34","M35","M39"},{"M17","M18","M21"},{"M34","M35","M31"}};
  static const std::vector<std::vector<const char*>>masks={{"T02","T09","T33"},{"T03","T08","T17"},{"T14","T25","T57"},{"T11","T12","T18"},{"T13","T24","T28"},{"T03","T17","T19"},{"T02","T10","T35"},{"T26","T28","T25"}};
- static const std::vector<std::vector<const char*>>decors={{"D25","D01","D32"},{"D07","D05","D32"},{"D32","D19","D09"},{"D21","D07","D23"},{"D15","D13","D07"},{"D05","D14","D07"},{"D25","D32","D26","D30"},{"D07","D10","D13"}};
+
  auto choose=[&](const std::string&id,const std::vector<std::vector<const char*>>&pool,Random&rng){const auto slot=rng.next()%pool[styleIndex].size();return id.empty()?std::string(pool[styleIndex][slot]):id;};
  const std::string motionId=choose(r.motionId,motions,motionRng),maskId=choose(r.maskId,masks,maskRng);
  // Consume one choice draw even for resolved/manual IDs so replay keeps layout draws aligned.
- const auto decorChoice=decorRng.next();std::vector<std::string>decorIds;
+ decorRng.next();std::vector<std::string>decorIds;
  if(r.decorationAmount){
   if(!r.resolvedDecorationIds.empty())decorIds=r.resolvedDecorationIds;
   else if(!r.decorationId.empty()){if(r.decorationId!="none")decorIds.push_back(r.decorationId);}
   else{
-   for(const auto*id:decors[decorStyleIndex])decorIds.emplace_back(id);
-   if(decorStyleIndex==5){if(decorChoice%2)decorIds[0]="D06";}
-   else if(decorStyleIndex!=4&&decorStyleIndex!=7&&decorChoice%2)std::swap(decorIds[0],decorIds[1]);
+   decorIds.push_back("D"+std::to_string(40+decorStyleIndex));
   }
  }
  if(decorIds.size()>4)return fail("装饰组合最多包含4种图形");std::set<std::string>decorUnique;
  for(const auto&id:decorIds)if(!part(decorationCatalog(),id)||!decorUnique.insert(id).second)return fail("找不到所选装饰或装饰重复");
  const std::string decorId=decorIds.empty()?"none":decorIds.front();
- if(motionId!="none"&&!part(motionCatalog(),motionId))return fail("找不到所选运动");if(maskId!="none"&&!part(maskCatalog(),maskId))return fail("找不到所选遮罩");if(motionId=="M44"&&r.selectedIds.size()<2)return fail("双主体交班需要至少两个素材");
- if((decorId!="none"||(maskId!="none"&&!r.localMask))&&!r.anchorId.empty()&&object(m,r.anchorId)<0)return fail("图形锚点不存在");
- if(motionId=="none"&&maskId=="none"&&decorId=="none"&&!r.camera)return fail("请选择至少一种运动、遮罩或装饰");
+ if(motionId!="none"&&!part(motionCatalog(),motionId))return fail("找不到所选运动");if(maskId!="none"&&!part(maskCatalog(),maskId))return fail("找不到所选遮罩");if(motionId=="M44"&&r.selectedIds.size()==1)return fail("双主体交班需要至少两个素材");
+ if((decorId!="none"||(maskId!="none"&&!r.maskReceiverIds.empty()&&!r.localMask))&&!r.anchorId.empty()&&object(m,r.anchorId)<0)return fail("图形锚点不存在");
+ if((motionId=="none"||r.selectedIds.empty())&&(maskId=="none"||r.maskReceiverIds.empty())&&decorId=="none"&&!r.camera)return fail("请勾选参与运动或接收转场的素材，或开启画面装饰。");
  if(m.presetInstances.size()>=256)return fail("预设数量已达上限");StageModel out=m;
- PresetInstance preset;preset.instanceId=fresh();preset.definitionId="composition";preset.version=1;preset.seed=r.seed;preset.label=std::string(style->name)+" · 组合";preset.start=r.start;preset.end=r.start+r.duration*r.cycles;
- QJsonArray selected;for(const auto&id:r.selectedIds)selected.append(ref(id));QJsonObject recipe{{"definition_id","composition"},{"version",1},{"style",QString::fromStdString(r.styleId)},{"seed",double(r.seed)},{"motion",QString::fromStdString(motionId)},{"mask",QString::fromStdString(maskId)},{"decoration",QString::fromStdString(decorId)},{"selected",selected},{"start_us",QString::number(r.start)},{"duration_us",QString::number(r.duration)},{"cycles",QString::number(r.cycles)},{"loop",r.loop},{"strength",r.strength},{"decoration_amount",r.decorationAmount},{"camera",r.camera},{"color_a",QJsonObject{{"r",r.colorA.x},{"g",r.colorA.y},{"b",r.colorA.z}}},{"color_b",QJsonObject{{"r",r.colorB.x},{"g",r.colorB.y},{"b",r.colorB.z}}},{"local_mask",r.localMask},{"screen_fixed",r.screenFixed},{"anchor",ref(r.anchorId)},{"plane",QJsonObject{{"x",r.decorationPlane.position.x},{"y",r.decorationPlane.position.y},{"z",r.decorationPlane.position.z},{"rx",r.decorationPlane.rotation.x},{"ry",r.decorationPlane.rotation.y},{"rz",r.decorationPlane.rotation.z},{"sx",r.decorationPlane.scaleX},{"sy",r.decorationPlane.scaleY}}}};
+ PresetInstance preset;preset.instanceId=fresh();preset.definitionId="composition";preset.version=2;preset.seed=r.seed;preset.label=std::string(style->name)+" · 组合";preset.start=r.start;preset.end=r.start+r.duration*r.cycles;
+ QJsonArray selected;for(const auto&id:r.selectedIds)selected.append(ref(id));QJsonObject recipe{{"definition_id","composition"},{"version",2},{"style",QString::fromStdString(r.styleId)},{"seed",double(r.seed)},{"motion",QString::fromStdString(motionId)},{"mask",QString::fromStdString(maskId)},{"decoration",QString::fromStdString(decorId)},{"selected",selected},{"start_us",QString::number(r.start)},{"duration_us",QString::number(r.duration)},{"cycles",QString::number(r.cycles)},{"loop",r.loop},{"strength",r.strength},{"decoration_amount",r.decorationAmount},{"camera",r.camera},{"color_a",QJsonObject{{"r",r.colorA.x},{"g",r.colorA.y},{"b",r.colorA.z}}},{"color_b",QJsonObject{{"r",r.colorB.x},{"g",r.colorB.y},{"b",r.colorB.z}}},{"local_mask",r.localMask},{"screen_fixed",r.screenFixed},{"anchor",ref(r.anchorId)},{"plane",QJsonObject{{"x",r.decorationPlane.position.x},{"y",r.decorationPlane.position.y},{"z",r.decorationPlane.position.z},{"rx",r.decorationPlane.rotation.x},{"ry",r.decorationPlane.rotation.y},{"rz",r.decorationPlane.rotation.z},{"sx",r.decorationPlane.scaleX},{"sy",r.decorationPlane.scaleY}}}};
+ QJsonArray maskReceivers;for(const auto&id:r.maskReceiverIds)maskReceivers.append(ref(id));recipe["mask_receivers"]=maskReceivers;
  recipe["local_mask_plane"]=QJsonObject{{"x",r.localMaskPlane.position.x},{"y",r.localMaskPlane.position.y},{"z",r.localMaskPlane.position.z},{"rx",r.localMaskPlane.rotation.x},{"ry",r.localMaskPlane.rotation.y},{"rz",r.localMaskPlane.rotation.z},{"sx",r.localMaskPlane.scaleX},{"sy",r.localMaskPlane.scaleY}};
  QJsonArray resolvedDecor;for(const auto&id:decorIds)resolvedDecor.append(QJsonObject{{"id",QString::fromStdString(id)}});recipe["decoration_ids"]=resolvedDecor;
+ recipe["decoration_protection"]=r.decorationProtection;
+ recipe["spatial_motion"]=r.spatialMotion;
  recipe["decoration_style"]=QString::fromStdString(decorationStyle);
  const double direction=motionRng.next()%2?1.:-1.;recipe["direction"]=direction;recipe["motion_seed"]=double(motionSeed);recipe["mask_seed"]=double(maskSeed);recipe["decoration_seed"]=double(decorationSeed);auto*recipeData=obs_data_create_from_json(QJsonDocument(recipe).toJson(QJsonDocument::Compact).constData());preset.definitionSnapshot=obs_data_get_json(recipeData);obs_data_release(recipeData);out.presetInstances.push_back(preset);
- size_t generatedKeyCount=0;
+ size_t generatedKeyCount=0;QJsonArray skippedLocks;
  auto add=[&](const std::string&id,std::vector<MotionChannel>channels){
   int o=object(out,id);if(o==INT_MIN)return fail("运动绑定失效");if(objectLocked(out,o))return fail("对象已锁定");auto&a=objectAnimation(out,o);
   const bool orbit=o==-1?out.cameraOrbit.enabled:o>=0?out.layers[size_t(o)].orbit.enabled:false;
   for(auto&ch:channels){
+   if(r.alignMotionStart && o>=-1 && ch.samples.size()>1){
+    const auto first=ch.samples.front();const double n=double(ch.samples.size()-1);
+    for(size_t k=0;k<ch.samples.size();++k) ch.samples[k]-=first*(1.-smooth(double(k)/n/.22));
+   }
    if(r.loop&&ch.samples.size()>1){
     const auto original=ch.samples;const size_t last=original.size()-1;
     const double delta=original.back()-original.front();
@@ -231,10 +249,10 @@ bool compileComposition(StageModel&m,const ComposeRequest&r,std::string&error,Co
     if(!ch.stepped){ch.samples[1]=ch.samples[0];ch.samples[last-1]=ch.samples[last];}
    }
    if(orbit){if(ch.parameter=="x"){ch.parameter="yaw";ch.amplitude*=.06;}if(ch.parameter=="y"){ch.parameter="pitch";ch.amplitude*=.06;}if(ch.parameter=="z")ch.parameter="radius";}
-   auto it=a.find(ch.parameter);if(it!=a.end()){if(it->second.locked)return fail("参数轨已锁定："+ch.parameter);if(it->second.enabled&&!it->second.keys().empty()&&it->second.keys().front().time<=preset.end&&it->second.keys().back().time>=r.start&&!r.replace)return fail("参数区间已有关键帧："+ch.parameter,ComposeFailure::IntervalConflict);}
+   auto it=a.find(ch.parameter);if(it!=a.end()){if(it->second.locked){skippedLocks.append(QJsonObject{{"target",ref(id)},{"parameter",QString::fromStdString(ch.parameter)}});continue;}if(it->second.enabled&&!it->second.keys().empty()&&it->second.keys().front().time<=preset.end&&it->second.keys().back().time>=r.start&&!r.replace)return fail("参数区间已有关键帧："+ch.parameter,ComposeFailure::IntervalConflict);}
    for(const auto&b:out.motionBlocks)if(b.enabled&&b.targetId==id&&overlap(r.start,preset.end,b.start,b.end))for(const auto&c:b.channels)if(c.parameter==ch.parameter)return fail("参数区间已有循环动作："+ch.parameter,ComposeFailure::IntervalConflict);
   }
-  for(const auto&ch:channels){GeneratedTrack track;track.targetId=id;track.parameter=ch.parameter;track.existed=a.find(ch.parameter)!=a.end();auto&c=a[ch.parameter];track.before=c;const double base=baseValue(out,o,ch.parameter),begin=c.value(r.start,base);std::vector<AnimKey>keys;
+  for(const auto&ch:channels){auto existing=a.find(ch.parameter);if(existing!=a.end()&&existing->second.locked)continue;GeneratedTrack track;track.targetId=id;track.parameter=ch.parameter;track.existed=a.find(ch.parameter)!=a.end();auto&c=a[ch.parameter];track.before=c;const double base=baseValue(out,o,ch.parameter),begin=c.value(r.start,base);std::vector<AnimKey>keys;
    // Both looping and one-shot presets are finite editable data. Refuse an
    // oversized request atomically rather than silently shortening its motion.
    if(ch.samples.size()<2||generatedKeyCount+3>=250000||uint64_t(r.cycles)>(250000-generatedKeyCount-3)/(ch.samples.size()-1))return fail("预设超过250000个关键帧预算，请减少持续时间或重复次数");
@@ -243,14 +261,35 @@ bool compileComposition(StageModel&m,const ComposeRequest&r,std::string&error,Co
    const TimeUs lo=r.start>0?r.start-1:r.start,hi=preset.end<INT64_MAX?preset.end+1:preset.end;if(lo<r.start)keys.insert(keys.begin(),{lo,c.value(lo,base),Interpolation::Hold});if(hi>preset.end){keys.back().interpolation=Interpolation::Hold;keys.push_back({hi,c.value(hi,base),Interpolation::Linear});}splice(c,lo,hi,base,keys,lo<r.start);track.after=c;if(o>=-1)out.presetInstances.back().generatedTracks.push_back(std::move(track));
   }return true;
  };
- if(motionId!="none")for(size_t i=0;i<r.selectedIds.size();++i)if(!add(r.selectedIds[i],motion(motionId,r.strength,direction,i,r.selectedIds.size())))return false;
+ if(motionId!="none" && !r.selectedIds.empty()) {
+  const auto scene=evaluateSceneAt(m,r.start);
+  const bool retreat=motionRng.next()%2==0;
+  for(size_t i=0;i<r.selectedIds.size();++i){
+   const auto &id=r.selectedIds[i];const auto slot=size_t(object(m,id));
+   auto channels=stageMotion(m,scene,slot,r,motionId,direction,i,r.selectedIds.size(),retreat);
+   if(!add(id,std::move(channels)))return false;
+  }
+ }
  if(r.camera&&!add("camera",motion("M04",r.strength*.18,direction,0,1)))return false;
  const double w=out.width,h=out.height;
  auto geometry=[&](const std::string&label){Geometry g;g.instanceId=fresh();g.ownerId=preset.instanceId;g.label=label;g.anchorId=r.anchorId;g.plane=r.decorationPlane;g.layoutPivot=r.decorationPlane.position;g.screenFixed=r.screenFixed;g.color=r.colorA;g.referenceWidth=w;g.referenceHeight=h;g.width=w;g.height=h;g.spacing=h*.1;g.thickness=std::max(2.,h*.006);g.softness=1;return g;};
- if(maskId!="none")for(const auto&id:r.selectedIds){Geometry g=geometry(std::string(part(maskCatalog(),maskId)->name));g.mode=Mode::Mask;g.receivers={id};g.localMask=r.localMask;g.referenceWidth=g.referenceHeight=0;g.width=w*1.05;g.height=h*1.05;g.reveal=int(part(maskCatalog(),maskId)-maskCatalog().data())+1;g.revealStart=r.start;g.revealPeriod=r.duration;g.revealLoop=r.loop||r.cycles>1;g.detail=double(maskRng.next()%65536);g.softness=1.;if(g.localMask){g.plane=r.localMaskPlane;g.layoutPivot=r.localMaskPlane.position;g.anchorId.clear();g.screenFixed=false;const auto&l=out.layers[size_t(object(out,id))];if(l.importWidth>0&&l.importHeight>0){g.width=std::max(1.,l.importWidth-l.cropLeft-l.cropRight);g.height=std::max(1.,l.importHeight-l.cropTop-l.cropBottom);}}out.geometries.push_back(g);}
+ const double maskPattern=double(maskRng.next()%65536);
+ if(maskId!="none")for(const auto&id:r.maskReceiverIds){Geometry g=geometry(std::string(part(maskCatalog(),maskId)->name));g.mode=Mode::Mask;g.receivers={id};g.localMask=r.localMask;g.referenceWidth=g.referenceHeight=0;g.width=w*1.05;g.height=h*1.05;g.reveal=int(part(maskCatalog(),maskId)-maskCatalog().data())+1;g.revealStart=r.start;g.revealPeriod=r.duration;g.revealLoop=r.loop||r.cycles>1;g.detail=maskPattern;g.softness=1.;if(g.localMask){g.plane=r.localMaskPlane;g.layoutPivot=r.localMaskPlane.position;g.anchorId.clear();g.screenFixed=false;const auto&l=out.layers[size_t(object(out,id))];if(l.importWidth>0&&l.importHeight>0){g.width=std::max(1.,l.importWidth-l.cropLeft-l.cropRight);g.height=std::max(1.,l.importHeight-l.cropTop-l.cropBottom);}}out.geometries.push_back(g);}
+ int decorationGroups=0;
  const bool rich=r.decorationAmount==2,mixed=decorIds.size()>1;const double densityScale=rich?1.16:1.;
  for(size_t motif=0;motif<decorIds.size();++motif){
-  const auto&decoration=decorIds[motif];int copies=rich?4:2;
+  const auto&decoration=decorIds[motif];
+  if(decoration.size()==3 && decoration>="D40" && decoration<="D47"){
+   const auto drawing=style_art::compose(m,r,decoration.back()-'0',decorationSeed,decorationGroups);
+   for(const auto&piece:drawing){
+    auto g=geometry(piece.label);g.shape=piece.shape;g.plane=piece.plane;g.width=piece.width;g.height=piece.height;
+    g.thickness=piece.thickness;g.spacing=piece.spacing;g.softness=piece.softness;g.opacity=piece.opacity;
+    g.shear=piece.shear;g.sides=piece.sides;g.color=piece.color;g.depthOrder=int(motif)*20+piece.order;
+    out.geometries.push_back(g);if(!add(g.instanceId,piece.motion))return false;
+   }
+   continue;
+  }
+  ++decorationGroups;int copies=rich?4:2;
   if(decoration=="D01"||decoration=="D09"||decoration=="D10"||decoration=="D17"||decoration=="D21"||decoration=="D25"||decoration=="D26"||decoration=="D31")copies=rich?2:1;
   if(decoration=="D06")copies=2;if(decoration=="D03")copies=rich?16:8;if(decoration=="D04")copies=rich?8:4;
   if(decoration=="D05")copies=rich?3:2;if(decoration=="D07"||decoration=="D13"||decoration=="D32")copies=rich?3:2;
@@ -322,6 +361,8 @@ bool compileComposition(StageModel&m,const ComposeRequest&r,std::string&error,Co
    out.geometries.push_back(g);if(!channels.empty()&&!add(g.instanceId,channels))return false;
   }
  }
- if(out.geometries.size()>128||out.motionBlocks.size()>512)return fail("组合超过128个图形或512个循环动作预算，请减少装饰或素材数量");m=std::move(out);return true;
+ if(out.geometries.size()>128||out.motionBlocks.size()>512)return fail("组合超过128个图形或512个循环动作预算，请减少装饰或素材数量");if(out.presetInstances.back().generatedTracks.empty()&&out.geometries.size()==m.geometries.size())return fail(skippedLocks.isEmpty()?"没有可生成的动作、转场或装饰。":"所选动作的参数轨均已锁定。");
+ recipe["decoration_groups"]=decorationGroups;if(!skippedLocks.isEmpty())recipe["skipped_locks"]=skippedLocks;out.presetInstances.back().definitionSnapshot=QJsonDocument(recipe).toJson(QJsonDocument::Compact).toStdString();
+ m=std::move(out);return true;
 }
 }

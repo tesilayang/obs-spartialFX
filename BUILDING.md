@@ -1,4 +1,4 @@
-# OBS Spatial FX 构建说明（当前 v3.6.4）
+# OBS Spatial FX 构建说明（当前 v3.6.6-b）
 
 开发、测试和发布必须执行 [项目开发与交付标准](DEVELOPMENT_STANDARDS.md)。
 
@@ -16,7 +16,7 @@
 
 bootstrap 使用 tools/dependencies.json 中固定 URL 与 SHA256，下载到 third_party；需要 Python3.12+、Git 和网络。已有本地官方依赖时也可配置 -DOBS_SOURCE=官方OBS源码路径、-DCMAKE_PREFIX_PATH=Qt6开发目录，工具链使用外部 VS2022/CMake/Ninja。不要把 OBS 自带的 Qt DLL 复制到插件安装目录。
 
-构建产物 build/OBS_Spatial_FX_V3.6.4_Setup.exe；插件 build/obs-spatial-fx.dll；PDB 同目录。
+构建产物 build/OBS_Spatial_FX_V3.6.6-b_Setup.exe；插件 build/obs-spatial-fx.dll；PDB 同目录。
 
 当前工作区可直接在 PowerShell 执行：
 

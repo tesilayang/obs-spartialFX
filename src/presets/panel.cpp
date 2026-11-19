@@ -14,6 +14,9 @@
 #include <QJsonArray>
 #include <QLabel>
 #include <QListWidget>
+#include <QTableWidget>
+#include <QHeaderView>
+#include <QHash>
 #include <QMessageBox>
 #include <QPainter>
 #include <QPainterPath>
@@ -40,7 +43,16 @@ QString u(const std::string&s){return QString::fromStdString(s);}
 std::string id(QComboBox*w){return w->currentData().toString().toStdString();}
 QColor color(Vec3 v){return QColor::fromRgbF(float(std::clamp(v.x,0.,1.)),float(std::clamp(v.y,0.,1.)),float(std::clamp(v.z,0.,1.)));}
 Vec3 rgb(const QColor&c){return {c.redF(),c.greenF(),c.blueF()};}
-std::vector<std::string> checked(QListWidget*w){std::vector<std::string>result;for(int i=0;i<w->count();++i){auto*v=w->item(i);if((v->flags()&Qt::ItemIsEnabled)&&v->checkState()==Qt::Checked)result.push_back(v->data(Qt::UserRole).toString().toStdString());}return result;}
+enum TargetColumn { Material, Motion, Transition };
+struct TargetSelection { std::set<std::string> motion,transitions; };
+std::vector<std::string> checked(const QTableWidget*table,TargetColumn column){
+ std::vector<std::string> result;
+ for(int row=0;row<table->rowCount();++row){auto*item=table->item(row,column);if(item&&(item->flags()&Qt::ItemIsEnabled)&&item->checkState()==Qt::Checked)result.push_back(table->item(row,Material)->data(Qt::UserRole).toString().toStdString());}
+ return result;
+}
+std::vector<std::string> recipeRefs(const QJsonObject&recipe,const char*key){
+ std::vector<std::string> result;for(const auto&value:recipe[key].toArray())result.push_back(value.toObject()["instance_id"].toString().toStdString());return result;
+}
 QPushButton*button(const QString&text,const char*name,QWidget*p){auto*w=new QPushButton(text,p);w->setObjectName(name);w->setMinimumWidth(0);w->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);return w;}
 QWidget*fold(QVBoxLayout*layout,const QString&label,const char*name){auto*t=new QToolButton;t->setText(label);t->setObjectName(name);t->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);t->setCheckable(true);t->setArrowType(Qt::RightArrow);t->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);auto*body=new QWidget;body->hide();layout->addWidget(t);layout->addWidget(body);QObject::connect(t,&QToolButton::toggled,body,[t,body](bool on){t->setArrowType(on?Qt::DownArrow:Qt::RightArrow);body->setVisible(on);});return body;}
 QFormLayout*form(QWidget*w){auto*f=new QFormLayout(w);f->setContentsMargins(0,2,0,3);f->setHorizontalSpacing(6);f->setVerticalSpacing(3);f->setFieldGrowthPolicy(QFormLayout::AllNonFixedFieldsGrow);f->setRowWrapPolicy(QFormLayout::WrapLongRows);return f;}
@@ -125,7 +137,9 @@ struct PresetPanel::Impl {
  std::optional<Candidate>candidate;std::vector<std::string>heldDecorations;std::string heldDecorationStyle;
  std::string styleId="gentle";Vec3 colorA{},colorB{};uint32_t motionSeed=0,maskSeed=0,decorationSeed=0;
  QLabel*status=nullptr,*countLabel=nullptr,*colorPreview[2]{};
- QListWidget*targets=nullptr,*applied=nullptr;
+ QListWidget*applied=nullptr;QTableWidget*targets=nullptr;
+ QHash<QString,TargetSelection> remembered; bool targetEdited=false;
+ QComboBox*movementSpace=nullptr,*protection=nullptr;
  QComboBox*motion=nullptr,*mask=nullptr,*decor=nullptr,*amount=nullptr,*depth=nullptr,*anchor=nullptr,*depthA=nullptr,*depthB=nullptr,*beatRatio=nullptr;
  QCheckBox*camera=nullptr,*loop=nullptr,*replace=nullptr,*localMask=nullptr,*screen=nullptr,*beat=nullptr,*lockMotion=nullptr,*lockDecor=nullptr,*lockPalette=nullptr;
  QSpinBox*cycles=nullptr;QDoubleSpinBox*seed=nullptr,*period=nullptr,*start=nullptr,*strength=nullptr,*bpm=nullptr,*bakeStart=nullptr,*bakeEnd=nullptr,*bakeStep=nullptr,*position[3]{},*rotation[3]{},*scale[2]{};
@@ -137,13 +151,13 @@ struct PresetPanel::Impl {
   void thumbnails(){for(size_t n=0;n<cards.size();++n){auto style=styleCatalog()[n];if(styleId==style.id){style.colorA=colorA;style.colorB=colorB;}cards[n]->setIcon(QIcon(thumbnail(int(n),thumbTime,style)));}}
   void colors(){setColorValuePreview(colorPreview[0],color(colorA));setColorValuePreview(colorPreview[1],color(colorB));thumbnails();}
  QJsonObject recipe()const{return compiled&&!compiled->presetInstances.empty()?QJsonDocument::fromJson(QByteArray::fromStdString(compiled->presetInstances.back().definitionSnapshot)).object():QJsonObject{};}
- void ready(){const bool available=model&&!document.isEmpty()&&!checked(targets).empty();generate->setEnabled(available);reroll->setEnabled(available);apply->setEnabled(available&&published&&!tailPreview);append->setEnabled(available&&published&&candidate.has_value());cancel->setEnabled(session);}
+ void ready(){const bool available=model&&!document.isEmpty()&&((!checked(targets,Motion).empty()&&id(motion)!="none")||(!checked(targets,Transition).empty()&&id(mask)!="none")||(amount->currentIndex()>0&&id(decor)!="none")||camera->isChecked());generate->setEnabled(available);reroll->setEnabled(available);apply->setEnabled(available&&published&&!tailPreview);append->setEnabled(available&&published&&candidate.has_value());cancel->setEnabled(session);}
  void changed(){if(refreshing)return;ready();if(session)debounce->start();}
  void closeColor(){if(!colorDialog)return;(dialogWhich?colorB:colorA)=dialogOriginal;colors();++colorEpoch;auto dialog=colorDialog;colorDialog.clear();dialog->reject();}
  void cancelSession(){debounce->stop();closeColor();const bool notify=published;published=session=tailPreview=false;baseline.reset();compiled.reset();candidate.reset();ready();if(notify&&q->cancelPreview)q->cancelPreview();}
  void chooseStyle(const StyleDefinition&style){styleId=style.id;if(!lockDecor->isChecked()){heldDecorations.clear();heldDecorationStyle.clear();}for(auto*c:cards)c->setChecked(c->property("styleId").toString()==u(styleId));if(!lockPalette->isChecked()){colorA=style.colorA;colorB=style.colorB;colors();}changed();}
  ComposeRequest request()const{
-  ComposeRequest r;r.styleId=styleId;r.selectedIds=checked(targets);r.seed=uint32_t(seed->value());r.motionId=id(motion);r.maskId=id(mask);r.decorationId=id(decor);
+  ComposeRequest r;r.styleId=styleId;r.selectedIds=checked(targets,Motion);r.maskReceiverIds=checked(targets,Transition);r.spatialMotion=movementSpace->currentIndex()==0;r.decorationProtection=protection->currentIndex();r.seed=uint32_t(seed->value());r.motionId=id(motion);r.maskId=id(mask);r.decorationId=id(decor);
   r.motionSeed=motionSeed;r.maskSeed=maskSeed;r.decorationSeed=decorationSeed;
     r.resolvedDecorationIds=heldDecorations;r.decorationStyleId=heldDecorationStyle;
     const auto last=recipe();if(lockMotion->isChecked()&&!last.isEmpty()){r.motionId=last["motion"].toString().toStdString();r.motionSeed=uint32_t(last["motion_seed"].toDouble());}if(lockDecor->isChecked()&&!last.isEmpty()){r.decorationId=last["decoration"].toString().toStdString();r.resolvedDecorationIds=decorationIds(last);r.decorationStyleId=last["decoration_style"].toString(last["style"].toString()).toStdString();r.decorationSeed=uint32_t(last["decoration_seed"].toDouble());}
@@ -152,7 +166,7 @@ struct PresetPanel::Impl {
    return r;
   }
   bool place(ComposeRequest&r,const StageModel&base,const Candidate&selection){
-   const bool worldGraphics=(r.decorationAmount>0&&(r.decorationId!="none"||!r.resolvedDecorationIds.empty()))||(r.maskId!="none"&&!r.localMask);
+   const bool worldGraphics=(r.decorationAmount>0&&(r.decorationId!="none"||!r.resolvedDecorationIds.empty()))||(r.maskId!="none"&&!r.maskReceiverIds.empty()&&!r.localMask);
    if(worldGraphics&&selection.depthMode==1&&(selection.referenceA.empty()||selection.referenceB.empty()||selection.referenceA==selection.referenceB)){tell(QStringLiteral("层间位置需要两个不同的参考素材。"),true);return false;}
    if(worldGraphics&&selection.depthMode==2&&r.anchorId.empty()){tell(QStringLiteral("请选择图形要跟随的素材。"),true);return false;}
    if(selection.depthMode<2){const auto scene=evaluateSceneAt(base,r.start);Vec3 initial{};
@@ -182,6 +196,7 @@ struct PresetPanel::Impl {
   }
   void freeze(Candidate&selection,const StageModel&output){
    const auto resolved=QJsonDocument::fromJson(QByteArray::fromStdString(output.presetInstances.back().definitionSnapshot)).object();auto&r=selection.request;
+   r.selectedIds=recipeRefs(resolved,"selected");r.maskReceiverIds=resolved.contains("mask_receivers")?recipeRefs(resolved,"mask_receivers"):r.selectedIds;
     r.motionId=resolved["motion"].toString().toStdString();r.maskId=resolved["mask"].toString().toStdString();r.decorationId=resolved["decoration"].toString().toStdString();r.resolvedDecorationIds=decorationIds(resolved);r.decorationStyleId=resolved["decoration_style"].toString(resolved["style"].toString()).toStdString();
    r.motionSeed=uint32_t(resolved["motion_seed"].toDouble());r.maskSeed=uint32_t(resolved["mask_seed"].toDouble());r.decorationSeed=uint32_t(resolved["decoration_seed"].toDouble());
   }
@@ -190,7 +205,13 @@ struct PresetPanel::Impl {
   void describePreview(){
    if(tailPreview&&candidate){tell(QStringLiteral("尾部预览 · 从 %1 秒补充").arg(toSeconds(candidate->request.start),0,'f',3));return;}const auto selected=recipe();
    auto partName=[](const auto&catalog,const QString&value){for(const auto&p:catalog)if(value==QString::fromUtf8(p.id))return QString::fromUtf8(p.name);return QStringLiteral("无");};
-   tell(QStringLiteral("预览中：%1 · %2 · %3").arg(partName(motionCatalog(),selected["motion"].toString()),partName(maskCatalog(),selected["mask"].toString()),partName(decorationCatalog(),selected["decoration"].toString())));
+   const auto&instance=compiled->presetInstances.back();std::set<std::string> moving,receiving;
+   for(const auto&track:instance.generatedTracks)if(track.targetId!="camera")moving.insert(track.targetId);
+   for(const auto&g:compiled->geometries)if(g.ownerId==instance.instanceId&&g.mode==Mode::Mask)receiving.insert(g.receivers.begin(),g.receivers.end());
+   const auto groups=selected["decoration_groups"].toInt(int(selected["decoration_ids"].toArray().size()));QString summary=QStringLiteral("运动 %1 层 · 转场 %2 层 · 装饰 %3 组").arg(moving.size()).arg(receiving.size()).arg(groups);
+   if(!receiving.empty())summary+=QStringLiteral(" · ")+partName(maskCatalog(),selected["mask"].toString());
+   const auto skipped=selected["skipped_locks"].toArray().size();if(skipped)summary+=QStringLiteral(" · 已跳过 %1 条锁定轨").arg(skipped);
+   tell(summary);
  }
  void updatePreview(){
   if(document.isEmpty()||!model||!q->previewDocument){tell(QStringLiteral("请先在镜头与动画页导入素材。"),true);return;}
@@ -198,7 +219,7 @@ struct PresetPanel::Impl {
    Candidate selection{request(),depth->currentIndex(),id(depthA),id(depthB)};std::string error;ComposeFailure failure=ComposeFailure::Other;tailPreview=false;
    if(!compile(snapshot,selection,error,failure)){
     if(failure!=ComposeFailure::IntervalConflict){clearFailedPreview(error);return;}
-    const auto at=tailStart();if(!at){clearFailedPreview({});return;}selection.request.start=*at;selection.request.replace=false;snapshot=*baseline;
+    const auto at=tailStart();if(!at){clearFailedPreview({});return;}selection.request.start=*at;selection.request.replace=false;selection.request.alignMotionStart=true;snapshot=*baseline;
     if(!compile(snapshot,selection,error,failure)){clearFailedPreview(error);return;}tailPreview=true;
    }
     if(tailPreview&&!appendKeepsInactiveTracks(snapshot,error)){clearFailedPreview(error);return;}
@@ -226,6 +247,10 @@ struct PresetPanel::Impl {
   refreshing=true;auto select=[](QComboBox*w,const QString&s){w->setCurrentIndex(std::max(0,w->findData(s)));};
     select(mask,current["mask"].toString());select(movement?decor:motion,current[movement?"decoration":"motion"].toString());select(movement?motion:decor,QString());if(!movement){heldDecorations.clear();heldDecorationStyle.clear();}(movement?lockMotion:lockDecor)->setChecked(false);refreshing=false;nextSeed();(movement?motionSeed:decorationSeed)=std::max(1u,uint32_t(seed->value()));updatePreview();
  }
+ void rerollMask(){closeColor();const auto current=recipe();if(current.isEmpty()){updatePreview();return;}holdPartSeeds(current);
+  refreshing=true;motion->setCurrentIndex(motion->findData(current["motion"].toString()));decor->setCurrentIndex(decor->findData(current["decoration"].toString()));mask->setCurrentIndex(0);refreshing=false;
+  nextSeed();maskSeed=std::max(1u,uint32_t(seed->value()));updatePreview();
+ }
  void rerollColors(){closeColor();const auto current=recipe();if(!current.isEmpty()){holdPartSeeds(current);refreshing=true;auto select=[](QComboBox*w,const QString&s){w->setCurrentIndex(std::max(0,w->findData(s)));};select(motion,current["motion"].toString());select(mask,current["mask"].toString());select(decor,current["decoration"].toString());refreshing=false;}const bool previous=lockPalette->isChecked();lockPalette->setChecked(false);nextSeed();varyColors();lockPalette->setChecked(previous);if(session)updatePreview();}
  void pickColor(int which){
   if(colorDialog){colorDialog->raise();colorDialog->activateWindow();return;}
@@ -244,7 +269,7 @@ struct PresetPanel::Impl {
   if(debounce->isActive()){debounce->stop();updatePreview();if(!published||!compiled)return;}
    if(!baselineCurrent()||!candidate||(!atTail&&tailPreview))return;
    StageModel snapshot=*compiled;
-   if(atTail){const auto at=tailStart();if(!at)return;auto selection=*candidate;selection.request.start=*at;selection.request.replace=false;snapshot=*baseline;std::string error;ComposeFailure failure=ComposeFailure::Other;if(!compile(snapshot,selection,error,failure)){if(!error.empty())tell(u(error),true);return;}if(!appendKeepsInactiveTracks(snapshot,error)){cancelSession();tell(u(error),true);return;}snapshot.loop=baseline->loop;}
+   if(atTail){const auto at=tailStart();if(!at)return;auto selection=*candidate;selection.request.start=*at;selection.request.replace=false;selection.request.alignMotionStart=true;snapshot=*baseline;std::string error;ComposeFailure failure=ComposeFailure::Other;if(!compile(snapshot,selection,error,failure)){if(!error.empty())tell(u(error),true);return;}if(!appendKeepsInactiveTracks(snapshot,error)){cancelSession();tell(u(error),true);return;}snapshot.loop=baseline->loop;}
    cancelSession();q->applyDocument(snapshot);q->refresh();tell(atTail?QStringLiteral("已补充至时间轴尾部；撤销可恢复整套。"):QStringLiteral("已应用到时间轴；撤销可恢复整套。"));
  }
  QString selectedApplied()const{auto*i=applied->currentItem();return i?i->data(Qt::UserRole).toString():QString();}
@@ -260,31 +285,47 @@ struct PresetPanel::Impl {
   if(QMessageBox::question(q,QStringLiteral("转换为关键帧"),QStringLiteral("将 %1 至 %2 秒转换为 %3 个采样时刻的关键帧？可以撤销。").arg(bakeStart->value()).arg(bakeEnd->value()).arg(qulonglong(n)))!=QMessageBox::Yes||doc!=document)return;
   cancelSession();StageModel snapshot=*model;std::string error;if(!bakePreset(snapshot,selected.toStdString(),toTime(bakeStart->value()),toTime(bakeEnd->value()),toTime(bakeStep->value()),error)){tell(u(error),true);return;}q->applyDocument(snapshot);q->refresh();tell(QStringLiteral("已转换为可编辑的关键帧。"));
  }
+ TargetSelection targetState()const{const auto a=checked(targets,Motion),b=checked(targets,Transition);return {{a.begin(),a.end()},{b.begin(),b.end()}};}
+ void seedActive(const std::string&active){
+  if(targetEdited||document.isEmpty()||active.empty())return;
+  QSignalBlocker hold(targets);for(int row=0;row<targets->rowCount();++row){auto*item=targets->item(row,Motion);if(item->flags()&Qt::ItemIsEnabled)item->setCheckState(targets->item(row,Material)->data(Qt::UserRole).toString()==u(active)?Qt::Checked:Qt::Unchecked);}
+  ready();
+ }
  void rebuildCombo(QComboBox*w){const auto old=w->currentData();QSignalBlocker block(w);w->clear();w->addItem(QStringLiteral("请选择素材"),QString());if(model)for(const auto&layer:model->layers)w->addItem(u(layerDisplayName(layer)),u(layer.instanceId));w->setCurrentIndex(std::max(0,w->findData(old)));}
  void refresh(){
   refreshing=true;QString signature;if(model)for(const auto&l:model->layers)signature+=u(l.instanceId)+QChar(0x1f)+u(layerDisplayName(l))+QString::number(l.locked)+QChar(0x1e);
-  if(layerSignature!=signature){const auto selected=checked(targets);std::set<std::string>old,ids(selected.begin(),selected.end());for(int i=0;i<targets->count();++i)old.insert(targets->item(i)->data(Qt::UserRole).toString().toStdString());bool lost=false;for(const auto&selectedId:selected)lost=lost||!model||std::none_of(model->layers.begin(),model->layers.end(),[&](const auto&l){return l.instanceId==selectedId&&!l.locked;});if(session)cancelSession();layerSignature=signature;
-   {QSignalBlocker block(targets);targets->clear();if(model)for(const auto&l:model->layers){auto*i=new QListWidgetItem(u(layerDisplayName(l))+(l.locked?QStringLiteral("（已锁定）"):QString()),targets);i->setData(Qt::UserRole,u(l.instanceId));i->setFlags(l.locked?Qt::NoItemFlags:Qt::ItemIsEnabled|Qt::ItemIsUserCheckable);i->setCheckState(!l.locked&&(ids.count(l.instanceId)||!old.count(l.instanceId))?Qt::Checked:Qt::Unchecked);i->setToolTip(l.locked?QStringLiteral("此素材在时间轴中已锁定，解锁后可以选择。") :QStringLiteral("勾选后参与本套运动；不重复导入，不改变基础位置。"));}}
-   for(auto*c:{anchor,depthA,depthB})rebuildCombo(c);if(lost)tell(QStringLiteral("已移除或锁定的素材已退出本次选择。"),true);
+  if(layerSignature!=signature){
+   auto previous=targetState();if(layerSignature==QString(QChar(0))&&remembered.contains(document))previous=remembered.value(document);
+   if(session)cancelSession();layerSignature=signature;
+   QSignalBlocker block(targets);targets->setRowCount(0);if(model)for(const auto&layer:model->layers){
+    const int row=targets->rowCount();targets->insertRow(row);auto*name=new QTableWidgetItem(u(layerDisplayName(layer))+(layer.locked?QStringLiteral("（已锁定）"):QString()));name->setData(Qt::UserRole,u(layer.instanceId));name->setFlags(Qt::ItemIsEnabled);targets->setItem(row,Material,name);
+    for(auto column:{Motion,Transition}){auto*item=new QTableWidgetItem;item->setFlags(layer.locked?Qt::NoItemFlags:Qt::ItemIsEnabled|Qt::ItemIsUserCheckable);const auto&set=column==Motion?previous.motion:previous.transitions;
+     item->setCheckState(!layer.locked&&set.count(layer.instanceId)?Qt::Checked:Qt::Unchecked);item->setToolTip(layer.locked?QStringLiteral("请先在时间轴解锁此素材。"):column==Motion?QStringLiteral("为这个实例生成可编辑的运动关键帧。"):QStringLiteral("只在勾选的实例上显示转场。"));targets->setItem(row,column,item);}
+   }
+   const auto restored=targetState();if(previous.motion!=restored.motion||previous.transitions!=restored.transitions)tell(QStringLiteral("已移除或锁定的素材已退出本次选择。"),true);
+   for(auto*c:{anchor,depthA,depthB})rebuildCombo(c);
   }
   QString instances;if(model)for(const auto&i:model->presetInstances)instances+=u(i.instanceId)+QChar(0x1f)+u(i.label)+QChar(0x1e);
   if(instances!=presetSignature){const auto selected=selectedApplied();QSignalBlocker block(applied);applied->clear();if(model)for(const auto&i:model->presetInstances){auto*item=new QListWidgetItem(u(i.label),applied);item->setData(Qt::UserRole,u(i.instanceId));if(u(i.instanceId)==selected)applied->setCurrentItem(item);}presetSignature=instances;}
-  ready();updateBakeCount();refreshing=false;if(!model||model->layers.empty())tell(QStringLiteral("先到“镜头与动画”导入素材，再回来生成预设。"));
+  ready();updateBakeCount();refreshing=false;if(document.isEmpty())tell(QStringLiteral("请先在镜头与动画页创建舞台。"));else if(!session&&status->text().isEmpty()&&!generate->isEnabled())tell(QStringLiteral("勾选参与运动或接收转场的素材，也可以只开启画面装饰。"));
  }
 };
 
 PresetPanel::PresetPanel(StageModel*m,QWidget*parent):QWidget(parent),d(std::make_unique<Impl>(this,m)){
  setObjectName("spatial.presets36");auto*root=new QVBoxLayout(this);root->setContentsMargins(0,0,0,0);root->setSpacing(0);auto*scroll=new QScrollArea;scroll->setObjectName("spatial.preset-content-scroll361");scroll->setWidgetResizable(true);scroll->setFrameShape(QFrame::NoFrame);scroll->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);auto*content=new QWidget;content->setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Preferred);auto*layout=new QVBoxLayout(content);layout->setContentsMargins(8,6,8,6);layout->setSpacing(4);scroll->setWidget(content);root->addWidget(scroll,1);auto*footer=new QWidget;footer->setObjectName("spatial.preset-footer361");footer->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);auto*footerLayout=new QVBoxLayout(footer);footerLayout->setContentsMargins(8,6,8,6);footerLayout->setSpacing(4);root->addWidget(footer);
- auto*targetHeader=new QHBoxLayout;targetHeader->addWidget(new QLabel(QStringLiteral("让哪些素材动起来")),1);auto*all=button(QStringLiteral("全选"),"spatial.preset-select-all361",this);auto*none=button(QStringLiteral("清空"),"spatial.preset-select-none361",this);all->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);none->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);targetHeader->addWidget(all);targetHeader->addWidget(none);layout->addLayout(targetHeader);
- d->targets=new QListWidget;d->targets->setObjectName("spatial.preset-targets361");d->targets->setSelectionMode(QAbstractItemView::NoSelection);d->targets->setMinimumHeight(66);d->targets->setMaximumHeight(110);layout->addWidget(d->targets);connect(d->targets,&QListWidget::itemChanged,this,[this]{d->changed();});
- for(const auto&p:std::vector<std::pair<QPushButton*,bool>>{{all,true},{none,false}})connect(p.first,&QPushButton::clicked,this,[this,on=p.second]{d->refreshing=true;for(int i=0;i<d->targets->count();++i){auto*v=d->targets->item(i);if(v->flags()&Qt::ItemIsEnabled)v->setCheckState(on?Qt::Checked:Qt::Unchecked);}d->refreshing=false;d->changed();});
+ auto*targetHeader=new QHBoxLayout;targetHeader->addWidget(new QLabel(QStringLiteral("选择素材")),1);
+ auto*all=button(QStringLiteral("运动全选"),"spatial.preset-select-all361",this);auto*none=button(QStringLiteral("清空运动"),"spatial.preset-select-none361",this);auto*copy=button(QStringLiteral("复制运动选择"),"spatial.preset-copy-targets366",this);
+ copy->setToolTip(QStringLiteral("将当前的运动选择复制到转场列。之后两列仍可分别修改。"));for(auto*b:{all,none,copy}){b->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);targetHeader->addWidget(b);}layout->addLayout(targetHeader);
+ d->targets=new QTableWidget(0,3);d->targets->setObjectName("spatial.preset-targets361");d->targets->setHorizontalHeaderLabels({QStringLiteral("素材 / 实例"),QStringLiteral("参与运动"),QStringLiteral("接收转场")});d->targets->setSelectionMode(QAbstractItemView::NoSelection);d->targets->setEditTriggers(QAbstractItemView::NoEditTriggers);d->targets->verticalHeader()->hide();d->targets->verticalHeader()->setDefaultSectionSize(25);d->targets->setShowGrid(false);d->targets->horizontalHeader()->setSectionResizeMode(Material,QHeaderView::Stretch);for(auto c:{Motion,Transition})d->targets->horizontalHeader()->setSectionResizeMode(c,QHeaderView::ResizeToContents);d->targets->setMinimumHeight(94);d->targets->setMaximumHeight(170);layout->addWidget(d->targets);
+ connect(d->targets,&QTableWidget::itemChanged,this,[this]{if(!d->refreshing){d->targetEdited=true;d->changed();}});
+ for(auto*b:{all,none,copy})connect(b,&QPushButton::clicked,this,[this,b,all,copy]{QSignalBlocker hold(d->targets);for(int row=0;row<d->targets->rowCount();++row){auto*motion=d->targets->item(row,Motion);auto*item=b==copy?d->targets->item(row,Transition):motion;if(item->flags()&Qt::ItemIsEnabled)item->setCheckState(b==copy?motion->checkState():b==all?Qt::Checked:Qt::Unchecked);}d->targetEdited=true;d->changed();});
  layout->addWidget(new QLabel(QStringLiteral("挑一个画面风格")));auto*grid=new QGridLayout;grid->setSpacing(4);int index=0;
  for(const auto&style:styleCatalog()){auto*b=button(QString::fromUtf8(style.name),("spatial.preset-style-"+std::string(style.id)).c_str(),this);b->setCheckable(true);b->setProperty("styleId",u(style.id));b->setIconSize(QSize(75,39));b->setMinimumHeight(46);b->setToolTip(QString::fromUtf8(style.description));grid->addWidget(b,index/2,index%2);d->cards.push_back(b);const auto*def=&style;connect(b,&QPushButton::clicked,this,[this,def]{d->chooseStyle(*def);});++index;}layout->addLayout(grid);
  auto combo=[this](const char*name){auto*w=new QComboBox;w->setObjectName(name);w->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLengthWithIcon);w->setMinimumContentsLength(8);connect(w,&QComboBox::currentIndexChanged,this,[this]{d->changed();});return w;};
  auto check=[this](const QString&label,const char*name,bool on=false){auto*w=new QCheckBox(label);w->setObjectName(name);w->setChecked(on);connect(w,&QCheckBox::toggled,this,[this]{d->changed();});return w;};
  auto*main=new QWidget;auto*f=form(main);layout->addWidget(main);d->strength=number(f,QStringLiteral("动感"),"spatial.preset-strength36",0,2,.6,0,2);d->strength->parentWidget()->setToolTip(QStringLiteral("0～0.4 轻柔，约0.6适中，1以上强烈。只改变生成动作的幅度，不修改基础布局。"));
  auto*levels=new QWidget;auto*levelLayout=new QHBoxLayout(levels);levelLayout->setContentsMargins(0,0,0,0);for(const auto&p:std::vector<std::pair<QString,double>>{{QStringLiteral("轻柔"),.3},{QStringLiteral("适中"),.6},{QStringLiteral("强烈"),1.2}}){auto*b=button(p.first,("spatial.preset-level-"+std::to_string(int(p.second*100))).c_str(),levels);levelLayout->addWidget(b);connect(b,&QPushButton::clicked,this,[this,v=p.second]{d->strength->setValue(v);});}f->addRow(QString(),levels);
- d->amount=combo("spatial.preset-amount361");d->amount->addItems({QStringLiteral("不加装饰"),QStringLiteral("少量装饰"),QStringLiteral("丰富装饰")});d->amount->setCurrentIndex(1);d->amount->setToolTip(QStringLiteral("控制程序绘制的装饰数量。露出遮罩由详细控制单独选择；不加装饰不会自动裁切素材。"));f->addRow(QStringLiteral("画面装饰"),d->amount);
+ d->amount=combo("spatial.preset-amount361");d->amount->addItems({QStringLiteral("不加装饰"),QStringLiteral("少量装饰"),QStringLiteral("丰富装饰")});d->amount->setCurrentIndex(0);d->amount->setToolTip(QStringLiteral("控制程序绘制的装饰数量。露出遮罩由详细控制单独选择；不加装饰不会自动裁切素材。"));f->addRow(QStringLiteral("画面装饰"),d->amount);
   d->period=number(f,QStringLiteral("时长 / 秒"),"spatial.preset-period36",.01,maxSeconds,6,.01,30);d->loop=check(QStringLiteral("循环播放"),"spatial.preset-loop36");d->loop->setToolTip(QStringLiteral("勾选后生成有界周期动作。应用到时间轴时开启舞台循环；补充至时间轴时沿用舞台当前的循环设置。每段周期等于这里的时长；全场回到开头的时刻取时间轴最晚结束点。关闭则生成一次性可编辑关键帧。"));f->addRow(d->loop);
   auto*actions=new QHBoxLayout;actions->setSpacing(4);d->generate=button(QStringLiteral("生成一套"),"spatial.preset-generate361",footer);d->reroll=button(QStringLiteral("换一套"),"spatial.preset-reroll361",footer);actions->addWidget(d->generate);actions->addWidget(d->reroll);footerLayout->addLayout(actions);
   auto*commitActions=new QHBoxLayout;commitActions->setSpacing(4);d->apply=button(QStringLiteral("应用到时间轴"),"spatial.preset-apply36",footer);d->append=button(QStringLiteral("补充至时间轴"),"spatial.preset-append363",footer);d->cancel=button(QStringLiteral("取消预览"),"spatial.preset-cancel36",footer);commitActions->addWidget(d->apply);commitActions->addWidget(d->append);commitActions->addWidget(d->cancel);footerLayout->addLayout(commitActions);
@@ -292,16 +333,16 @@ PresetPanel::PresetPanel(StageModel*m,QWidget*parent):QWidget(parent),d(std::mak
  auto*details=fold(layout,QStringLiteral("详细控制"),"spatial.preset-details-toggle361");auto*detailLayout=new QVBoxLayout(details);detailLayout->setContentsMargins(0,0,0,0);detailLayout->setSpacing(4);
  auto*parts=new QWidget;auto*pf=form(parts);detailLayout->addWidget(parts);
  auto partCombo=[&](const char*name,const std::vector<PartDefinition>&catalog){auto*w=combo(name);w->addItem(QStringLiteral("按风格自动挑选"),QString());w->addItem(QStringLiteral("关闭"),QStringLiteral("none"));for(const auto&p:catalog){w->addItem(QString::fromUtf8(p.name),QString::fromUtf8(p.id));w->setItemData(w->count()-1,QString::fromUtf8(p.description),Qt::ToolTipRole);}return w;};
- d->motion=partCombo("spatial.preset-motion-part361",motionCatalog());d->mask=partCombo("spatial.preset-mask-part361",maskCatalog());d->mask->setCurrentIndex(1);d->decor=partCombo("spatial.preset-decor-part361",decorationCatalog());pf->addRow(QStringLiteral("素材运动"),d->motion);pf->addRow(QStringLiteral("露出遮罩"),d->mask);pf->addRow(QStringLiteral("装饰色块"),d->decor);
-  d->mask->setToolTip(QStringLiteral("裁切每个勾选素材的可见形状，与可见装饰不同。默认关闭；本版不把单个实时来源伪装成两个时间画面的A/B转场。"));connect(d->decor,&QComboBox::currentIndexChanged,this,[this]{if(!d->refreshing){d->heldDecorations.clear();d->heldDecorationStyle.clear();if(!id(d->decor).empty()&&id(d->decor)!="none"&&d->amount->currentIndex()==0)d->amount->setCurrentIndex(1);}});
+ d->motion=partCombo("spatial.preset-motion-part361",motionCatalog());d->mask=partCombo("spatial.preset-mask-part361",maskCatalog());d->mask->setCurrentIndex(0);d->decor=partCombo("spatial.preset-decor-part361",decorationCatalog());d->movementSpace=combo("spatial.preset-movement-space366");d->movementSpace->addItems({QStringLiteral("空间 · 带纵深"),QStringLiteral("平面")});pf->addRow(QStringLiteral("运动空间"),d->movementSpace);pf->addRow(QStringLiteral("素材运动"),d->motion);pf->addRow(QStringLiteral("露出遮罩"),d->mask);pf->addRow(QStringLiteral("装饰色块"),d->decor);
+  d->mask->setToolTip(QStringLiteral("只在「接收转场」列勾选的素材上揭示画面。多个实例共享方向、图案与时序。"));connect(d->decor,&QComboBox::currentIndexChanged,this,[this]{if(!d->refreshing){d->heldDecorations.clear();d->heldDecorationStyle.clear();if(!id(d->decor).empty()&&id(d->decor)!="none"&&d->amount->currentIndex()==0)d->amount->setCurrentIndex(1);}});
  auto*locks=new QWidget;auto*ll=new QHBoxLayout(locks);ll->setContentsMargins(0,0,0,0);d->lockMotion=check(QStringLiteral("固定运动"),"spatial.preset-lock-motion361");d->lockDecor=check(QStringLiteral("固定装饰"),"spatial.preset-lock-decor361");d->lockPalette=check(QStringLiteral("固定配色"),"spatial.preset-lock-colors361");for(auto*w:{d->lockMotion,d->lockDecor,d->lockPalette})ll->addWidget(w);pf->addRow(locks);
  d->lockMotion->setToolTip(QStringLiteral("换一套时保留已生成的运动种类、随机方向和相位。动感、时长等明确调整仍会生效；时间轴对象锁用于禁止编辑已有动作。"));d->lockDecor->setToolTip(QStringLiteral("换一套时保留装饰种类、随机布局和相位。配色、数量、空间位置等明确调整仍会生效。"));d->lockPalette->setToolTip(QStringLiteral("保留当前A/B颜色。选定颜色后自动勾选；取消勾选后，切换风格和换一套可以使用风格色板。"));
-  connect(d->amount,&QComboBox::currentIndexChanged,this,[this]{if(!d->refreshing&&!d->lockDecor->isChecked()){d->heldDecorations.clear();d->heldDecorationStyle.clear();}});
- auto*rerolls=new QWidget;auto*rl=new QHBoxLayout(rerolls);rl->setContentsMargins(0,0,0,0);auto*onlyMotion=button(QStringLiteral("只换运动"),"spatial.preset-reroll-motion361",rerolls);auto*onlyDecor=button(QStringLiteral("只换装饰"),"spatial.preset-reroll-decor361",rerolls);auto*onlyColors=button(QStringLiteral("只换配色"),"spatial.preset-reroll-colors361",rerolls);for(auto*b:{onlyMotion,onlyDecor,onlyColors})rl->addWidget(b);pf->addRow(rerolls);connect(onlyMotion,&QPushButton::clicked,this,[this]{d->rerollPart(true);});connect(onlyDecor,&QPushButton::clicked,this,[this]{d->rerollPart(false);});connect(onlyColors,&QPushButton::clicked,this,[this]{d->rerollColors();});
+  connect(d->amount,&QComboBox::currentIndexChanged,this,[this]{if(d->refreshing)return;if(d->amount->currentIndex()>0&&id(d->decor)=="none")d->decor->setCurrentIndex(0);if(!d->lockDecor->isChecked()){d->heldDecorations.clear();d->heldDecorationStyle.clear();}});
+ auto*rerolls=new QWidget;auto*rl=new QHBoxLayout(rerolls);rl->setContentsMargins(0,0,0,0);auto*onlyMotion=button(QStringLiteral("只换运动"),"spatial.preset-reroll-motion361",rerolls);auto*onlyDecor=button(QStringLiteral("只换装饰"),"spatial.preset-reroll-decor361",rerolls);auto*onlyColors=button(QStringLiteral("只换配色"),"spatial.preset-reroll-colors361",rerolls);auto*onlyMask=button(QStringLiteral("只换转场"),"spatial.preset-reroll-mask366",rerolls);connect(onlyMask,&QPushButton::clicked,this,[this]{d->rerollMask();});for(auto*b:{onlyMotion,onlyMask,onlyDecor,onlyColors})rl->addWidget(b);pf->addRow(rerolls);connect(onlyMotion,&QPushButton::clicked,this,[this]{d->rerollPart(true);});connect(onlyDecor,&QPushButton::clicked,this,[this]{d->rerollPart(false);});connect(onlyColors,&QPushButton::clicked,this,[this]{d->rerollColors();});
  d->start=number(pf,QStringLiteral("开始 / 秒"),"spatial.preset-start36",0,maxSeconds,0,0,60);d->camera=check(QStringLiteral("同时移动镜头"),"spatial.preset-camera36");d->camera->setToolTip(QStringLiteral("额外给整体镜头增加低幅横移；关闭时只改变勾选素材。已有镜头轨冲突或镜头锁定会阻止应用。"));pf->addRow(d->camera);d->replace=check(QStringLiteral("替换已有关键帧冲突区间"),"spatial.preset-replace36");d->replace->setToolTip(QStringLiteral("默认阻止覆盖已有动画。勾选后只替换生成动作所用参数的时间区间，保留区间外曲线；锁定对象或锁定参数仍会阻止应用。"));pf->addRow(d->replace);
  d->seed=new QDoubleSpinBox;d->seed->setObjectName("spatial.preset-seed361");d->seed->setDecimals(0);d->seed->setSingleStep(1);d->seed->setRange(0,4294967295.);d->seed->setValue(double(QRandomGenerator::global()->generate()));d->seed->setKeyboardTracking(false);pf->addRow(QStringLiteral("随机种子"),d->seed);
  for(int n=0;n<2;++n){auto*row=new QWidget;auto*l=new QHBoxLayout(row);l->setContentsMargins(0,0,0,0);l->setSpacing(4);d->colorPreview[n]=new QLabel;d->colorPreview[n]->setObjectName(n?"spatial.preset-color-preview-b361":"spatial.preset-color-preview-a361");d->colorButtons[n]=button(QStringLiteral("选择颜色"),n?"spatial.preset-color-b36":"spatial.preset-color-a36",row);l->addWidget(d->colorPreview[n],1);l->addWidget(d->colorButtons[n],1);pf->addRow(n?QStringLiteral("配色 B"):QStringLiteral("配色 A"),row);connect(d->colorButtons[n],&QPushButton::clicked,this,[this,n]{d->pickColor(n);});}
- auto*space=fold(detailLayout,QStringLiteral("图形的空间位置"),"spatial.preset-space-toggle36");auto*sf=form(space);d->depth=combo("spatial.preset-depth36");d->depth->addItems({QStringLiteral("放在素材前方"),QStringLiteral("放在两层之间"),QStringLiteral("跟随某个素材"),QStringLiteral("自定义世界 XYZ")});sf->addRow(QStringLiteral("放在哪里"),d->depth);d->depthA=combo("spatial.preset-depth-a36");d->depthB=combo("spatial.preset-depth-b36");d->anchor=combo("spatial.preset-anchor36");sf->addRow(QStringLiteral("参考 A"),d->depthA);sf->addRow(QStringLiteral("参考 B"),d->depthB);sf->addRow(QStringLiteral("跟随素材"),d->anchor);d->depthA->setEnabled(false);d->depthB->setEnabled(false);d->anchor->setEnabled(false);connect(d->depth,&QComboBox::currentIndexChanged,this,[this](int i){d->depthA->setEnabled(i==1);d->depthB->setEnabled(i==1);d->anchor->setEnabled(i==2);});
+ auto*space=fold(detailLayout,QStringLiteral("图形的空间位置"),"spatial.preset-space-toggle36");auto*sf=form(space);d->depth=combo("spatial.preset-depth36");d->depth->addItems({QStringLiteral("放在素材前方"),QStringLiteral("放在两层之间"),QStringLiteral("跟随某个素材"),QStringLiteral("自定义世界 XYZ")});sf->addRow(QStringLiteral("放在哪里"),d->depth);d->protection=combo("spatial.preset-protection366");d->protection->addItems({QStringLiteral("自动"),QStringLiteral("中央"),QStringLiteral("左侧"),QStringLiteral("右侧"),QStringLiteral("下方"),QStringLiteral("上方")});sf->addRow(QStringLiteral("装饰避开区域"),d->protection);d->depthA=combo("spatial.preset-depth-a36");d->depthB=combo("spatial.preset-depth-b36");d->anchor=combo("spatial.preset-anchor36");sf->addRow(QStringLiteral("参考 A"),d->depthA);sf->addRow(QStringLiteral("参考 B"),d->depthB);sf->addRow(QStringLiteral("跟随素材"),d->anchor);d->depthA->setEnabled(false);d->depthB->setEnabled(false);d->anchor->setEnabled(false);connect(d->depth,&QComboBox::currentIndexChanged,this,[this](int i){d->depthA->setEnabled(i==1);d->depthB->setEnabled(i==1);d->anchor->setEnabled(i==2);});
  d->depth->setToolTip(QStringLiteral("前方/层间依据开始时刻的统一场景求值，XYZ为附加偏移；跟随时XYZ为素材局部偏移；自定义时XYZ是绝对世界位置。只影响可见装饰和世界遮罩，不移动素材基础布局。"));
  const char*xyz[]={"X","Y","Z"};const char*pn[]={"spatial.preset-x36","spatial.preset-y36","spatial.preset-z36"};const char*rn[]={"spatial.preset-rx36","spatial.preset-ry36","spatial.preset-rz36"};for(int a=0;a<3;++a)d->position[a]=number(sf,QStringLiteral("位置 ")+xyz[a],pn[a],-100000,100000,0,-2000,2000);for(int a=0;a<3;++a)d->rotation[a]=number(sf,QStringLiteral("旋转 ")+xyz[a],rn[a],-100000,100000,0,-360,360);d->scale[0]=number(sf,QStringLiteral("缩放 X"),"spatial.preset-scale-x36",.01,100,1,.01,4);d->scale[1]=number(sf,QStringLiteral("缩放 Y"),"spatial.preset-scale-y36",.01,100,1,.01,4);d->localMask=check(QStringLiteral("遮罩跟随各素材局部坐标"),"spatial.preset-local-mask36",true);d->screen=check(QStringLiteral("图形固定在屏幕坐标"),"spatial.preset-screen-fixed36");sf->addRow(d->localMask);sf->addRow(d->screen);
  auto*timing=fold(detailLayout,QStringLiteral("循环与节拍"),"spatial.preset-timing-toggle36");auto*tf=form(timing);d->cycles=new QSpinBox;d->cycles->setObjectName("spatial.preset-cycles36");d->cycles->setRange(1,1000000);d->cycles->setValue(1);tf->addRow(QStringLiteral("段内重复次数"),d->cycles);d->cycles->setToolTip(QStringLiteral("整段结束位置=开始+时长×次数。每次生成最多250000个普通关键帧；超出时请减少重复次数或持续时间。是否让整个舞台从末尾回到开头由首屏“循环播放”控制。"));connect(d->cycles,&QSpinBox::valueChanged,this,[this]{d->changed();});d->beat=check(QStringLiteral("按拍长确定每周期时长"),"spatial.preset-beat36");tf->addRow(d->beat);d->bpm=number(tf,QStringLiteral("BPM"),"spatial.preset-bpm36",1,999,120,30,240);d->beatRatio=combo("spatial.preset-beat-ratio36");for(double v:{.25,.5,1.,2.,4.,8.})d->beatRatio->addItem(QString::number(v)+QStringLiteral(" 拍"),v);d->beatRatio->setCurrentIndex(2);tf->addRow(QStringLiteral("每周期"),d->beatRatio);d->bpm->parentWidget()->setEnabled(false);d->beatRatio->setEnabled(false);connect(d->beat,&QCheckBox::toggled,this,[this](bool on){d->bpm->parentWidget()->setEnabled(on);d->beatRatio->setEnabled(on);d->period->parentWidget()->setEnabled(!on);});auto*reuse=button(QStringLiteral("沿用镜头页 BPM 与拍点"),"spatial.preset-reuse-bpm36",timing);tf->addRow(reuse);connect(reuse,&QPushButton::clicked,this,[this]{auto*existing=window()->findChild<QDoubleSpinBox*>("spatial.bpm32");if(!existing){d->tell(QStringLiteral("未找到镜头页 BPM，请手动输入。"),true);return;}d->bpm->setValue(existing->value());if(auto*offset=window()->findChild<QDoubleSpinBox*>("spatial.beat-offset32"))d->start->setValue(offset->value());d->beat->setChecked(true);});
@@ -311,7 +352,8 @@ PresetPanel::PresetPanel(StageModel*m,QWidget*parent):QWidget(parent),d(std::mak
  d->chooseStyle(styleCatalog().front());d->refreshing=false;installHoverHelp(this);d->refresh();
 }
 PresetPanel::~PresetPanel(){d->cancelSession();for(auto*child:findChildren<QObject*>())QObject::disconnect(child,nullptr,this,nullptr);}
-void PresetPanel::setDocument(QString document){if(d->document==document)return;d->cancelSession();d->status->clear();d->document=std::move(document);d->layerSignature=QString(QChar(0));d->presetSignature=QString(QChar(0));d->refreshing=true;d->targets->clear();for(auto*c:{d->anchor,d->depthA,d->depthB})c->setCurrentIndex(0);if(d->model){d->start->setValue(d->model->timelinePosition);if(auto*row=dynamic_cast<NumericSlider*>(d->start->parentWidget()))row->refresh();}d->refreshing=false;d->refresh();}
+void PresetPanel::setDocument(QString document){if(d->document==document)return;d->cancelSession();if(!d->document.isEmpty()&&d->targetEdited)d->remembered.insert(d->document,d->targetState());d->status->clear();d->document=std::move(document);d->targetEdited=d->remembered.contains(d->document);d->layerSignature=QString(QChar(0));d->presetSignature=QString(QChar(0));d->refreshing=true;d->targets->setRowCount(0);for(auto*c:{d->anchor,d->depthA,d->depthB})c->setCurrentIndex(0);if(d->model){d->start->setValue(d->model->timelinePosition);if(auto*row=dynamic_cast<NumericSlider*>(d->start->parentWidget()))row->refresh();}d->refreshing=false;d->refresh();}
+void PresetPanel::openForLayer(const std::string&id){d->seedActive(id);}
 void PresetPanel::refresh(){d->refresh();}
 void PresetPanel::cancelCurrentPreview(){d->cancelSession();}
 }
