@@ -6,9 +6,11 @@ OBS Spatial FX 是一个使用 C++ 和 Qt6 开发的 Windows x64 OBS 插件。�
 
 把背景、人物和前景分成独立图层，设置深度，再移动摄像机，就能制作具有远近视差的 2.5D 直播舞台。还可以给每个图层设置关键帧、绑定灯光、叠加 FX，并将配置保存到 OBS。
 
-> 当前发布版本：**v3.6.5**。修复 FX 参数页操作时跳回顶部的问题，悬停说明改为 OBS 窗口内显示，切换程序时立即收起。
+**当前版本为 v3.6.6-b。** 本版重做八种预设风格的装饰构图，加入 24 套主图案，支持 Z 轴随机推拉和独立选择运动、转场的图层，并修复分批导入时窗口捕捉被背景覆盖的问题。
 
-[下载 v3.6.5](https://github.com/tesilayang/obs-spartialFX/releases/tag/v3.6.5) · [下载现有 v3.6.3 HTML 说明书](https://github.com/tesilayang/obs-spartialFX/releases/download/v3.6.3/OBS_Spatial_FX_V3.6.3_Manual.html) · [查看说明书源文件](docs/v3.6.3/manual/) · [构建说明](BUILDING.md) · [本版开发与实测报告](docs/v3.6.5/) · [开发与交付标准](DEVELOPMENT_STANDARDS.md)
+[下载 Windows x64 安装包](https://github.com/tesilayang/obs-spatialFX/releases/download/v3.6.6-b/OBS_Spatial_FX_V3.6.6-b_Setup.exe) · [版本详情与源码](https://github.com/tesilayang/obs-spatialFX/releases/tag/v3.6.6-b) · [下载装饰实拍对照 HTML](https://github.com/tesilayang/obs-spatialFX/releases/download/v3.6.6-b/OBS_Spatial_FX_V3.6.6-b_Style_Comparison.html)
+
+[下载 v3.6.3 HTML 说明书](https://github.com/tesilayang/obs-spatialFX/releases/download/v3.6.3/OBS_Spatial_FX_V3.6.3_Manual.html) · [本版构建说明](https://github.com/tesilayang/obs-spatialFX/blob/v3.6.6-b/BUILDING.md) · [本版实测报告](https://github.com/tesilayang/obs-spatialFX/blob/v3.6.6-b/docs/v3.6.6/TEST_REPORT.md) · [开发与交付标准](DEVELOPMENT_STANDARDS.md)
 
 ## 可以做什么
 
@@ -23,7 +25,7 @@ OBS Spatial FX 是一个使用 C++ 和 Qt6 开发的 Windows x64 OBS 插件。�
 | 舞台灯光 | 点光源、简化面光源、颜色、衰减、柔化阴影、轮廓光和指定受光层 |
 | 灯光跟随 | 按独立图层实例绑定，跟随其动画后的空间位置、旋转和缩放 |
 | 分层 FX | 每个已导入实例独立选择效果；13 个大组、95 个子功能，按需启用 |
-| 卡片式预设 | 8 种风格，18 种运动、22 种露出遮罩、21 种程序装饰；随机组合或详细手选 |
+| 卡片式预设 | 8 种风格、24 套装饰主图案，运动与转场对象可分别选择 |
 | 应用与补充 | 候选先预览；可放到指定时间，或在原时间轴末尾下一帧继续追加，支持运动撤销 |
 | 工程管理 | 工程 JSON 按原场景名称恢复；完整 ZIP 携带本地素材副本，支持文件夹或 ZIP 解压后新建场景 |
 | 安装与卸载 | x64 安装器、覆盖升级、便携版启动支持，以及 Windows 控制面板卸载 |
@@ -87,11 +89,11 @@ SMAA 与 FXAA 二选一，RCAS 可以叠加。RCAS 是单遍五点采样的自�
 
 ### 风格预设与程序装饰
 
-先勾选要运动的图层，再点击温柔舒缓、简洁几何、活泼波普、纸片拼贴、科技界面、节奏快剪、朦胧梦幻或故障实验卡片。调整动感、装饰数量与时长，生成候选，在 OBS 直接预览；满意后应用或补充至时间轴。
+在预设页分别勾选「参与运动」和「接收转场」的图层，再选择温柔舒缓、简洁几何、活泼波普、纸片拼贴、科技界面、节奏快剪、朦胧梦幻或故障实验。空间运动会结合镜头距离与相邻图层深度调整推拉幅度。可在 OBS 预览，也可应用到指定时间或补充到时间轴末尾。
 
-“详细控制”可手选运动、露出遮罩和装饰，固定满意的运动、装饰或配色，再只换其余部分。程序图形支持实心色面、厚圆环、宽色带、网点、纸条、星形、色团等，可以放在图层前方、两层之间、绑定图层或固定屏幕位置。无需提前制作透明视频。
+装饰默认关闭，可按需开启。少量档放置主图与呼应图形，丰富档再利用空余边缘。可单独重抽运动、转场或装饰。装饰由插件生成，可在「详细控制」中手选模板、配色和保护区域。
 
-有限周期块支持循环与节拍时长，可将指定区间转换成关键帧继续细修。露出遮罩裁切当前来源的可见区域，不等于两段独立视频的 A/B 转场。
+运动写为可直接编辑的时间轴关键帧。转场蒙版只改变勾选图层的露出范围，例如单独让标题擦入，同时保持角色与背景可见。
 
 ### 当前光影行为
 
@@ -101,7 +103,7 @@ SMAA 与 FXAA 二选一，RCAS 可以叠加。RCAS 是单遍五点采样的自�
 
 ## 安装与开始使用
 
-1. 从 [Release](https://github.com/tesilayang/obs-spartialFX/releases) 下载 `OBS_Spatial_FX_V3.6.5_Setup.exe`。
+1. 下载 [`OBS_Spatial_FX_V3.6.6-b_Setup.exe`](https://github.com/tesilayang/obs-spatialFX/releases/download/v3.6.6-b/OBS_Spatial_FX_V3.6.6-b_Setup.exe)。
 2. 关闭所有 OBS，双击安装。支持覆盖升级，场景和个人预设保留。
 3. 常规版正常启动 OBS；便携版使用安装器创建的便携启动入口。
 4. 在 OBS 的“停靠窗口”中打开 **OBS Spatial FX**，选择/新建舞台。
@@ -132,7 +134,7 @@ SMAA 与 FXAA 二选一，RCAS 可以叠加。RCAS 是单遍五点采样的自�
 
 - v3.6.3 对预设、舞台软阴影、局部阴影、辉光、星芒和轮廓隔离分别完成对应专项；测试范围随具体修改确定。
 - v3.6.4 完成 10 组专项测试、39 项真实 OBS 交互检查、保存重启与 1080p60 测试；真实 Spout 验证通过，NDI 因无发送端保持 BLOCKED。详见 [测试报告](docs/v3.6.4/TEST_REPORT.md)。
-- 最新两组 1080p60、各约 30 秒采样中，轮廓光平均渲染耗时约 0.286 ms，叠加外阴影约 0.362 ms，无新增渲染丢帧，缓存分配保持稳定。这些结果只对应测试场景。
+- v3.6.6-b 使用五实例场景测试 1080p60。关闭预设时平均渲染耗时 0.253 ms，同时开启运动、转场和少量装饰时为 0.282 ms。两组各采样 30 秒，均未出现渲染丢帧。
 - **没有测量整机电功耗，不能把帧耗时当作瓦数或能耗。** 不承诺其他 CPU、集显、显卡、驱动、分辨率、编码器或 OBS 版本具有与开发机完全相同的资源占用、帧率和能耗表现。
 - 集显/无独显设备、NVIDIA 实机、互联网实际推流、数小时持续运行均为 **NOT RUN**。未来 OBS 版本也需单独回归。
 - 每个活动 SMAA 图层在 1080p 约增加 19.8 MiB 专用图像空间，FXAA 与 RCAS 使用现有中间目标。资源紧张时先尝试 FXAA 和低强度 RCAS，再在自己的直播配置中观察 OBS 渲染丢帧。
